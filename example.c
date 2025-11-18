@@ -6,6 +6,9 @@
 // 2025-11-18 04:07:37 - Поддержка C99/C11 вычитания указателей
 //
 
+#if !__STDC_NO_VLA__ && !__cplusplus && !DISABLE_VLA_EXAMPLE
+    #define _COUNTOF_NS_WANT_VLA  (1)
+#endif
 #include "countof_ns.h"
 
 #include <assert.h>
@@ -102,13 +105,13 @@ int main(void) {
         #endif
     #endif
 
-    #if !__STDC_NO_VLA__ && !__cplusplus && !_COUNTOF_NS_VLS_UNSUPPORTED
+    #if !_COUNTOF_NS_VLA_UNSUPPORTED
         for(size_t n = MIN_DIM; n < 4; n++) {
             int vla[n];
             assert(countof_ns(vla) == n);
             for(size_t m = MIN_DIM; m < 4; m++) {
                 int vlm[n][m];
-                assert(m <= 0 || countof_ns(vlm) == n);
+                assert(countof_ns(vlm) == (m > 0 ? n : 0));
                 assert(countof_ns(vlm[0]) == m);
                 #ifdef countof
                     assert(countof(vlm) == n);
@@ -116,10 +119,10 @@ int main(void) {
                 #endif
                 for(size_t l = MIN_DIM; l < 4; l++) {
                     int vlt[n][m][l];
-                    assert(m <= 0 || l <= 0 ||
-                           countof_ns(vlt) == n);
-                    assert(l <= 0 ||
-                           countof_ns(vlt[0]) == m);
+                    assert(countof_ns(vlt) ==
+                           (m > 0 && l > 0 ? n : 0));
+                    assert(countof_ns(vlt[0]) ==
+                           (l > 0 ? m : 0));
                     assert(countof_ns(vlt[0][0]) == l);
                     #ifdef countof
                         assert(countof(vlt) == n);
@@ -129,6 +132,8 @@ int main(void) {
                 }
             }
         }
+    #elif !__STDC_NO_VLA__ && !__cplusplus && !DISABLE_VLA_EXAMPLE
+        #error "VLA detection error, probably bug in \"countof_ns.h\""
     #endif
 
     #ifdef std_size
@@ -158,7 +163,7 @@ int main(void) {
             #endif
         #endif
     #endif
-    #ifdef __cplusplus
+    #if __cplusplus
         #ifdef __cpp_lib_nonmember_container_access
             printf("__cpp_lib_nonmember_container_access %ld ",
                    __cpp_lib_nonmember_container_access);

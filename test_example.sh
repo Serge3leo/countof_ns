@@ -11,7 +11,7 @@ set -e
 gccwarn="-Wno-unknown-warning-option -Wduplicated-branches -Wduplicated-cond -Wcast-qual -Wconversion -Wsign-conversion -Wlogical-op"
 #gccwarn="-Wno-unknown-warning-option"
 gxxwarn="-Wsign-promo"
-common="-O -g -Wall -Wextra $gccwarn"
+common="-g -Wall -Wextra $gccwarn"
 cflags="$common"
 cxxflags="$common $gxxwarn -Wno-deprecated"
 
@@ -32,9 +32,11 @@ cxx_stds_mclang___mp_21="c++11 c++23 c++2c"
 for cc in $ccs ; do
     xcc=`echo "$cc" | tr "+-" "__"`
     for std in `eval echo \\$cc_stds_"$xcc"` ; do
-	echo "$cc $cflags --std=$std example.c && ./a.out"
-	"$cc" $cflags --std="$std" example.c
-	./a.out
+	for addf in "" "-DDISABLE_VLA_EXAMPLE"; do
+	    echo "$cc $addf $cflags --std=$std example.c && ./a.out"
+	    "$cc" $addf $cflags --std="$std" example.c
+	    ./a.out
+	done
     done
 done
 
