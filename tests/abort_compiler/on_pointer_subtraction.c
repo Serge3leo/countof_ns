@@ -8,6 +8,7 @@
 //  - clang
 //  - GCC
 //  - pgcc18 -A
+//  - pgcc --diag_error=nonstandard_ptr_minus_ptr,incompatible_operands
 //  - Pelles C 13.0
 //  - nvcc
 //
@@ -18,6 +19,7 @@
 // Only warnings, no errors at any cases pointers incompatibles:
 //  - MSVC (Visual Studio)
 //  - pgcc18
+//  - pgcc (aka nvc) 25.9-0
 
 // ===============
 // C11/C23 6.5.6 Additive operators

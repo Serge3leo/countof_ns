@@ -6,7 +6,7 @@
 // 2025-11-18 04:07:37 - Поддержка C99/C11 вычитания указателей
 //
 
-#if !DISABLE_VLA_EXAMPLE && !__SUNPRO_C
+#if !DISABLE_VLA_EXAMPLE && !__SUNPRO_C && !__NVCOMPILER
     #define _COUNTOF_NS_WANT_VLA  (1)
 #endif
 #include "countof_ns.h"
@@ -39,7 +39,14 @@
     #define example_assert(e, s)  assert((e) && (s))
     #define example_thread_local
 #endif
-#if __clang__ || __GNUC__ || __NVCC__
+#if __NVCOMPILER
+    #define example_const
+    #define example_volatile
+#else
+    #define example_const  const
+    #define example_volatile  volatile
+#endif
+#if __clang__ || __GNUC__ || __NVCC__ || !__NVCOMPILER
     #define MIN_DIM  (0)
 #else
     #define MIN_DIM  (1)
@@ -49,8 +56,8 @@
 #endif
 
 int main(void) {
-    const int a1[42] = { 0 };
-    volatile int a2[42][56];
+    example_const int a1[42] = { 0 };
+    example_volatile int a2[42][56];
     static example_thread_local int a3[42][56][23];
     int min1[MIN_DIM];
     int min2[MIN_DIM][42];
@@ -71,28 +78,40 @@ int main(void) {
     size_t res = countof_ns(a1);
     // Negative examples
     #if 0
-        const int *p1 = a1;
-        const int **pp1 = &p1;
-        volatile int (*p2)[56] = a2;
+        example_const int *p1 = a1;
+        example_const int **pp1 = &p1;
+        example_volatile int (*p2)[56] = a2;
         int (*p3)[56][23] = a3;
         res += countof_ns(p1);
+                                    #warning "Must error above"
         res += countof_ns(pp1);
+                                    #warning "Must error above"
         res += countof_ns(p2);
+                                    #warning "Must error above"
         res += countof_ns(p3);
+                                    #warning "Must error above"
         res += countof_ns(&a1);
+                                    #warning "Must error above"
         res += countof_ns(a1[0]);
+                                    #warning "Must error above"
         res += countof_ns(&a1[0]);
+                                    #warning "Must error above"
         res += countof_ns(&min1);
+                                    #warning "Must error above"
         res += countof_ns(&min3[0]);
+                                    #warning "Must error above"
         res += countof_ns(s);
+                                    #warning "Must error above"
         #if HAVE_FLEXIBLE_ONLY
             res += countof_ns(flexs42[0]);
+                                    #warning "Must error above"
         #endif
         // Need DISABLE_VLA_EXAMPLE
         #if _COUNTOF_NS_VLA_UNSUPPORTED && !__STDC_NO_VLA__ && !__cplusplus
             for(size_t n = MIN_DIM; n < 4; n++) {
                 int vla[n];
                 res += countof_ns(vla);
+                                    #warning "Must error above"
             }
         #endif
     #endif
@@ -139,19 +158,39 @@ int main(void) {
             assert(countof_ns(vla) == n);
             for(size_t m = MIN_DIM; m < 4; m++) {
                 int vlm[n][m];
-                assert(countof_ns(vlm) == (m > 0 ? n : 0));
-                assert(countof_ns(vlm[0]) == m);
+                #if 0
+                    printf("n = %zu m = %zu\n", n, m);
+                    printf("sizeof(vlm) = %zu\n", sizeof(vlm));
+                    printf("sizeof(vlm[0]) = %zu\n", sizeof(vlm[0]));
+                    printf("sizeof(*vlm) = %zu\n", sizeof(*vlm));
+                    printf("countof_ns(vlm) = %zu\n", countof_ns(vlm));
+                    printf("sizeof(vlm[0][0]) = %zu\n", sizeof(vlm[0][0]));
+                    printf("sizeof(*(vlm[0])) = %zu\n", sizeof(*(vlm[0])));
+                    printf("countof_ns(vlm[0]) = %zu\n", countof_ns(vlm[0]));
+                #else
+                    assert(countof_ns(vlm) == (m > 0 ? n : 0));
+                    assert(countof_ns(vlm[0]) == m);
+                #endif
                 #ifdef countof
                     assert(countof(vlm) == n);
                     assert(countof(vlm[0]) == m);
                 #endif
                 for(size_t l = MIN_DIM; l < 4; l++) {
                     int vlt[n][m][l];
-                    assert(countof_ns(vlt) ==
-                           (m > 0 && l > 0 ? n : 0));
-                    assert(countof_ns(vlt[0]) ==
-                           (l > 0 ? m : 0));
-                    assert(countof_ns(vlt[0][0]) == l);
+                    #if 0
+                        printf("n = %zu m = %zu l = %zu\n", n, m, l);
+                        printf("countof_ns(vlt) = %zu\n", countof_ns(vlt));
+                        printf("countof_ns(vlt[0]) = %zu\n",
+                                countof_ns(vlt[0]));
+                        printf("countof_ns(vlt[0][0]) = %zu\n",
+                                countof_ns(vlt[0][0]));
+                    #else
+                        assert(countof_ns(vlt) ==
+                               (m > 0 && l > 0 ? n : 0));
+                        assert(countof_ns(vlt[0]) ==
+                               (l > 0 ? m : 0));
+                        assert(countof_ns(vlt[0][0]) == l);
+                    #endif
                     #ifdef countof
                         assert(countof(vlt) == n);
                         assert(countof(vlt[0]) == m);
@@ -212,6 +251,10 @@ int main(void) {
         printf("__CUDACC_VER_MAJOR__.__CUDACC_VER_MINOR__ %d.%d ",
                 __CUDACC_VER_MAJOR__, __CUDACC_VER_MINOR__);
     #endif
+    #if __NVCOMPILER
+        printf("__NVCOMPILER_MAJOR__.__NVCOMPILER_MINOR__ %d.%d ",
+                __NVCOMPILER_MAJOR__, __NVCOMPILER_MINOR__);
+    #endif
     #if __cplusplus
         #ifdef __cpp_lib_nonmember_container_access
             printf("__cpp_lib_nonmember_container_access %ld ",
@@ -223,6 +266,10 @@ int main(void) {
             printf("__STDC_NO_VLA__ %d ", __STDC_NO_VLA__);
         #endif
         printf("__STDC_VERSION__ %ld\n", __STDC_VERSION__);
+    #endif
+    #if __NVCOMPILER  // TODO
+        (void)a1;  // static_assert() correct check, but variable never used?
+        (void)a3;  // static_assert() correct check, but variable never used?
     #endif
     (void)res;
     return 0;
