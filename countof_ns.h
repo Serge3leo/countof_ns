@@ -31,11 +31,9 @@
 //
 //     - C23 или C++11;
 //
-//     - С11 c расширением `__typeof__()` - clang 4, gcc 5, MSVC 17.9, но это
-//     неточно (TODO);
+//     - С11 c расширением `__typeof__()` (clang, gcc, MSVC, Sun C, ...);
 //
-//     - C99 c расширениями `__typeof__()` и `_Generic()` - clang 4, gcc 5,
-//     MSVC 17.9, но это неточно (TODO);
+//     - C99 c расширениями `__typeof__()` и `_Generic()`.
 //
 //
 // До первого включения можно определить следующие макросы значением 1:
@@ -43,8 +41,10 @@
 // `_COUNTOF_NS_WANT_VLA` - обеспечить поддержку VLA (если не определён
 //     `__STDC_NO_VLA__`), без этого флага аргумент VLA будет вызывать ошибку
 //     компиляции. (Поддержка VLA требует соответствия компилятора `6.7.5.2
-//     Array declarators` C11 и выше) (Дублировать ветку `_Generic()`, для
-//     того, что бы показать сообщение о возможности _COUNTOF_NS_WANT_VLA);
+//     Array declarators` C11 и выше)
+//
+//         TODO: Дублировать ветку `_Generic()`, для того, что бы показать
+//         сообщение о возможности _COUNTOF_NS_WANT_VLA
 //
 // `_COUNTOF_NS_WANT_STDC` - не использовать расширение `__typeof__()`;
 //
@@ -60,11 +60,10 @@
 #if !__cplusplus
     #if __STDC_VERSION__ >= 202311L
         #define _countof_ns_typeof(t)  typeof(t)
-    #elif (!_COUNTOF_NS_WANT_STDC && \
-           (__clang_major__ >= 4 || __GNUC__ >= 5 || _MSC_VER >= 1939))  // TODO
+    #elif !_COUNTOF_NS_WANT_STDC
         #define _countof_ns_typeof(t)  __typeof__(t)
     #else
-        #error "typeof(t) don't detected, need C23 or clang/gcc/MSVC/... extension"
+        #error "With _COUNTOF_NS_WANT_STDC required C23 typeof(t)"
     #endif
     #define _countof_ns_unsafe(a)  (sizeof(*(a)) ? sizeof(a)/sizeof(*(a)) : 0)
     #if __STDC_NO_VLA__ || !_COUNTOF_NS_WANT_VLA

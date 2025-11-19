@@ -3,38 +3,53 @@
 // SPDX-FileCopyrightText: 2025 Сергей Леонтьев (leo@sai.msu.ru)
 // История:
 // 2025-11-18 16:46:22 - Создан.
-//
 
+// Compilers with C11 semantics:
+//  - clang
+//  - GCC
+//  - pgcc18 -A
+//  - Pelles C 13.0
+//  - nvcc
+//
+// Compilers with C99 semantics:
+//  - Sun C, Oracle Studio
+//  - pgcc11
+//
+// Only warnings, no errors at any cases pointers incompatibles:
+//  - MSVC (Visual Studio)
+//  - pgcc18
+
+// ===============
 // C11/C23 6.5.6 Additive operators
 // Constraints
 // (3, clause 2)
 // - both operands are pointers to qualified or unqualified versions of
-// compatible complete object types; or
+//   compatible complete object types; or
 
 // C99 6.5.6 Additive operators
 // Constraints
 // (3, clause 2)
 // - both operands are pointers to qualified or unqualified versions of
-// compatible object types; or
+//   compatible object types; or
 
 // For compassion:
-//
+// ===============
 // C99/C23 6.5.8 Relational operators
 // Constraints
 // (2, clause 2)
 // - both operands are pointers to qualified or unqualified versions of
-// compatible object types; or
+//   compatible object types; or
 
 // C99/C23 6.5.9 Equality operators
 // Constraints
 // (2, clause 2)
 // - both operands are pointers to qualified or unqualified versions of
-// compatible types;
+//   compatible types;
 
-#define bug_on_incompatible(p, q)  ((p) - (q))
+#define ps_bug_on_incompatible(p, q)  ((p) - (q))
 
 #define unsafe(a) (sizeof(*(a)) ? sizeof(a)/sizeof(*(a)) : 0)
-#define bug_on_not_array(base_t, array_t, a) bug_on_incompatible( \
+#define ps_bug_on_not_array(base_t, array_t, a) ps_bug_on_incompatible( \
                                                 (array_t **)&(a), \
                                                 (base_t(**)[unsafe(a)])&(a))
 
@@ -44,15 +59,15 @@ typedef base1_t array1_t[42];
 typedef int base2_t;
 typedef base2_t *pointer2_t;
 
-void foo(void) {
+void ps_foo(void) {
     array1_t a1;
-    const int good = bug_on_not_array(base1_t, array1_t, a1);
+    const int good = ps_bug_on_not_array(base1_t, array1_t, a1);
     #if __STDC_VERSION__ >= 201112L && NON_INT_CONSTEXPR
-        _Static_assert(!bug_on_not_array(base1_t, array1_t, a1),
+        _Static_assert(!ps_bug_on_not_array(base1_t, array1_t, a1),
                        "Check return value");
     #endif
     pointer2_t p2 = a1;
-    const int abort_compiler = bug_on_not_array(base2_t, pointer2_t, p2);
+    const int abort_compiler = ps_bug_on_not_array(base2_t, pointer2_t, p2);
 
     double d;
     char c;

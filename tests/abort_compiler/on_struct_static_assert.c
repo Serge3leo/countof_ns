@@ -13,12 +13,12 @@
 // Constraints
 // (2) The constant expression shall compare unequal to 0.
 
-#define bug_on_zero(e)  sizeof(struct{_Static_assert((e), "Check"); short foo;})
+#define sa_bug_on_zero(e)  sizeof(struct{_Static_assert((e), "Check"); short foo;})
 
-void foo(void) {
-    const int good = bug_on_zero(1);
-    _Static_assert(sizeof(short) == bug_on_zero(1), "Check return value");
-    const int abort_compiler = bug_on_zero(0);
+void sa_foo(void) {
+    const int good = sa_bug_on_zero(1);
+    _Static_assert(sizeof(short) == sa_bug_on_zero(1), "Check return value");
+    const int abort_compiler = sa_bug_on_zero(0);
 
     (void)good, (void)abort_compiler;
 }

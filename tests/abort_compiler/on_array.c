@@ -16,14 +16,14 @@
 //     shall appear only in a declaration of a function parameter with an array
 //     type, and then only in the outermost array type derivation.
 
-#define bug_on_negative(s)  sizeof(char [s])
+#define a_bug_on_negative(s)  sizeof(char [s])
 
-void foo(void) {
-    const int good = bug_on_negative(1);
+void a_foo(void) {
+    const int good = a_bug_on_negative(1);
     #if __STDC_VERSION__ >= 201112L
-        _Static_assert(1 == bug_on_negative(1), "Check return value");
+        _Static_assert(1 == a_bug_on_negative(1), "Check return value");
     #endif
-    const int abort_compiler = bug_on_negative(-1);
+    const int abort_compiler = a_bug_on_negative(-1);
 
     (void)good, (void)abort_compiler;
 }

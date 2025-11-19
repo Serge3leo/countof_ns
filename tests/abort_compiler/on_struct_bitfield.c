@@ -22,15 +22,15 @@
 // 143) While the number of bits in a bool object is at least CHAR_BIT, the
 // width of a bool is just 1 bit.
 
-#define bug_on_negative(s)  sizeof(struct{unsigned short foo:(s);})
+#define sb_bug_on_negative(s)  sizeof(struct{unsigned short foo:(s);})
 
-void foo(void) {
-    const int good = bug_on_negative(1);
+void sb_foo(void) {
+    const int good = sb_bug_on_negative(1);
     #if __STDC_VERSION__ >= 201112L
-        _Static_assert(sizeof(unsigned short) == bug_on_negative(1),
+        _Static_assert(sizeof(unsigned short) == sb_bug_on_negative(1),
                        "Check return value");
     #endif
-    const int abort_compiler = bug_on_negative(-1);
+    const int abort_compiler = sb_bug_on_negative(-1);
 
     (void)good, (void)abort_compiler;
 }
