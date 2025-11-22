@@ -7,9 +7,9 @@
 - [Extensions of C++ language](#extensions-of-c-language-1)
 - [Terms and definitions](#terms-and-definitions)
   - [Methods](#methods)
+  - [Test cases legend](#test-cases-legend)
   - [Test results legend](#test-results-legend)
   - [Compiler ID](#compiler-id)
-
 ## C language standard
 
 | ID        | Version     | array                                | cv array                              | ptr                                  | cv ptr                               | other                                | VLA                                      | ptr VLA                                  |
@@ -21,7 +21,6 @@
 | NVHPC     | 25.9        | countof_ns<br>~~countof_ns¹~~_W      | **countof_ns_E**<br>~~countof_ns¹~~_W | countof_ns<br>~~countof_ns¹~~_W      | countof_ns<br>~~countof_ns¹~~_W      | countof_ns<br>~~countof_ns¹~~_W      | Broken implementation                    | Broken implementation                    |
 | PGI       |             |                                      |                                       |                                      |                                      |                                      |                                          |                                          |
 | SunPro    | 5.15        | countof_ns<br>~~countof_ns¹~~_W      | countof_ns<br>~~countof_ns¹~~_W       | countof_ns<br>~~countof_ns¹~~_W      | countof_ns<br>~~countof_ns¹~~_W      | countof_ns<br>~~countof_ns¹~~_W      | **countof_ns_E**<br>~~countof_ns¹~~_W    | **countof_ns_E**<br>~~countof_ns¹~~_W    |
-
 ## Extensions of C language
 
 | ID        | Version     | ZLA[0][n]                            | ZLA[0][0]                            | ZLA[n][0]                                        | ptr ZLA[0]                                       | other<br>sizeof(0)                   | VLA[0][n]                            | VLA[0][n]                            | VLA[0][n]                                | ptr VLA[0]                               |
@@ -33,7 +32,6 @@
 | NVHPC     | 25.9        | countof_ns<br>~~countof_ns¹~~_W      | countof_ns<br>~~countof_ns¹~~_W      | **countof_ns_E**<br>~~countof_ns¹~~_W            | **countof_ns_E**<br>~~countof_ns¹~~_W            | countof_ns<br>~~countof_ns¹~~_W      | Broken implementation                | Broken implementation                | Broken implementation                    | Broken implementation                    |
 | PGI       |             |                                      |                                      |                                                  |                                                  |                                      |                                      |                                      |                                          |                                          |
 | SunPro    | 5.15        |                                      |                                      |                                                  |                                                  |                                      |                                      |                                      |                                          |                                          |
-
 ## Extensions of C++ language
 
 | ID        | Version     | ZLA[0][n]                            | ZLA[0][0]                            | ZLA[n][0]                                        | ptr ZLA[0]                                       | other<br>sizeof(0)                   |
@@ -45,36 +43,52 @@
 | NVHPC     | 25.9        | countof_ns<br>~~countof_ns¹~~_W      | countof_ns<br>~~countof_ns¹~~_W      | **countof_ns_E**<br>~~countof_ns¹~~_W            | **countof_ns_E**<br>~~countof_ns¹~~_W            | countof_ns<br>~~countof_ns¹~~_W      |
 | PGI       |             |                                      |                                      |                                                  |                                                  |                                      |
 | SunPro    | 5.15        |                                      |                                      |                                                  |                                                  |                                      |
-
 ## Terms and definitions
-
 ### Methods
 
-| Name        | Language | Description                                                                                        |
-| ----------- | -------- | -------------------------------------------------------------------------------------------------- |
-| countof_ns  | C/C++    | Макрос `countof_ns()` из ["countof_ns.h"](../include/countof_ns.h) по умолчанию                                               |
-| countof_ns¹ | C/C++    | Макрос `countof_ns()` из ["countof_ns.h"](../include/countof_ns.h) с предварительным определением `_COUNTOF_NS_WANT_С11_VLA` |
-| countof     | С        | Реализация проекта C2y  компиляторами Clang 21 и IntelLLVM 2025.3                                  |
-| ARRAY_SIZE  | С        | [Копия](../include/_comparisons/array_size.h) реализации [Linux Kernel](https://github.com/torvalds/linux/blob/master/include/linux/array_size.h)                                                                       |
-| ms_countof  | C/C++    | [Копия](../include/_comparisons/ms_countof.h) реализации `_countof()` [MSVC](https://learn.microsoft.com/ru-ru/cpp/c-runtime-library/reference/countof-macro?view=msvc-170)                                                                 |
-| COUNTOF     | С        | [Реализация](../include/_comparisons/COUNTOF.h) от [alx - recommends codidact](https://stackoverflow.com/a/57537491/8585880)               |
-| ARRAY_LEN   | C/C++    | [Реализация](../include/_comparisons/ARRAY_LEN.h) от [James Z.M. Gao](https://stackoverflow.com/a/77001872/8585880)                          |
-| std::size   | С++      | Функция стандарта C++17                                                                            |
+| Name        | Language | Description                                                                                                                                                                       |
+| ----------- | -------- | --------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
+| countof_ns  | C/C++    | Macro `countof_ns()` from ["countof_ns.h"](../include/countof_ns.h) by default                                                                                                    |
+| countof_ns¹ | C/C++    | Macro `countof_ns()` from ["countof_ns.h"](../include/countof_ns.h) with predefinition of `_COUNTOF_NS_WANT_С11_VLA`                                                              |
+| countof     | С        | Implementation of the C2y draft by Clang 21 and IntelLLVM 2025.3 compilers                                                                                                        |
+| ARRAY_SIZE  | С        | [Copy](../include/_comparisons/array_size.h) implementation from [Linux Kernel](https://github.com/torvalds/linux/blob/master/include/linux/array_size.h )                        |
+| ms_countof  | C/C++    | [Copy](../include/_comparisons/ms_countof.h) implementation of `_countof()` [MSVC](https://learn.microsoft.com/ru-ru/cpp/c-runtime-library/reference/countof-macro?view=msvc-170) |
+| COUNTOF     | С        | [Implementation](../include/_comparisons/COUNTOF.h) by [alx - recommends codidact](https://stackoverflow.com/a/57537491/8585880)                                                  |
+| ARRAY_LEN   | C/C++    | [Implementation](../include/_comparisons/ARRAY_LEN.h) by [James Z.M. Gao](https://stackoverflow.com/a/77001872/8585880)                                                           |
+| std::size   | С++      | C++17 standard feature                                                                                                                                                            |
+### Test cases legend
 
+| Legend          | Type     | Description                                                                                                                                                                                                                                                                            |
+| --------------- | -------- | -------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
+| array           | Positive | `int a[1], b[2][3], c[4][5][6];`<br>`static_assert(1 == countof(a));`<br>`static_assert(2 == countof(b));`<br>`static_assert(3 == countof(b[0]));`<br>...                                                                                                                              |
+| cv array        | Positive | `const volatile int a[1], ...`<br>`static_assert(1 == countof(a));`<br>...                                                                                                                                                                                                             |
+| ptr             | Negative | `int *a, **b, ***c;`<br>`countof(a));  // Require compilation error`<br>`countof(b));  // Require compilation error`<br>`countof(c));  // Require compilation error`<br>...                                                                                                            |
+| cv ptr          | Negative | `const volatile int *a, ...`<br>`countof(a));  // Require compilation error`<br>...                                                                                                                                                                                                    |
+| other           | Negative | `int a, ...;`<br>`countof(a));  // Require compilation error`<br>...                                                                                                                                                                                                                   |
+| VLA             | Positive | `int d1 = 1, d2 = 2, d3 = 3, ...`<br>`int a[d1], b[d2][d3], c[d4][d5][d6];`<br>`static_assert(d1 == countof(a));`<br>`static_assert(d2 == countof(b));`<br>`static_assert(d3 == countof(b[0]));`<br>...                                                                                |
+| ptr VLA         | Negative | `int d1 = 1, d2 = 2, ...`<br>`int (*a)[d1], (*b)[d2][d3], (**)c[d4], ...`<br>`countof(a));  // Require compilation error`<br>`countof(b));  // Require compilation error`<br>`countof(c));  // Require compilation error`<br>...                                                       |
+| ZLA[0][n]       | Positive | `int a[0], b[0][1], c[0][2][3], ...`<br>`static_assert(0 == countof(a));`<br>`static_assert(0 == countof(b));`<br>`static_assert(0 == countof(c));`<br>...                                                                                                                             |
+| ZLA[0][0]       | Positive | `int a[0][0], b[0][0][0];`<br>`static_assert(0 == countof(a));`<br>`static_assert(0 == countof(b));`<br>`static_assert(0 == countof(b[0]));`<br>...                                                                                                                                    |
+| ZLA[n][0]       | Positive | `int a[1][0], b[2][0][0], c[3][4][0] ...`<br>`static_assert(1 == countof_ns(a));`<br>`static_assert(2 == countof_ns(b));`<br>`static_assert(3 == countof_ns(c));`<br>...                                                                                                               |
+| ptr ZLA[0]      | Negative | `int (*a)[0], (*b)[1][0], (**)c[0];`<br>`countof(a));  // Require compilation error`<br>`countof(b));  // Require compilation error`<br>`countof(c));  // Require compilation error`<br>...                                                                                            |
+| other sizeof(0) | Negative |                                                                                                                                                                                                                                                                                        |
+| VLA[0][n]       | Positive | `int d0 = 0, d1 = 2, ...`<br>`int a[d0], b[d0][d1], c[d0][d2][d3];`<br>`assert(0 == countof(a));`<br>`assert(0 == countof(b));`<br>`assert(0 == countof(c));`<br>...<br>// Assertion error -> **countof_F0** or **countof_Fany⚛︎**<br>// Other UB -> **~~countof_Fany~~⚛︎**            |
+| VLA[0][0]       | Positive | `int d0 = 0;`<br>`int a[d0][d0], b[d0][d0][d0];`<br>`assert(0 == countof(a));`<br>`assert(0 == countof(b));`<br>`assert(0 == countof(b[0]));`<br>...<br>// Assertion error -> **countof_F0** or **countof_Fany⚛︎**<br>// Other UB -> **~~countof_Fany~~⚛︎**                            |
+| VLA[n][0]       | Positive | `int d0 = 0, d1 = 2, ...`<br>`int a[d1][d0], b[d2][d0][d0], c[d3][d4][d0] ...`<br>`assert(1 == countof(a));`<br>`assert(2 == countof(b));`<br>`assert(3 == countof(c));`<br>...<br>// Assertion error -> **countof_F0** or **countof_Fany⚛︎**<br>// Other UB -> **~~countof_Fany~~⚛︎** |
+| ptr VLA[0]      | Negative | `int d0 = 0, d1 = 2, ...`<br>`int (*a)[d0], (*b)[d1][d0], (**)c[d0];`<br>`countof(a));  // Require compilation error`<br>`countof(b));  // Require compilation error`<br>`countof(c));  // Require compilation error`<br>...                                                           |
 ### Test results legend
 
-| Legend                  | Description                                                                                                                  |
-| ----------------------- | ---------------------------------------------------------------------------------------------------------------------------- |
-| countof_ns              | Успех.                                                                                                                       |
-| **countof_ns_E**        | Ошибка сборки для положительного теста, т.е. ложноотрицательный результат.                                                   |
-| **countof_ns_F0**       | Некорректный результат 0, для положительного теста.                                                                          |
-| **countof_ns_Fany⚛︎**   | Некорректный результат отличный от 0, для положительного теста. Не встречается.                                              |
-| **countof_ns_W**        | Предупреждение при сборке положительного теста.                                                                              |
-| ~~countof_ns¹~~_W       | Предупреждение при сборке отрицательного теста и его выполнение без ошибок, т.е. ложноотрицательным результат.               |
-| ~~method~~_NW           | Сборка и выполнение отрицательного теста без предупреждений и ошибок. Не встречается.                                        |
-| **~~ms_countof~~_W⚛︎**  | Предупреждение при сборке отрицательного теста и UB (аварийный отказ) при его исполнении, т.е. ложноотрицательным результат. |
-| **~~ms_countof~~_NW⚛︎** | Сборка отрицательного теста без предупреждений и UB (аварийный отказ) при его исполнении. Не встречается.                    |
-
+| Legend               | Description                                                                                               |
+| -------------------- | --------------------------------------------------------------------------------------------------------- |
+| countof              | Success                                                                                                   |
+| **countof_E**        | Build error for a positive test, i.e. a false negative result                                             |
+| **countof_F0**       | An incorrect result of 0 is for a positive test                                                           |
+| **countof_Fany⚛︎**   | Incorrect result other than 0 for a positive test (it does not occur)                                     |
+| **countof_W**        | A compile warning for positive test                                                                       |
+| ~~countof~~_W        | A warning when compiling a negative test and executing it without errors, i.e. a false negative result    |
+| ~~countof~~_NW       | Compiling and executing a negative test without warnings or errors (it does not occur)                    |
+| **~~countof~~_W⚛︎**  | A warning when compiling a negative test and a UB (crash) when executing it, i.e. a false negative result |
+| **~~countof~~_NW⚛︎** | Compilation of a negative test without warnings and UB (crash) during its execution (it does not occur)   |
 ### Compiler ID
 
 | ID        | Description                                                                                               |
