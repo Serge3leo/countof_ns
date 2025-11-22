@@ -2,13 +2,13 @@
 
 ## Table of Contents
 
-- [C language standard](#c_language_standard)
-- [Extensions of C language](#extensions_of_c_language)
-- [Extensions of C++ language](#extensions_of_c++_language)
-- [Terms and definitions](#terms_and_definitions)
+- [C language standard](#c-language-standard)
+- [Extensions of C language](#extensions-of-c-language)
+- [Extensions of C++ language](#extensions-of-c-language-1)
+- [Terms and definitions](#terms-and-definitions)
   - [Methods](#methods)
-  - [Test results legend](#Test_results_legend)
-  - [Compiler ID](#compiler_id)
+  - [Test results legend](#test-results-legend)
+  - [Compiler ID](#compiler-id)
 
 ## C language standard
 
