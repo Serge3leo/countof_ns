@@ -55,7 +55,7 @@
 | countof_ns  | C/C++    | Макрос `countof_ns()` из ["countof_ns.h"](../include/countof_ns.h) по умолчанию                                               |
 | countof_ns¹ | C/C++    | Макрос `countof_ns()` из ["countof_ns.h"](../include/countof_ns.h) с предварительным определением `_COUNTOF_NS_WANT_С11_VLA` |
 | countof     | С        | Реализация проекта C2y  компиляторами Clang 21 и IntelLLVM 2025.3                                  |
-| ARRAY_SIZE  | С        | [Копия](../include/_comparisons/ARRAY_LEN.h) реализации [Linux Kernel](https://github.com/torvalds/linux/blob/master/include/linux/array_size.h)                                                                       |
+| ARRAY_SIZE  | С        | [Копия](../include/_comparisons/array_size.h) реализации [Linux Kernel](https://github.com/torvalds/linux/blob/master/include/linux/array_size.h)                                                                       |
 | ms_countof  | C/C++    | [Копия](../include/_comparisons/ms_countof.h) реализации `_countof()` [MSVC](https://learn.microsoft.com/ru-ru/cpp/c-runtime-library/reference/countof-macro?view=msvc-170)                                                                 |
 | COUNTOF     | С        | [Реализация](../include/_comparisons/COUNTOF.h) от [alx - recommends codidact](https://stackoverflow.com/a/57537491/8585880)               |
 | ARRAY_LEN   | C/C++    | [Реализация](../include/_comparisons/ARRAY_LEN.h) от [James Z.M. Gao](https://stackoverflow.com/a/77001872/8585880)                          |
