@@ -6,8 +6,8 @@
 компиляторов.
 
 Неполный список поддерживаемых компиляторов: Clang, GNU gcc, IntelLLVM (icx),
-MSVC (Visual Studio 2022), NVHPC (NVIDIA HPC Compiler), PGI (The Portland
-Group(?)), SunPro (Oracle Developer Studio).
+MSVC (Visual Studio 2022), NVHPC (NVIDIA HPC Compiler), Pelles C, PGI (The
+Portland Group(?)), SunPro (Oracle Developer Studio).
 
 ## Содержание
 
