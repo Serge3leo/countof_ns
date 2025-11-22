@@ -5,7 +5,7 @@
 #include "tac_defs.h"
 
 TAC_CHECK_FUNC(es_foo) {
-    struct {} se;
+    struct {} se = {};
     tac_static_assert(0 == sizeof(se), "Empty structure");
     (void)se;
 }

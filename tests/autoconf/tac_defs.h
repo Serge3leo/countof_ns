@@ -15,13 +15,6 @@
 #else
     #define tac_static_assert(e, s)  assert((e) && (s))
 #endif
-#if __SUNPRO_C || __NVCOMPILER  || TAC_PEDANTIC \
-    || (defined(__clang_major__) && __clang_major__ < 16)
-    #define tac_crazy_static_assert(e, s)  assert((e) && (s))
-#else
-    #define tac_crazy_static_assert(e, s)  tac_static_assert((e), s)
-#endif
-
 #define _TAC_FUNC_DECL(name)  extern void _tac_check_func_##name(void)
 #if !TAC_DONT_MAIN
     #define _TAC_MAIN(name)  int main(void) { _tac_check_func_##name(); }

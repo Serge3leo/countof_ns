@@ -2,6 +2,10 @@
 // SPDX-License-Identifier: BSD-2-Clause
 // SPDX-FileCopyrightText: 2025 Сергей Леонтьев (leo@sai.msu.ru)
 
+// WARNING: DEPRECATED METHOD.
+// It's only left because James Z.M. Gao `ARRAY_LEN()` uses it.
+// See: include/_comparisons/ARRAY_LEN.h
+
 // Compilers with C11 semantics:
 //  - clang
 //  - GCC
@@ -71,8 +75,13 @@ TAC_CHECK_FUNC(ps_foo) {
     array1_t a1;
     const int good = ps_bug_on_not_array(base1_t, array1_t, a1);
     (void)good;
-    tac_crazy_static_assert(!ps_bug_on_not_array(base1_t, array1_t, a1),
-                           "Check return value");
+    #if __NVCOMPILER || _MSC_VER || __SUNPRO_C || TAC_PEDANTIC \
+        || (defined(__clang_major__) && __clang_major__ < 16)
+        assert(!ps_bug_on_not_array(base1_t, array1_t, a1));
+    #else
+        tac_static_assert(!ps_bug_on_not_array(base1_t, array1_t, a1),
+                          "Check return value");
+    #endif
     #if !TAC_DONT_FAIL
         pointer2_t p2 = a1;
         const int abort_compiler = ps_bug_on_not_array(base2_t,

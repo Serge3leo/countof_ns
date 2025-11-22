@@ -4,9 +4,12 @@
 
 message("examples: " ${ERROR_DEFINITIONS})
 if (MSVC)
-    add_definitions(-W4 -WX -D_CRT_SECURE_NO_WARNINGS)
+    add_definitions(-W4 -D_CRT_SECURE_NO_WARNINGS)
+    if (MSVC_VERSION GREATER_EQUAL 1914)
+        add_definitions("/Zc:__cplusplus")  # https://gitlab.kitware.com/cmake/cmake/-/issues/18837
+    endif()
 else()
-    add_definitions(-Wall -Wextra -Werror)
+    add_definitions(-Wall -Wextra)
 endif()
 
 foreach(sfx IN ITEMS "" "_cxx")

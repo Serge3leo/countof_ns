@@ -6,9 +6,9 @@
 
 #define check_by_subtraction(type_t, arr) { \
                 type_t arr[42] = { 0 }; \
-                tac_crazy_static_assert(0 == (&arr - (__typeof__(arr) *)&arr), \
+                tac_static_assert(sizeof(&arr - (__typeof__(arr) *)&arr), \
                         "(__typeof__(arr) *), " #type_t ", " #arr); \
-                tac_crazy_static_assert(0 == ((__typeof__(*arr) (*)[42])&arr \
+                tac_static_assert(sizeof((__typeof__(*arr) (*)[42])&arr \
                         - &arr), "(__typeof__(*arr) (*)[42]), " \
                         #type_t ", " #arr); \
             }

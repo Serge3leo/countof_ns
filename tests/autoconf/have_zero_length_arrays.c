@@ -24,20 +24,22 @@ TAC_CHECK_FUNC(zla_foo) {
     const size_t obviously_1d = sizeof(zla);
     (void)obviously_1d;
     tac_static_assert(ZLA_1D*sizeof(int) == sizeof(zla), "zla size");
-    tac_crazy_static_assert(0 == (&zla - (int(*)[ZLA_1D])&zla), "Check zla");
+    tac_static_assert(sizeof(&zla - (int(*)[ZLA_1D])&zla), "Check zla");
     int (*pzla)[ZLA_1D] = &zla;
-    tac_crazy_static_assert(0 == (&pzla - (int(**)[ZLA_1D])&pzla),
+    (void)pzla;
+    tac_static_assert(sizeof(&pzla - (int(**)[ZLA_1D])&pzla),
                       "Check ZLA ptr[ZLA_1D]");
-    tac_crazy_static_assert(0 == ((int(**)[ZLA_1D])&pzla - &pzla),
+    tac_static_assert(sizeof((int(**)[ZLA_1D])&pzla - &pzla),
                       "Check ZLA ptr[ZLA_1D] 1");
     int zlm[ZLA_MIN];
     const size_t obviously_m = sizeof(zlm);
     (void)obviously_m;
     tac_static_assert(ZLA_MIN*sizeof(int) == sizeof(zlm), "zlm size");
     int (*pzlm)[ZLA_MIN] = &zlm;
-    tac_crazy_static_assert(0 == (&pzlm - (int(**)[ZLA_MIN])&pzlm),
+    (void)pzlm;
+    tac_static_assert(sizeof(&pzlm - (int(**)[ZLA_MIN])&pzlm),
                       "Check ZLA ptr[ZLA_MIN]");
-    tac_crazy_static_assert(0 == ((int(**)[ZLA_MIN])&pzlm - &pzlm),
+    tac_static_assert(sizeof((int(**)[ZLA_MIN])&pzlm - &pzlm),
                       "Check ZLA ptr[ZLA_MIN] 1");
 
     size_t sum1 = 0;

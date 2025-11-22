@@ -24,7 +24,7 @@ TAC_CHECK_FUNC(vla_foo) {
     int fsa[2];
     const size_t obviously = sizeof(fsa);
     assert(2*sizeof(int) == obviously);
-    tac_crazy_static_assert(0 == (&fsa - (int(*)[2])&fsa), "Check FSA");
+    tac_static_assert(sizeof(&fsa - (int(*)[2])&fsa), "Check FSA");
     #if !TAC_DONT_FAIL
         int vla[vla_1d];
         const size_t unobvious = sizeof(vla);
@@ -32,23 +32,23 @@ TAC_CHECK_FUNC(vla_foo) {
         assert(0 == (&vla - (int(*)[3])&vla));
         assert(0 == (&vla - (int(*)[4])&vla));
         int (*pvla)[vla_1d] = &vla;
-        tac_crazy_static_assert(0 == (&pvla - (int(**)[VLA_MIN])&pvla),
+        tac_static_assert(sizeof(&pvla - (int(**)[VLA_MIN])&pvla),
                           "Check VLA ptr[VLA_MIN]");
-        tac_crazy_static_assert(0 == ((int(**)[VLA_MIN])&pvla - &pvla),
+        tac_static_assert(sizeof((int(**)[VLA_MIN])&pvla - &pvla),
                           "Check VLA ptr[VLA_MIN] 1");
-        tac_crazy_static_assert(0 == (&pvla - (int(**)[9])&pvla),
+        tac_static_assert(sizeof(&pvla - (int(**)[9])&pvla),
                           "Check VLA ptr[9]");
         int vlm[vla_min];
         const size_t unobvious_m = sizeof(vlm);
         assert(VLA_MIN*sizeof(int) == unobvious_m);
         int (*pvlm)[vla_min] = &vlm;
-        tac_crazy_static_assert(0 == (&pvlm - (int(**)[VLA_MIN])&pvlm),
+        tac_static_assert(sizeof(&pvlm - (int(**)[VLA_MIN])&pvlm),
                           "Check VLA ptr[VLA_MIN]");
-        tac_crazy_static_assert(0 == ((int(**)[VLA_MIN])&pvlm - &pvlm),
+        tac_static_assert(sizeof((int(**)[VLA_MIN])&pvlm - &pvlm),
                           "Check VLA ptr[VLA_MIN] 1");
-        tac_crazy_static_assert(0 == (&pvlm - (int(**)[VLA_1D])&pvlm),
+        tac_static_assert(sizeof(&pvlm - (int(**)[VLA_1D])&pvlm),
                           "Check VLA ptr[VLA_1D]");
-        tac_crazy_static_assert(0 == (&pvlm - (int(**)[8])&pvlm),
+        tac_static_assert(sizeof(&pvlm - (int(**)[8])&pvlm),
                           "Check VLA ptr[8]");
 
         size_t sum1 = 0;

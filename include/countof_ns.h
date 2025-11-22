@@ -76,7 +76,7 @@
     #define _countof_ns_unsafe(a)  (sizeof(*(a)) ? sizeof(a)/sizeof(*(a)) : 0)
     #if __STDC_NO_VLA__ || !_COUNTOF_NS_WANT_VLA
         #define _COUNTOF_NS_VLA_UNSUPPORTED  (1)
-#if 1  // TODO XXX удалить, ввиду MSVC
+#if 0  // TODO XXX удалить, ввиду MSVC
         #define _countof_ns_must_be(a)  ((size_t)!sizeof(struct{unsigned foo:( \
                 _Generic(&(a), \
                     _countof_ns_typeof(*(a)) (*)[_countof_ns_unsafe(a)]: 1, \

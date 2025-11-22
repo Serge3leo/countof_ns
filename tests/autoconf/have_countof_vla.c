@@ -15,16 +15,16 @@
 #endif
 
 TAC_CHECK_FUNC(cv_foo) {
-    int m = CV_MIN;
-    int f = 5;
+    size_t m = CV_MIN;
+    size_t f = 5;
     int a[m][m];
     int b[f][m];
     int c[m][f];
-    printf("%zu == countof(a), %zu == countof(a[0]) for a[%d][%d]\n",
+    printf("%zu == countof(a), %zu == countof(a[0]) for a[%zu][%zu]\n",
             countof(a), countof(a[0]), m, m);
-    printf("%zu == countof(b), %zu == countof(b[0]) for b[%d][%d]\n",
+    printf("%zu == countof(b), %zu == countof(b[0]) for b[%zu][%zu]\n",
             countof(b), countof(b[0]), f, m);
-    printf("%zu == countof(c), %zu == countof(c[0]) for c[%d][%d]\n",
+    printf("%zu == countof(c), %zu == countof(c[0]) for c[%zu][%zu]\n",
             countof(c), countof(c[0]), m, f);
     assert(m == countof(a) && m == countof(a[0]) && "a[0][0]");
     assert(f == countof(b) && m == countof(b[0]) && "b[5][0]");
