@@ -1,10 +1,6 @@
-// vim:set sw=4 ts=8 et fileencoding=utf8::Кодировка:UTF-8[АБЁЪЯабёъя]
+// vim:set sw=4 ts=8 et fileencoding=utf8:
 // SPDX-License-Identifier: BSD-2-Clause
 // SPDX-FileCopyrightText: 2025 Сергей Леонтьев (leo@sai.msu.ru)
-// История:
-// 2025-11-16 23:01:48 - Создан.
-// 2025-11-18 04:07:37 - Поддержка C99/C11 вычитания указателей
-//
 
 #if !DISABLE_VLA_EXAMPLE && !__SUNPRO_C && !__NVCOMPILER
     #define _COUNTOF_NS_WANT_VLA  (1)
@@ -55,7 +51,8 @@
     #define HAVE_FLEXIBLE_ONLY (1)
 #endif
 
-int main(void) {
+static int short_example(void) {
+#if 0
     example_const int a1[42] = { 0 };
     example_volatile int a2[42][56];
     static example_thread_local int a3[42][56][23];
@@ -262,6 +259,9 @@ int main(void) {
         #endif
         printf("__cplusplus %ld\n", __cplusplus);
     #else
+        #if _COUNTOF_NS_VLA_UNSUPPORTED
+            printf("_COUNTOF_NS_VLA_UNSUPPORTED ");
+        #endif
         #ifdef __STDC_NO_VLA__
             printf("__STDC_NO_VLA__ %d ", __STDC_NO_VLA__);
         #endif
@@ -272,5 +272,6 @@ int main(void) {
         (void)a3;  // static_assert() correct check, but variable never used?
     #endif
     (void)res;
+#endif
     return 0;
 }

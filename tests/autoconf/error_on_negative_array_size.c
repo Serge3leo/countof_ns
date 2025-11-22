@@ -1,8 +1,6 @@
-// vim:set sw=4 ts=8 et fileencoding=utf8::Кодировка:UTF-8[АБЁЪЯабёъя]
+// vim:set sw=4 ts=8 et fileencoding=utf8:
 // SPDX-License-Identifier: BSD-2-Clause
 // SPDX-FileCopyrightText: 2025 Сергей Леонтьев (leo@sai.msu.ru)
-// История:
-// 2025-11-18 15:13:35 - Создан.
 
 // С99 6.7.5.2 Array declarators
 // С11/23 6.7.6.2 Array declarators
@@ -16,14 +14,24 @@
 //     shall appear only in a declaration of a function parameter with an array
 //     type, and then only in the outermost array type derivation.
 
-#define a_bug_on_negative(s)  sizeof(char [s])
+// DISCLAIMER: WARNING:
+//     The expression MUST be a constant expression!
+//
+//     J.1 Unspecified behavior
+//     (72) The size expression in an array declaration is not a constant
+//          expression and evaluates at program execution time to a nonpositive
+//          value (6.7.6.2).
 
-void a_foo(void) {
-    const int good = a_bug_on_negative(1);
-    #if __STDC_VERSION__ >= 201112L
-        _Static_assert(1 == a_bug_on_negative(1), "Check return value");
+#include "tac_defs.h"
+
+#define nas_bug_on_negative(s)  sizeof(char [s])
+
+TAC_CHECK_FUNC(nas_foo) {
+    const int good = nas_bug_on_negative(1);
+    (void)good;
+    tac_static_assert(1 == nas_bug_on_negative(1), "Check return value");
+    #if !TAC_DONT_FAIL
+        const int abort_compiler = nas_bug_on_negative(-1);
+        (void)abort_compiler;
     #endif
-    const int abort_compiler = a_bug_on_negative(-1);
-
-    (void)good, (void)abort_compiler;
 }

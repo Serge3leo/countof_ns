@@ -1,8 +1,6 @@
 // vim:set sw=4 ts=8 et fileencoding=utf8::Кодировка:UTF-8[АБЁЪЯабёъя]
 // SPDX-License-Identifier: BSD-2-Clause
 // SPDX-FileCopyrightText: 2025 Сергей Леонтьев (leo@sai.msu.ru)
-// История:
-// 2025-11-18 16:13:34 - Создан.
 
 // C99 6.7.2.1 Structure and union specifiers
 // Constraints
@@ -22,15 +20,17 @@
 // 143) While the number of bits in a bool object is at least CHAR_BIT, the
 // width of a bool is just 1 bit.
 
-#define sb_bug_on_negative(s)  sizeof(struct{unsigned short foo:(s);})
+#include "tac_defs.h"
 
-void sb_foo(void) {
-    const int good = sb_bug_on_negative(1);
-    #if __STDC_VERSION__ >= 201112L
-        _Static_assert(sizeof(unsigned short) == sb_bug_on_negative(1),
-                       "Check return value");
+#define sbf_bug_on_negative(s)  sizeof(struct{unsigned foo:(s);})
+
+TAC_CHECK_FUNC(sbf_foo) {
+    const int good = sbf_bug_on_negative(1);
+    (void)good;
+    tac_static_assert(sizeof(unsigned) == sbf_bug_on_negative(1),
+                     "Check return value");
+    #if !TAC_DONT_FAIL
+        const int abort_compiler = sbf_bug_on_negative(-1);
+        (void)abort_compiler;
     #endif
-    const int abort_compiler = sb_bug_on_negative(-1);
-
-    (void)good, (void)abort_compiler;
 }
