@@ -52,7 +52,7 @@
 | countof_ns¹ | C/C++    | Macro `countof_ns()` from ["countof_ns.h"](../include/countof_ns.h) with predefinition of `_COUNTOF_NS_WANT_С11_VLA`                                                              |
 | countof     | С        | Implementation of the C2y draft by Clang 21 and IntelLLVM 2025.3 compilers                                                                                                        |
 | ARRAY_SIZE  | С        | [Copy](../include/_comparisons/array_size.h) implementation from [Linux Kernel](https://github.com/torvalds/linux/blob/master/include/linux/array_size.h )                        |
-| ms_countof  | C/C++    | [Copy](../include/_comparisons/ms_countof.h) implementation of `_countof()` [MSVC](https://learn.microsoft.com/ru-ru/cpp/c-runtime-library/reference/countof-macro?view=msvc-170) |
+| ms_countof  | C/C++    | [Copy](../include/_comparisons/ms_countof.h) implementation of `_countof()` [MSVC](https://learn.microsoft.com/cpp/c-runtime-library/reference/countof-macro?view=msvc-170) |
 | COUNTOF     | С        | [Implementation](../include/_comparisons/COUNTOF.h) by [alx - recommends codidact](https://stackoverflow.com/a/57537491/8585880)                                                  |
 | ARRAY_LEN   | C/C++    | [Implementation](../include/_comparisons/ARRAY_LEN.h) by [James Z.M. Gao](https://stackoverflow.com/a/77001872/8585880)                                                           |
 | std::size   | С++      | C++17 standard feature                                                                                                                                                            |
