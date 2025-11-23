@@ -40,7 +40,7 @@
     #define example_assert(e, s)  assert((e) && (s))
     #define example_thread_local
 #endif
-#if __NVCOMPILER && !TODO_cv_typeof  // TODO XXX
+#if (__NVCOMPILER || __INTEL_COMPILER) && !TODO_cv_typeof  // TODO XXX
     #define example_const
     #define example_volatile
 #else
@@ -252,11 +252,17 @@ static int long_example(void) {
         printf("__CUDACC_VER_MAJOR__.__CUDACC_VER_MINOR__ %d.%d ",
                 __CUDACC_VER_MAJOR__, __CUDACC_VER_MINOR__);
     #endif
-    #if __NVCOMPILER
+    #ifdef __NVCOMPILER
         printf("__NVCOMPILER_MAJOR__.__NVCOMPILER_MINOR__ %d.%d ",
                 __NVCOMPILER_MAJOR__, __NVCOMPILER_MINOR__);
     #endif
-    #if __cplusplus
+    #ifdef __INTEL_COMPILER
+        printf("__INTEL_COMPILER %d ", __INTEL_COMPILER);
+    #endif
+    #ifdef __INTEL_LLVM_COMPILER
+        printf("__INTEL_LLVM_COMPILER ", __INTEL_LLVM_COMPILER);
+    #endif
+    #ifdef __cplusplus
         #ifdef __cpp_lib_nonmember_container_access
             printf("__cpp_lib_nonmember_container_access %ld ",
                   (long)__cpp_lib_nonmember_container_access);

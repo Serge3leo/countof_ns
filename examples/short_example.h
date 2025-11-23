@@ -35,7 +35,7 @@
     #define example_assert(e, s)  assert((e) && (s))
     #define example_thread_local
 #endif
-#if __NVCOMPILER
+#if (__NVCOMPILER || __INTEL_COMPILER) && !TODO_cv_typeof  // TODO XXX
     #define example_const
     #define example_volatile
 #else
