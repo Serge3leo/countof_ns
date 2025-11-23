@@ -31,7 +31,8 @@ elseif(CMAKE_CXX_COMPILER_ID MATCHES "Clang$" OR
                             -Wno-zero-length-array)
 elseif(CMAKE_CXX_COMPILER_ID MATCHES "SunPro")
     set(TAC_ADD_DEFINITIONS -Wall -Wextra -pedantic)
-    set(TAC_ADD_C_DEFINITIONS -errtags -erroff=E_KW_IS_AN_EXTENSION_OF_ANSI)
+    set(TAC_ADD_C_DEFINITIONS -errtags
+            -erroff=E_KW_IS_AN_EXTENSION_OF_ANSI,E_NONPORTABLE_BIT_FIELD_TYPE)
 else()
     set(TAC_ADD_DEFINITIONS -Wall -Wextra -pedantic)
 endif()

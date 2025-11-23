@@ -109,9 +109,9 @@
 #else
     #define _COUNTOF_NS_VLA_UNSUPPORTED  (1)
     template<size_t A, size_t E, class T, size_t N>
-    constexpr static size_t _countof_ns_aux(T (&)[N]) { return N; }
+    constexpr static size_t _countof_ns_aux(const T (&)[N]) { return N; }
     template<size_t A, size_t E, class T>
-    constexpr static size_t _countof_ns_aux(T (&)) {
+    constexpr static size_t _countof_ns_aux(const T (&)) {
         static_assert(0 == A, "Argument must be zero-length array");
         return 0;
     }

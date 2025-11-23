@@ -40,6 +40,13 @@ static void shr_example(void) {
         example_assert(12 == countof_ns(*(int (*)[12])&p2));
         example_assert(3 == countof_ns(*(int (*)[3])p3));
         example_assert(2 == countof_ns(*(int(*)[2][2])&p3));
+        int a3[2] = { 0 };
+        struct {
+            // int bits: sizeof(a3);  // OK
+            // int bits: std::size(a3);  // Bug in clang++/icx // score 2:4
+             int bits: countof_ns(a3);  // Bug in clang++/icx TODO XXX
+        } s = { 0 };
+        (void)a3[s.bits];
     #endif
 
     #ifdef EXAMPLE_FAIL
