@@ -4,28 +4,33 @@
 
 #include "tac_defs.h"
 
+#if __STDC_VERSION__ >= 202311L
+    #define cvt_typeof(t)  typeof(t)
+#else
+    #define cvt_typeof(t)  __typeof__(t)
+#endif
 #define check_by_subtraction(type_t, arr) { \
                 type_t arr[42] = { 0 }; \
-                tac_static_assert(sizeof(&arr - (__typeof__(arr) *)&arr), \
-                        "(__typeof__(arr) *), " #type_t ", " #arr); \
-                tac_static_assert(sizeof((__typeof__(*arr) (*)[42])&arr \
-                        - &arr), "(__typeof__(*arr) (*)[42]), " \
+                tac_static_assert(sizeof(&arr - (cvt_typeof(arr) *)&arr), \
+                        "(cvt_typeof(arr) *), " #type_t ", " #arr); \
+                tac_static_assert(sizeof((cvt_typeof(*arr) (*)[42])&arr \
+                        - &arr), "(cvt_typeof(*arr) (*)[42]), " \
                         #type_t ", " #arr); \
             }
 
 #define check_by_Generic(type_t, arr) { \
                 type_t arr[42] = { 0 }; \
-                tac_static_assert(1 == _Generic(&*arr, __typeof__(*arr) *: 1, \
+                tac_static_assert(1 == _Generic(&*arr, cvt_typeof(*arr) *: 1, \
                                                       default: -1), \
-                                 "__typeof__(*arr) *, " #type_t ", " #arr); \
+                                 "cvt_typeof(*arr) *, " #type_t ", " #arr); \
                 tac_static_assert( \
-                        1 == _Generic(&arr, __typeof__(arr) *: 1, \
+                        1 == _Generic(&arr, cvt_typeof(arr) *: 1, \
                                             default: -1), \
-                        "__typeof__(arr) *, " #type_t ", " #arr); \
+                        "cvt_typeof(arr) *, " #type_t ", " #arr); \
                 tac_static_assert( \
-                        1 == _Generic(&arr, __typeof__(*arr)(*)[42]: 1, \
+                        1 == _Generic(&arr, cvt_typeof(*arr)(*)[42]: 1, \
                                             default: -1), \
-                        "__typeof__(*arr)(*)[42], " #type_t ", " #arr); \
+                        "cvt_typeof(*arr)(*)[42], " #type_t ", " #arr); \
             }
 
 TAC_CHECK_FUNC(cvt_foo) {

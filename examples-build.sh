@@ -57,6 +57,9 @@ elif [ -z "$cxx_cmp_arg" ] ; then
      icx)
         try=icpx
         ;;
+     icc)
+        try=icpc
+        ;;
      nvc)
         try=nvc++
         ;;

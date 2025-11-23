@@ -37,6 +37,9 @@ function(check_cmpl status res out)
         # ...gmake[1]: Warning: File ... has
         # modification time 0.047 s in the future...
         string(REGEX REPLACE "make[^\n]*warning" "" lout "${lout}")
+        # TODO: A false negative result may be detected, workaround:
+        # ^ld: warning: no platform load command found in '/opt/intel
+        string(REGEX REPLACE "\nld: warning: " "" lout "${lout}")
         if("${lout}" MATCHES " error[: ]")
             set(sts "ERRORS")
         elseif("${lout}" MATCHES " warning[: ]")
@@ -57,7 +60,7 @@ foreach(chk IN ITEMS ${tac_checks} ${tac_error_checks})
                 RUN_OUTPUT_VARIABLE run_out
                 )
         check_cmpl(sts "${cmpl}" "${cmpl_out}")
-        # message("\n====\n${chk} sts=${sts} cmpl=${cmpl}\n${cmpl_out}\n====")
+        # message("\n===\npre:${chk} sts=${sts} cmpl=${cmpl}\n${cmpl_out}\n===")
         if((NOT "${sts}" STREQUAL OK) OR (NOT "${run}" EQUAL 0))
             message("${chk}: SKIP on pre-check")
             continue()
@@ -70,7 +73,7 @@ foreach(chk IN ITEMS ${tac_checks} ${tac_error_checks})
             )
     string(TOUPPER "${chk}" def)
     check_cmpl(sts "${cmpl}" "${cmpl_out}")
-    # message("\n====\n${chk} sts=${sts} cmpl=${cmpl}\n${cmpl_out}\n====")
+    # message("\n===\npost:${chk} sts=${sts} cmpl=${cmpl}\n${cmpl_out}\n===")
     if((("${chk}" MATCHES "^error_") AND ("${sts}" STREQUAL FAIL)) OR
        (("${chk}" MATCHES "^have_") AND
         ("${sts}" STREQUAL OK) AND ("${run}" EQUAL 0)))
