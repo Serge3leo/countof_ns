@@ -2,19 +2,18 @@
 # SPDX-License-Identifier: BSD-2-Clause
 # SPDX-FileCopyrightText: 2025 Сергей Леонтьев (leo@sai.msu.ru)
 
-message("examples: " ${ERROR_DEFINITIONS})
-if (MSVC)
-    add_definitions(-W4 -D_CRT_SECURE_NO_WARNINGS)
-    if (MSVC_VERSION GREATER_EQUAL 1914)
-        add_definitions("/Zc:__cplusplus")  # https://gitlab.kitware.com/cmake/cmake/-/issues/18837
-    endif()
-else()
-    add_definitions(-Wall -Wextra)
-endif()
+add_definitions(${TAC_HAVE_ADD_DEFINITIONS}  # TODO: remove for EXAMPLE_FAIL
+                ${TAC_ADD_DEFINITIONS}
+                ${TAC_DEFINITIONS})
+message("TAC_DEFINITIONS=${TAC_DEFINITIONS} "
+        "TAC_ADD_DEFINITIONS=${TAC_ADD_DEFINITIONS} "
+        "TAC_ADD_C_DEFINITIONS=${TAC_ADD_C_DEFINITIONS} "
+        "TAC_HAVE_ADD_DEFINITIONS=${TAC_HAVE_ADD_DEFINITIONS} ")
 
 foreach(sfx IN ITEMS "" "_cxx")
-    if(sfx STREQUAL "")
-        set(novla "_novla")
+    if(sfx STREQUAL "" AND
+       "${TAC_DEFINITIONS}" MATCHES "HAVE_VLA")
+        set(novla "_vla")
     else()
         set(novla "")
     endif()
@@ -24,10 +23,11 @@ foreach(sfx IN ITEMS "" "_cxx")
             set(tgt ${base}${vla})
             if(sfx STREQUAL "")
                 add_executable(${tgt} ${base}.c)
+                target_compile_options(${tgt} PRIVATE ${TAC_ADD_C_DEFINITIONS})
             else()
                 add_executable(${tgt} ${base}.cpp)
             endif()
-            if(NOT vla STREQUAL "")
+            if(NOT vla STREQUAL "_vla")
                 target_compile_options(${tgt} PRIVATE "-DDISABLE_VLA_EXAMPLE")
             endif()
             target_link_libraries(${tgt} PRIVATE CounofNS::CounofNS)

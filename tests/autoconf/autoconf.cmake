@@ -4,21 +4,42 @@
 
 # Detect default compiler capability (no options) for tests
 
-set(TAC_PRE_CHECK "-DTAC_DONT_FAIL")
+set(TAC_HAVE_ADD_DEFINITIONS "-DTAC_DONT_FAIL")
+if (MSVC)
+    list(APPEND TAC_HAVE_ADD_DEFINITIONS -WX)
+else()
+    set(TAC_ADD_DEFINITIONS -Wall -Wextra -)
+    list(APPEND TAC_HAVE_ADD_DEFINITIONS -Werror)
+endif()
 if (MSVC)
     set(TAC_ADD_DEFINITIONS -W4 -D_CRT_SECURE_NO_WARNINGS)
-elseif(CMAKE_CXX_COMPILER_ID STREQUAL "Clang")
-    set(TAC_ADD_DEFINITIONS -Wall -Wextra -pedantic -Wno-unknown-warning-option
-                            -Wno-gnu-empty-struct -Wno-c2y-extensions
-                            -Wno-c23-extensions -Wno-zero-length-array
-                            -Wno-gnu-empty-initializer)
-else()
+    if (MSVC_VERSION GREATER_EQUAL 1914)
+            # https://gitlab.kitware.com/cmake/cmake/-/issues/18837
+        list(APPEND TAC_HAVE_ADD_DEFINITIONS "/Zc:__cplusplus")
+    endif()
+elseif(CMAKE_CXX_COMPILER_ID STREQUAL "GNU")
     set(TAC_ADD_DEFINITIONS -Wall -Wextra)
+elseif(CMAKE_CXX_COMPILER_ID MATCHES "Clang$" OR
+       CMAKE_CXX_COMPILER_ID MATCHES "^Intel")
+    set(TAC_ADD_DEFINITIONS -Wall -Wextra -pedantic -Wno-unknown-warning-option
+                            -Wno-c23-extensions  # TODO
+                            -Wno-c2y-extensions  # countof()
+                            -Wno-c99-extensions  # C++ flexible array members
+                            -Wno-flexible-array-extensions
+                            -Wno-gnu-empty-initializer
+                            -Wno-gnu-empty-struct
+                            -Wno-zero-length-array)
+elseif(CMAKE_CXX_COMPILER_ID MATCHES "SunPro")
+    set(TAC_ADD_DEFINITIONS -Wall -Wextra -pedantic)
+    set(TAC_ADD_C_DEFINITIONS -errtags -erroff=E_KW_IS_AN_EXTENSION_OF_ANSI)
+else()
+    set(TAC_ADD_DEFINITIONS -Wall -Wextra -pedantic)
 endif()
+message("CMAKE_CXX_COMPILER_ID=${CMAKE_CXX_COMPILER_ID}")
 
-set(tac_checks        have_zero_length_arrays
-                      have_alone_flexible_array have_countof have_countof_zla
-                      have_countof_vla have_cv_typeof have_empty_initializer
+set(tac_checks        have_zero_length_arrays have_alone_flexible_array
+                      have_countof  # have_countof_zla have_countof_vla
+                      have_cv_typeof have_empty_initializer
                       have_empty_structure have_vla)
 
 set(tac_error_checks  error_on_negative_array_size
@@ -26,61 +47,40 @@ set(tac_error_checks  error_on_negative_array_size
                       error_on_sizeof_pointer_subtraction
                       error_on_struct_bit_field error_on_struct_static_assert)
 
-
-function(check_cmpl status res out)
-    if(NOT "${res}")
-        set(sts "FAIL")
-    else()
-        string(TOLOWER "${out}" lout)
-        # TODO: A false negative result may be detected, workaround:
-        # ...gmake[1]: warning:  Clock skew detected...
-        # ...gmake[1]: Warning: File ... has
-        # modification time 0.047 s in the future...
-        string(REGEX REPLACE "make[^\n]*warning" "" lout "${lout}")
-        # TODO: A false negative result may be detected, workaround:
-        # ^ld: warning: no platform load command found in '/opt/intel
-        string(REGEX REPLACE "\nld: warning: " "" lout "${lout}")
-        if("${lout}" MATCHES " error[: ]")
-            set(sts "ERRORS")
-        elseif("${lout}" MATCHES " warning[: ]")
-            set(sts "WARNINGS")
-        else()
-            set(sts "OK")
-        endif()
+foreach(cchk IN ITEMS ${tac_checks} ${tac_error_checks})
+    set(src "${TAC_SOURCE_DIR}/${cchk}.c")
+    set(cchks ${cchk})
+    if("${cchk}" MATCHES "^error_")
+        list(PREPEND cchks "have_${cchk}")
     endif()
-    set(${status} "${sts}" PARENT_SCOPE)
-endfunction()
-
-foreach(chk IN ITEMS ${tac_checks} ${tac_error_checks})
-    if("${chk}" MATCHES "^error_")
-        try_run(run cmpl SOURCES "${TAC_SOURCE_DIR}/${chk}.c"
-            COMPILE_DEFINITIONS ${TAC_PRE_CHECK}
-                                ${TAC_ADD_DEFINITIONS} ${TAC_DEFINITIONS}
-                COMPILE_OUTPUT_VARIABLE cmpl_out
-                RUN_OUTPUT_VARIABLE run_out
-                )
-        check_cmpl(sts "${cmpl}" "${cmpl_out}")
-        # message("\n===\npre:${chk} sts=${sts} cmpl=${cmpl}\n${cmpl_out}\n===")
-        if((NOT "${sts}" STREQUAL OK) OR (NOT "${run}" EQUAL 0))
-            message("${chk}: SKIP on pre-check")
-            continue()
+    foreach(chk IN ITEMS ${cchks})
+        set(cd ${TAC_ADD_DEFINITIONS} ${TAC_DEFINITIONS})
+        if("${chk}" MATCHES "^have_")
+            list(PREPEND cd ${TAC_HAVE_ADD_DEFINITIONS}
+                 ${TAC_ADD_C_DEFINITIONS})
         endif()
-    endif()
-    try_run(run cmpl SOURCES "${TAC_SOURCE_DIR}/${chk}.c"
-            COMPILE_DEFINITIONS ${TAC_ADD_DEFINITIONS} ${TAC_DEFINITIONS}
-            COMPILE_OUTPUT_VARIABLE cmpl_out
-            RUN_OUTPUT_VARIABLE run_out
-            )
-    string(TOUPPER "${chk}" def)
-    check_cmpl(sts "${cmpl}" "${cmpl_out}")
-    # message("\n===\npost:${chk} sts=${sts} cmpl=${cmpl}\n${cmpl_out}\n===")
-    if((("${chk}" MATCHES "^error_") AND ("${sts}" STREQUAL FAIL)) OR
-       (("${chk}" MATCHES "^have_") AND
-        ("${sts}" STREQUAL OK) AND ("${run}" EQUAL 0)))
-        list(APPEND TAC_DEFINITIONS "-D${def}")
-        message("${chk}: ok")
+        # message("before ${chk}=${chk} run_${chk}=${run_${chk}} compile_${chk}=${compile_${chk}}")
+        if("${compile_${chk}}" STREQUAL "")
+            message("Detecting ${chk}")
+            try_run(run_${chk} compile_${chk} "${CMAKE_CURRENT_BINARY_DIR}"
+                    SOURCES "${src}"
+                    COMPILE_DEFINITIONS ${cd})
+            # message("after ${cchk}=${chk} run_${chk}=${run_${chk}} compile_${chk}=${compile_${chk}}")
+        endif()
+    endforeach()
+    string(TOUPPER "${cchk}" CCHK)
+    if("${cchk}" MATCHES "^error_")
+        # message("run_have_${cchk}=${run_have_${cchk}} ompile_have_${cchk}={compile_have_${cchk}} compile_${cchk}=${compile_${cchk}}")
+        if(("${run_have_${cchk}}" EQUAL 0) AND "${compile_have_${cchk}}"
+           AND NOT "${compile_${cchk}}")
+            list(APPEND TAC_DEFINITIONS "-D${CCHK}=1")
+            string(APPEND TAC_REPORT "${CCHK}\n")
+        endif()
     else()
-        message("${chk}: NONE")
+        if("${run_${cchk}}" EQUAL 0)
+            list(APPEND TAC_DEFINITIONS "-D${CCHK}=1")
+            string(APPEND TAC_REPORT "${CCHK}\n")
+        endif()
     endif()
 endforeach()
-message("${TAC_DEFINITIONS}")
+message("${TAC_REPORT}")
