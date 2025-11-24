@@ -39,7 +39,7 @@
 //
 // До первого включения можно определить следующие макросы значением 1:
 //
-// `_COUNTOF_NS_WANT_VLA` - обеспечить поддержку VLA (если не определён
+// `_COUNTOF_NS_WANT_C11_VLA` - обеспечить поддержку VLA (если не определён
 //     `__STDC_NO_VLA__`), без этого флага аргумент VLA будет вызывать ошибку
 //     компиляции;
 //
@@ -53,7 +53,7 @@
 //     аналогичным;
 //
 //         TODO: Дублировать ветку `_Generic()`, для того, что бы показать
-//         сообщение о возможности _COUNTOF_NS_WANT_VLA
+//         сообщение о возможности _COUNTOF_NS_WANT_C11_VLA
 //
 // `_COUNTOF_NS_WANT_STDC` - не использовать расширение `__typeof__()`;
 //
@@ -74,7 +74,7 @@
         #error "With _COUNTOF_NS_WANT_STDC required C23 typeof(t)"
     #endif
     #define _countof_ns_unsafe(a)  (sizeof(*(a)) ? sizeof(a)/sizeof(*(a)) : 0)
-    #if __STDC_NO_VLA__ || !_COUNTOF_NS_WANT_VLA
+    #if __STDC_NO_VLA__ || !_COUNTOF_NS_WANT_C11_VLA
         #define _COUNTOF_NS_VLA_UNSUPPORTED  (1)
 #if 0  // TODO XXX удалить, ввиду MSVC
         #define _countof_ns_must_be(a)  ((size_t)!sizeof(struct{unsigned foo:( \
@@ -109,9 +109,11 @@
 #else
     #define _COUNTOF_NS_VLA_UNSUPPORTED  (1)
     template<size_t A, size_t E, class T, size_t N>
-    constexpr static size_t _countof_ns_aux(const T (&)[N]) { return N; }
+    constexpr static size_t _countof_ns_aux(const T (&)[N]) noexcept {
+        return N;
+    }
     template<size_t A, size_t E, class T>
-    constexpr static size_t _countof_ns_aux(const T (&)) {
+    constexpr static size_t _countof_ns_aux(const T (&)) noexcept {
         static_assert(0 == A, "Argument must be zero-length array");
         return 0;
     }

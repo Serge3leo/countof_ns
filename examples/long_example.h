@@ -2,235 +2,389 @@
 // SPDX-License-Identifier: BSD-2-Clause
 // SPDX-FileCopyrightText: 2025 Сергей Леонтьев (leo@sai.msu.ru)
 
-#if !DISABLE_VLA_EXAMPLE && !__SUNPRO_C && !__NVCOMPILER
-    #define _COUNTOF_NS_WANT_VLA  (1)
-#endif
-#include "countof_ns.h"
+// The second part of the example depends on the capabilities of the compiler:
+//   1. Zero-length arrays and/or arrays of zero-size objects - zla_example();
+//   2. Variable-length arrays - vla_example();
+//   3. Qualifiers `const` and `volatile` - cv_example();
+//   4. Comparison with `countof()` (draft C2y) - countof_example();
+//   5. Comparison with `std::size()` (C++17) - std_size_example().
+//
+// `long_example.h` compilation options:
+//
+// EXAMPLE_FAIL - Include examples for compilation errors with erroneous
+//                parameters;
+//
+// EXAMPLE_VLA_ENABLE - Variable-length arrays (VLA) examples;
+//
+// HAVE_ZERO_LENGTH_ARRAYS - The compiler supports the C/C++ extension for
+//                           zero-length arrays (clang, gcc, intel, nvidia...);
+//
+// HAVE_ALONE_FLEXIBLE_ARRAY - The compiler supports the C/C++ extension for
+//                             structures with only Flexible Array Members or
+//                             unions unions with Flexible Array Members
+//                             (clang, gcc, modern intel);
+//
+// HAVE_COUNTOF - The compiler supports the C2y `countof()` (clang 21,
+//                IntelLLVM 2025.3);
+//
+// HAVE_CV_TYPEOF - The common C extension "__typeof__()" preserves all
+//                  qualifiers, equivalent to `typeof()` C23 (clang, gcc,
+//                  modern intel, MSVC, nvidia, Pelles C, SunPRO...). But,
+//                  unfortunately, rarely, but still a meeting there are
+//                  implementations equivalent to `typeof_unqual() (old Intel
+//                  and PGI);
+//
+// HAVE_EMPTY_INITIALIZER - The compiler supports the C/C++ extension for empty
+//                          initializer;
+//
+// HAVE_EMPTY_STRUCTURE - The compiler supports the C/C++ extension for
+//                        Structures with No Members. The structure has size
+//                        zero. In C++, empty structures are part of the
+//                        language. C++ treats empty structures as if they had
+//                        a single member of type char;
+//
+// HAVE_VLA - The compiler supports the C/C++ optional variable-length arrays.
+//            This is workaround, some `pgicc` have broken implementation of
+//            VLA (clang, gcc, intel, nvidia, Pelles C, PGI, SunPRO...);
 
-#ifdef __cplusplus
-#include <cassert>
-#include <cstdio>
-#else
-#include <assert.h>
-#include <stdio.h>
+#ifdef ENABLE_VLA_EXAMPLE
+        // By default, `countof_ns()` causes compilation errors if the argument
+        // is a VLA array. This is often the most expected behavior, see the
+        // README for details.
+
+    #ifndef HAVE_VLA
+        #pragma message ("VLA support don't detected, may be broken " \
+                         "(as some `pgcc`)")
+    #endif
+    #ifdef countof_ns
+        #pragma message ("_COUNTOF_NS_WANT_C11_VLA don't not affected. " \
+                         "Probably the above was #include \"countof_ns.h\"")
+    #endif
+    #define _COUNTOF_NS_WANT_C11_VLA  (1)
 #endif
-#if defined(__has_include)
-    #if __has_include(<stdcountof.h>) && !__cplusplus
+
+#include "countof_ns.h"
+#include "short_example.h"
+
+static void zla_example(void) {
+#ifdef HAVE_ZERO_LENGTH_ARRAYS
+    size_t fail = 0;
+    int z1[0];
+    int z2[0][0];
+    int z3[5][0];
+    int z4[0][5];
+    int z5[5][countof_ns(z4)][5];
+
+    example_assert(0 == sizeof(z1) && 0 == sizeof(z2) && 0 == sizeof(z3) &&
+                   0 == sizeof(z4) && 0 == sizeof(z5));
+
+    example_assert(0 == countof_ns(z1));
+    example_assert(0 == countof_ns(z2));  // 0, if complete object type is T[0]
+    example_assert(0 == countof_ns(z4));
+    example_assert(0 == countof_ns(z2[0]));  // z2[0] - don't evaluated
+    example_assert(0 == countof_ns(z3[0]));
+    example_assert(5 == countof_ns(z4[0]));
+    example_assert(0 == countof_ns(z5[0]));
+    example_assert(5 == countof_ns(z5[0][0]));
+    #ifdef __cplusplus
+        example_assert(5 == countof_ns(z3));
+        example_assert(5 == countof_ns(z5));
+    #elif defined(__NVCOMPILER)
+        #warning "TODO for pgcc (aka nvc) 25.9 & HAVE_ZERO_LENGTH_ARRAYS"
+    #elif defined(EXAMPLE_FAIL)
+                            #pragma message ("Must error below @{")
+        fail += countof_ns(z3);  // compile error, if complete object type not
+                                 // T[0], to avoid zero-to-zero indeterminate
+                            #pragma message ("}@ Must error above & below @{")
+        fail += countof_ns(z5);
+                            #pragma message ("}@ Must error above & below @{")
+        fail += countof_ns((int *)z1);
+                            #pragma message ("}@ Must error above & below @{")
+        fail += countof_ns(&z1[0]);
+                            #pragma message ("}@ Must error above")
+    #endif
+
+    #ifdef HAVE_ALONE_FLEXIBLE_ARRAY
+        printf("HAVE_ALONE_FLEXIBLE_ARRAY\n");
+        struct {
+            int flex[];
+        }       f1[0], f2[5];
+
+        example_assert(0 == sizeof(f1) && 0 == sizeof(f2));
+
+        example_assert(0 == countof_ns(f1));
+        #ifdef __cplusplus
+            example_assert(5 == countof_ns(f2));
+        #elif defined(EXAMPLE_FAIL)
+                            #pragma message ("Must error below @{")
+            fail += countof_ns(f2);
+                            #pragma message ("}@ Must error above")
+        #endif
+
+        union {
+            char flex_c[];
+            int flex_i[];
+        }       u1[0], u2[5];
+
+        example_assert(0 == sizeof(u1) && 0 == sizeof(u2));
+
+        example_assert(0 == countof_ns(u1));
+        #ifdef __cplusplus
+            example_assert(5 == countof_ns(u2));
+        #elif defined(EXAMPLE_FAIL)
+                            #pragma message ("Must error below @{")
+            fail += countof_ns(u2);
+                            #pragma message ("}@ Must error above")
+        #endif
+    #endif
+
+    #ifdef HAVE_EMPTY_INITIALIZER
+        #if ((4 < __GNUC__ && __GNUC__ < 11) || \
+             defined(__GNUC_WIDE_EXECUTION_CHARSET_NAME)) && \
+            !defined(__cplusplus)
+            // TODO: How can you distinguish genuine gcc from counterfeit?
+            #pragma message ("TODO for gcc & HAVE_EMPTY_INITIALIZER")
+        #else
+            printf("HAVE_EMPTY_INITIALIZER\n");
+            int e1[] = {};
+            int e2[0][countof_ns(e1)];
+            int e3[5][countof_ns(e2)];
+
+            example_assert(0 == sizeof(e1) && 0 == sizeof(e2) &&
+                           0 == sizeof(e3));
+
+            example_assert(0 == countof_ns(e1));
+            example_assert(0 == countof_ns(e2));
+            #ifdef __cplusplus
+                example_assert(5 == countof_ns(e3));
+            #elif defined(EXAMPLE_FAIL)
+                                #pragma message ("Must error below @{")
+                fail += countof_ns(e3);
+                                #pragma message ("}@ Must error above")
+            #endif
+            (void)e1;
+        #endif
+    #endif
+
+    #if defined(HAVE_EMPTY_STRUCTURE) && !defined(__cplusplus)
+        printf("HAVE_EMPTY_STRUCTURE\n");
+        struct {
+        }       s1[0], s2[5];
+
+        example_assert(0 == sizeof(s1) && 0 == sizeof(s2));
+
+        example_assert(0 == countof_ns(s1));
+        #ifdef EXAMPLE_FAIL
+                            #pragma message ("Must error below @{")
+            fail += countof_ns(s2);
+                            #pragma message ("}@ Must error above")
+        #endif
+    #endif
+
+    printf("%s: Ok (fail=%zu)\n", __func__, fail);
+#endif
+}
+
+static void vla_example() {
+#if defined(HAVE_VLA) && !_COUNTOF_NS_VLA_UNSUPPORTED
+    size_t fail = 0;
+    const size_t ba = 42;
+    const size_t fa = 56;
+    const size_t tt = 23;
+    const size_t xx = 12;
+    const size_t xy = 3;
+    const size_t xz = 2;
+    int a1[ba];
+    int a2[fa][tt];
+    int (*p1)[tt] = &a2[0];
+    int *p2 = a1;
+    int **p3 = &p2;
+
+    assert(ba == countof_ns(a1));
+    assert(fa == countof_ns(a2));
+    assert(tt == countof_ns(a2[0]));
+
+    int c[countof_ns(a2[0])];
+    assert(tt == countof_ns(c));
+
+    assert(tt == countof_ns(*p1));
+    assert(xx == countof_ns(*(int (*)[xx])&p2));
+    assert(xy == countof_ns(*(int (*)[xy])p3));
+    assert(xz == countof_ns(*(int(*)[xz][xz])&p3));
+
+    #ifdef EXAMPLE_FAIL
+                            #pragma message ("Must error below @{")
+        example_assert(ba == countof_ns(a1));
+                            #pragma message ("}@ Must error above & below @{")
+        int a3[z] = { 0 };
+        struct {
+            int bits: countof_ns(a3);
+        } s = { 0 };
+        (void)a3[s.bits];
+                            #pragma message ("}@ Must error above & below @{")
+        fail += countof_ns(p1);
+                            #pragma message ("}@ Must error above & below @{")
+        fail += countof_ns(p2);
+                            #pragma message ("}@ Must error above")
+    #endif
+
+    #ifdef HAVE_ZERO_LENGTH_ARRAYS
+        const size_t n = 0;
+        const size_t f = 5;
+        int vz1[n][n];
+        int vz2[countof_ns(vz1)][f];
+        int vz3[countof_ns(vz2[0])][n];
+
+        assert(0 == sizeof(vz1) && 0 == sizeof(vz2) && 0 == sizeof(vz3));
+
+        assert(0 == countof_ns(vz1));  // 0, if complete object type is T[0]
+        assert(0 == countof_ns(vz2));
+        #if __APPLE__ && ((4 < __GNUC__ && __GNUC__ < 11) || \
+             defined(__GNUC_WIDE_EXECUTION_CHARSET_NAME)) && \
+            !defined(__cplusplus)
+            // TODO: How can you distinguish genuine gcc from counterfeit?
+            #pragma message ("TODO for macOS gcc & HAVE_EMPTY_INITIALIZER")
+        #else
+#if !(__APPLE__ && defined(__clang__) && __clang_major__ <= 15)
+        assert(0 == countof_ns(vz3));  // But all VLA T[x] have compatible
+                                       // complete types. We can't avoid
+                                       // zero-to-zero indeterminate for VLA.
+#endif
+        #endif
+        assert(0 == countof_ns(vz1[0]));
+        assert(5 == countof_ns(vz2[0]));
+        assert(0 == countof_ns(vz3[0]));
+    #endif
+
+    printf("%s: Ok (fail=%zu)\n", __func__, fail);
+#endif
+}
+
+static void cv_example() {
+#ifdef HAVE_CV_TYPEOF
+    const int a1[1] = { 0 };
+    volatile int a2[2][countof_ns(a1)];
+    const volatile int a3[3][countof_ns(a2)][countof_ns(a2[0])] = {{{ 0 }}};
+
+    example_assert(1 == countof_ns(a1));
+    example_assert(2 == countof_ns(a2));
+    example_assert(3 == countof_ns(a3));
+    example_assert(1 == countof_ns(a2[0]));
+    example_assert(2 == countof_ns(a3[0]));
+    example_assert(1 == countof_ns(a3[0][0]));
+
+    printf("%s: Ok\n", __func__);
+#endif
+}
+
+#ifdef __has_include
+    #if __has_include(<stdcountof.h>)
         #include <stdcountof.h>
     #endif
 #endif
-#if __cplusplus >= 201703L || __cpp_lib_nonmember_container_access >= 201411L
+
+static void countof_example() {
+#if defined(HAVE_COUNTOF) && !defined(__cplusplus)
+    int a1[1];
+    int a9[9];
+
+    static_assert(_Generic(__typeof__(countof(a1)),
+                           __typeof__(countof_ns(a1)) : 1, default : 0));
+    static_assert(countof(a1) == countof_ns(a1));
+    static_assert(countof(a9) == countof_ns(a9));
+
+    #ifdef HAVE_ZERO_LENGTH_ARRAYS
+        int z1[0][0];
+        int z2[countof(z1)][5];
+        int z3[countof(z2[0])][0];
+
+        static_assert(countof(z1) == countof_ns(z1));
+        static_assert(countof(z2) == countof_ns(z2));
+        static_assert(countof(z3) == 5);  // But countof_ns() - compile error
+
+        #if defined(HAVE_VLA) && !_COUNTOF_NS_VLA_UNSUPPORTED
+            const size_t n = 0;
+            const size_t f = 5;
+            int vz1[n][n];
+            int vz2[countof(vz1)][f];
+            int vz3[countof(vz2[0])][n];
+
+            assert(countof(vz1) == countof_ns(vz1));
+            assert(countof(vz2) == countof_ns(vz2));
+            assert(countof(vz3) == 5);
+            assert(0 == countof_ns(vz3));  // zero-to-zero indeterminate for VLA
+        #endif
+    #endif
+    #if defined(HAVE_VLA) && !_COUNTOF_NS_VLA_UNSUPPORTED
+        const size_t d = 2;
+        int v[d];
+
+        static_assert(_Generic(__typeof__(countof_ns(v)),
+                      __typeof__(countof_ns(v)) : 1, default : 0));
+        assert(countof(v) == countof_ns(v));
+    #endif
+
+    printf("%s: Ok\n", __func__);
+#endif
+}
+
+#ifdef __cplusplus
+    #include <typeinfo>
     #include <vector>
-    #define std_size(a)  (std::size(a))
 #endif
-#if defined(__cplusplus) && __cplusplus < 201103L
-    #error "Require C++11 or above"
-#endif
-#if __cplusplus || __STDC_VERSION__ >= 202311L
-    #define example_assert(...)  static_assert(__VA_ARGS__)
-    #if __POCC__
-        #define example_thread_local
+
+static void std_size_example() {
+#if __cplusplus >= 201703L || __cpp_lib_nonmember_container_access >= 201411L
+    size_t fail = 0;
+    int a1[1];
+    int a9[9];
+
+    static_assert(std::size(a1) == countof_ns(a1));
+    static_assert(std::size(a9) == countof_ns(a9));
+
+    #if (4 < __GNUC__ && __GNUC__ <= 11) || \
+        (__APPLE__ && defined(__clang__) && __clang_major__ <= 15)
+        #pragma message ("TODO for old gcc & typeid()..")
     #else
-        #define example_thread_local  thread_local
+        static_assert(typeid(std::size(a1)) == typeid(countof_ns(a9)));
+        #if !defined(_MSC_VER)  // TODO неоднозначность специализации по типу
+                                // аргумента?
+            static_assert(typeid(std::size<int, 1>) != typeid(std::size<int, 2>));
+        #endif
+        #if !defined(__NVCOMPILER) && !defined(_MSC_VER) // TODO
+            static_assert(typeid(std::size<int, 1>) ==
+                    typeid(_countof_ns_aux<sizeof(int), sizeof(int[1]), int, 1>));
+        #endif
     #endif
-#elif __STDC_VERSION__ >= 201112L
-    #define example_assert(...)  _Static_assert(__VA_ARGS__)
-    #define example_thread_local  _Thread_local
-#else
-    #define example_assert(e, s)  assert((e) && (s))
-    #define example_thread_local
+
+    #ifdef HAVE_ZERO_LENGTH_ARRAYS
+        int z1[5][0];
+        int z2[0][5];
+        int z3[0][0]; (void)z3;
+
+        static_assert(std::size(z1) == countof_ns(z1));
+        static_assert(std::size(z2[0]) == countof_ns(z2[0]));
+
+        #if defined(EXAMPLE_FAIL)
+                            #pragma message ("Must error below @{")
+            fail += std::size(z2);
+                            #pragma message ("}@ Must error above & below @{")
+            fail += std::size(z3);
+                            #pragma message ("}@ Must error above")
+        #endif
+    #endif
+
+    printf("%s: Ok (fail=%zu)\n", __func__, fail);
 #endif
-#if (__NVCOMPILER || __INTEL_COMPILER) && !TODO_cv_typeof  // TODO XXX
-    #define example_const
-    #define example_volatile
-#else
-    #define example_const  const
-    #define example_volatile  volatile
-#endif
-#if (__clang__ || __GNUC__ || __NVCC__) && !__NVCOMPILER
-    #define MIN_DIM  (0)
-#else
-    #define MIN_DIM  (1)
-#endif
-#if __clang_major__ >= 19 || __GNUC__ >= 15
-    #define HAVE_FLEXIBLE_ONLY (1)
-#endif
+}
 
-static int long_example(void) {
-    example_const int a1[42] = { 0 };
-    example_volatile int a2[42][56];
-    static example_thread_local int a3[42][56][23];
-    int min1[MIN_DIM];
-    int min2[MIN_DIM][42];
-    int min3[MIN_DIM][MIN_DIM];
-    int min4[42][MIN_DIM][56];
-    struct {
-        int mins[MIN_DIM];
-    } s;
-    #if HAVE_FLEXIBLE_ONLY
-        struct {
-            int flex[];
-        } flexsmin[MIN_DIM];
-        struct {
-            int flex[];
-        } flexs42[42];
-    #endif
-
-    // Negative examples
-    #if 0
-        size_t res = countof_ns(a1);
-        example_const int *p1 = a1;
-        example_const int **pp1 = &p1;
-        example_volatile int (*p2)[56] = a2;
-        int (*p3)[56][23] = a3;
-        res += countof_ns(p1);
-                                    #warning "Must error above"
-        res += countof_ns(pp1);
-                                    #warning "Must error above"
-        res += countof_ns(p2);
-                                    #warning "Must error above"
-        res += countof_ns(p3);
-                                    #warning "Must error above"
-        res += countof_ns(&a1);
-                                    #warning "Must error above"
-        res += countof_ns(a1[0]);
-                                    #warning "Must error above"
-        res += countof_ns(&a1[0]);
-                                    #warning "Must error above"
-        res += countof_ns(&min1);
-                                    #warning "Must error above"
-        res += countof_ns(&min3[0]);
-                                    #warning "Must error above"
-        res += countof_ns(s);
-                                    #warning "Must error above"
-        #if HAVE_FLEXIBLE_ONLY
-            res += countof_ns(flexs42[0]);
-                                    #warning "Must error above"
-        #endif
-        // Need DISABLE_VLA_EXAMPLE
-        #if _COUNTOF_NS_VLA_UNSUPPORTED && !__STDC_NO_VLA__ && !__cplusplus
-            for(size_t n = MIN_DIM; n < 4; n++) {
-                int vla[n];
-                res += countof_ns(vla);
-                                    #warning "Must error above"
-            }
-        #endif
-    #endif
-
-    // Positive examples
-    example_assert(countof_ns(a1) == 42, "a1");
-    example_assert(countof_ns(a2) == 42, "a2");
-    example_assert(countof_ns(a2[0]) == 56, "a2[0]");
-    example_assert(countof_ns(a3) == 42, "a3");
-    example_assert(countof_ns(a3[0]) == 56, "a3[0]");
-    example_assert(countof_ns(a3[0][0]) == 23, "a3[0][0]");
-    example_assert(countof_ns(min1) == MIN_DIM, "min1");
-    example_assert(countof_ns(min2) == MIN_DIM, "min2");
-    example_assert(countof_ns(min2[0]) == 42, "min2[0]");
-    example_assert(countof_ns(min3) == MIN_DIM, "min3");
-    example_assert(countof_ns(min3[0]) == MIN_DIM, "min3[0]");
-    #if __cplusplus || MIN_DIM > 0
-        example_assert(countof_ns(min4) == 42, "min4");
-    #endif
-    example_assert(countof_ns(min4[0]) == MIN_DIM, "min4[0]");
-    example_assert(countof_ns(min4[0][0]) == 56, "min4[0][0]");
-    example_assert(countof_ns(s.mins) == MIN_DIM, "s.mins");
-    #if HAVE_FLEXIBLE_ONLY
-        example_assert(countof_ns(flexsmin) == MIN_DIM, "flexsmin");
-        (void)flexsmin;
-        #if __cplusplus
-            example_assert(countof_ns(flexs42) == 42, "flexs42");
-        #endif
-        (void)flexs42;
-    #endif
-
-    #ifdef countof
-        printf("Comparison with C2y countof()\n");
-        example_assert(sizeof(min4[0]) == 0 &&
-                      countof(min4) == 42, "C2y countof(min4)");
-        #if HAVE_FLEXIBLE_ONLY
-            example_assert(countof(flexs42) == 42, "C2y countof(flexs42)");
-        #endif
-    #endif
-
-    #if !_COUNTOF_NS_VLA_UNSUPPORTED
-        for(size_t n = MIN_DIM; n < 4; n++) {
-            int vla[n];
-            assert(countof_ns(vla) == n);
-            for(size_t m = MIN_DIM; m < 4; m++) {
-                int vlm[n][m];
-                #if 0
-                    printf("n = %zu m = %zu\n", n, m);
-                    printf("sizeof(vlm) = %zu\n", sizeof(vlm));
-                    printf("sizeof(vlm[0]) = %zu\n", sizeof(vlm[0]));
-                    printf("sizeof(*vlm) = %zu\n", sizeof(*vlm));
-                    printf("countof_ns(vlm) = %zu\n", countof_ns(vlm));
-                    printf("sizeof(vlm[0][0]) = %zu\n", sizeof(vlm[0][0]));
-                    printf("sizeof(*(vlm[0])) = %zu\n", sizeof(*(vlm[0])));
-                    printf("countof_ns(vlm[0]) = %zu\n", countof_ns(vlm[0]));
-                #else
-                    assert(countof_ns(vlm) == (m > 0 ? n : 0));
-                    assert(countof_ns(vlm[0]) == m);
-                #endif
-                #ifdef countof
-                    assert(countof(vlm) == n);
-                    assert(countof(vlm[0]) == m);
-                #endif
-                for(size_t l = MIN_DIM; l < 4; l++) {
-                    int vlt[n][m][l];
-                    #if 0
-                        printf("n = %zu m = %zu l = %zu\n", n, m, l);
-                        printf("countof_ns(vlt) = %zu\n", countof_ns(vlt));
-                        printf("countof_ns(vlt[0]) = %zu\n",
-                                countof_ns(vlt[0]));
-                        printf("countof_ns(vlt[0][0]) = %zu\n",
-                                countof_ns(vlt[0][0]));
-                    #else
-                        assert(countof_ns(vlt) ==
-                               (m > 0 && l > 0 ? n : 0));
-                        assert(countof_ns(vlt[0]) ==
-                               (l > 0 ? m : 0));
-                        assert(countof_ns(vlt[0][0]) == l);
-                    #endif
-                    #ifdef countof
-                        assert(countof(vlt) == n);
-                        assert(countof(vlt[0]) == m);
-                        assert(countof(vlt[0][0]) == l);
-                    #endif
-                }
-            }
-        }
-    #elif _COUNTOF_NS_WANT_VLA && !__STDC_NO_VLA__ && !__cplusplus
-        #error "VLA detection error, probably bug in \"countof_ns.h\""
-    #endif
-
-    #ifdef std_size
-        printf("Comparison with std::size()\n");
-        static_assert(std_size(a1) == 42);
-        static_assert(std_size(a2) == 42);
-        static_assert(std_size(a2[0]) == 56);
-        static_assert(std_size(a3) == 42);
-        static_assert(std_size(a3[0]) == 56);
-        static_assert(std_size(a3[0][0]) == 23);
-        static_assert(std_size(min4) == 42);
-        static_assert(std_size(min4[0][0]) == 56);
-        #if HAVE_FLEXIBLE_ONLY
-            printf("Comparison with std::size() "
-                    "and flexible array member only\n");
-            static_assert(std_size(flexs42) == 42);
-        #endif
-        #if MIN_DIM > 0
-            static_assert(std_size(min1) == MIN_DIM);
-            static_assert(std_size(min2) == MIN_DIM);
-            static_assert(std_size(min3) == MIN_DIM);
-            static_assert(std_size(min3[0]) == MIN_DIM);
-            static_assert(std_size(min4[0]) == MIN_DIM);
-            static_assert(std_size(s.mins) == MIN_DIM);
-            #if HAVE_FLEXIBLE_ONLY
-                static_assert(std_size(flexsmin) == MIN_DIM);
-            #endif
-        #endif
-    #endif
+static void long_example() {
+    short_example();
+    zla_example();
+    vla_example();
+    cv_example();
+    countof_example();
+    std_size_example();
     #ifdef __clang_major__
         printf("__clang_major__.__clang_minor__ %d.%d ",
                 __clang_major__, __clang_minor__);
@@ -277,9 +431,4 @@ static int long_example(void) {
         #endif
         printf("__STDC_VERSION__ %ld\n", __STDC_VERSION__);
     #endif
-    #if __NVCOMPILER  // TODO
-        (void)a1;  // static_assert() correct check, but variable never used?
-        (void)a3;  // static_assert() correct check, but variable never used?
-    #endif
-    return 0;
 }
