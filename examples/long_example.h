@@ -347,13 +347,15 @@ static void std_size_example() {
         #pragma message ("TODO for old gcc & typeid()..")
     #else
         static_assert(typeid(std::size(a1)) == typeid(countof_ns(a9)));
-        #if !defined(_MSC_VER)  // TODO неоднозначность специализации по типу
-                                // аргумента?
-            static_assert(typeid(std::size<int, 1>) != typeid(std::size<int, 2>));
-        #endif
-        #if !defined(__NVCOMPILER) && !defined(_MSC_VER) // TODO
-            static_assert(typeid(std::size<int, 1>) ==
-                    typeid(_countof_ns_aux<sizeof(int), sizeof(int[1]), int, 1>));
+        constexpr auto std_size_1 = std::size<int, 1>;
+        constexpr auto std_size_2 = std::size<int, 2>;
+
+        static_assert(typeid(std_size_1) != typeid(std_size_2));
+        #ifndef __NVCOMPILER  // TODO
+            constexpr auto countof_ns_1 = _countof_ns_aux<sizeof(int),
+                                                          sizeof(int[1]),
+                                                          int, 1>;
+            static_assert(typeid(std_size_1) == typeid(countof_ns_1));
         #endif
     #endif
 
