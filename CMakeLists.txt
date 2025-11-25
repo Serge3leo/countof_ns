@@ -23,7 +23,7 @@ target_include_directories(CounofNS INTERFACE include)
 set(TAC_SOURCE_DIR "${CMAKE_CURRENT_SOURCE_DIR}/tests/autoconf")
 include("${TAC_SOURCE_DIR}/autoconf.cmake")
 
-set(CMAKE_FOLDER "examples")
 add_subdirectory(examples)
-set(CMAKE_FOLDER "tests")
 add_subdirectory(tests)
+
+enable_testing()

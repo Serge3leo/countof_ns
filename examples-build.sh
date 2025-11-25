@@ -97,10 +97,6 @@ bcxx=`basename "$cxx"`
 default_cmpl() {
     make
     ctest
-    for le in examples/long_example* ; do
-        echo "$le":
-        ./"$le"
-    done
 }
 Xcode_args() {
     cmake_args="$cmake_args -G Xcode"

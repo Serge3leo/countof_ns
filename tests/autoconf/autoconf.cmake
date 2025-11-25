@@ -4,6 +4,12 @@
 
 # Detect default compiler capability (no options) for tests
 
+if(${CMAKE_CXX_COMPILER_ID} STREQUAL Intel)
+    # TODO: skip C++ for oldest Intel icpc, my local troubles XXX
+    set(TAC_SKIP_CXX TRUE)
+else()
+    set(TAC_SKIP_CXX FALSE)
+endif()
 set(TAC_HAVE_ADD_DEFINITIONS "-DTAC_DONT_FAIL")
 if (MSVC)
     list(APPEND TAC_HAVE_ADD_DEFINITIONS -WX)
@@ -15,7 +21,7 @@ if (MSVC)
     set(TAC_ADD_DEFINITIONS -W4 -D_CRT_SECURE_NO_WARNINGS)
     if (MSVC_VERSION GREATER_EQUAL 1914)
             # https://gitlab.kitware.com/cmake/cmake/-/issues/18837
-        list(APPEND TAC_HAVE_ADD_DEFINITIONS "/Zc:__cplusplus")
+        list(APPEND TAC_ADD_DEFINITIONS "/Zc:__cplusplus")
     endif()
 elseif(CMAKE_CXX_COMPILER_ID STREQUAL "GNU")
     set(TAC_ADD_DEFINITIONS -Wall -Wextra)
