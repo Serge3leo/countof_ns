@@ -4,7 +4,18 @@
 
 # Detect default compiler capability (no options) for tests
 
-if(${CMAKE_CXX_COMPILER_ID} STREQUAL Intel)
+if(CMAKE_C_COMPILER_ID STREQUAL "")
+    # TODO XXX Remove or?
+    set(CMAKE_C_COMPILER_ID Pelles)
+    #set(CMAKE_C_COMPILER_FRONTEND_VARIANT "MSVC")
+    set(CMAKE_C_COMPILER_ID "${CMAKE_C_COMPILER_ID}")
+    set(CMAKE_C_COMPILER_FRONTEND_VARIANT "${CMAKE_C_COMPILER_FRONTEND_VARIANT}")
+    message("WARNING: chage to CMAKE_C_COMPILER_ID=${CMAKE_C_COMPILER_ID} "
+     "CMAKE_C_COMPILER_FRONTEND_VARIANT=${CMAKE_C_COMPILER_FRONTEND_VARIANT}")
+else()
+    message("CMAKE_C_COMPILER_ID=${CMAKE_C_COMPILER_ID} "
+     "CMAKE_C_COMPILER_FRONTEND_VARIANT=${CMAKE_C_COMPILER_FRONTEND_VARIANT}")
+if(CMAKE_C_COMPILER_ID STREQUAL Intel)
     # TODO: skip C++ for oldest Intel icpc, my local troubles XXX
     set(TAC_SKIP_CXX TRUE)
 else()
@@ -23,10 +34,10 @@ if (MSVC)
             # https://gitlab.kitware.com/cmake/cmake/-/issues/18837
         list(APPEND TAC_ADD_DEFINITIONS "/Zc:__cplusplus")
     endif()
-elseif(CMAKE_CXX_COMPILER_ID STREQUAL "GNU")
+elseif(CMAKE_C_COMPILER_ID STREQUAL "GNU")
     set(TAC_ADD_DEFINITIONS -Wall -Wextra)
-elseif(CMAKE_CXX_COMPILER_ID MATCHES "Clang$" OR
-       CMAKE_CXX_COMPILER_ID MATCHES "^Intel")
+elseif(CMAKE_C_COMPILER_ID MATCHES "Clang$" OR
+       CMAKE_C_COMPILER_ID MATCHES "^Intel")
     set(TAC_ADD_DEFINITIONS -Wall -Wextra -pedantic -Wno-unknown-warning-option
                             -Wno-c23-extensions  # TODO
                             -Wno-c2y-extensions  # countof()
@@ -36,17 +47,17 @@ elseif(CMAKE_CXX_COMPILER_ID MATCHES "Clang$" OR
                             -Wno-gnu-empty-struct
                             -Wno-gnu-flexible-array-union-member
                             -Wno-zero-length-array)
-elseif(CMAKE_CXX_COMPILER_ID MATCHES "SunPro")
+elseif(CMAKE_C_COMPILER_ID MATCHES "SunPro")
     set(TAC_ADD_DEFINITIONS -Wall -Wextra -pedantic)
     set(TAC_ADD_C_DEFINITIONS -errtags
             -erroff=E_KW_IS_AN_EXTENSION_OF_ANSI,E_NONPORTABLE_BIT_FIELD_TYPE)
-elseif(CMAKE_CXX_COMPILER_ID MATCHES "NVHPC")
+elseif(CMAKE_C_COMPILER_ID MATCHES "NVHPC")
     set(TAC_ADD_DEFINITIONS -Wall -Wextra -pedantic
                             --diag_suppress warning_directive)
 else()
     set(TAC_ADD_DEFINITIONS -Wall -Wextra -pedantic)
 endif()
-message("CMAKE_CXX_COMPILER_ID=${CMAKE_CXX_COMPILER_ID}")
+endif()
 
 set(tac_checks        have_zero_length_arrays have_alone_flexible_array
                       have_countof  # have_countof_zla have_countof_vla

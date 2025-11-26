@@ -46,8 +46,12 @@
 #endif
 
                             // TODO: Strange: do{ } while(0)
-#define TU_ASSERT_AND_RETURN(a, b)  \
+#define TU_STATIC_ASSERT_AND_RETURN(a, b)  \
                 tu_static_assert((a) == (b)); \
+                return (a) - (b)
+
+#define TU_ASSERT_AND_RETURN(a, b)  \
+                assert((a) == (b)); \
                 return (a) - (b)
 
 #define _TU_STR1(S)  #S

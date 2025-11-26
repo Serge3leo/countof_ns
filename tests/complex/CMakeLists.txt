@@ -13,7 +13,7 @@ foreach(t IN ITEMS short_example short_example_cxx  # TODO function?
     if((NOT ${t} MATCHES "_vla$" OR "${TAC_DEFINITIONS}" MATCHES "HAVE_VLA")
        AND (NOT ${t} MATCHES "_cxx$" OR NOT "${TAC_SKIP_CXX}"))
         add_test(NAME "${t}" COMMAND "${t}")
-        if(NOT CMAKE_CXX_COMPILER_ID STREQUAL "MSVC"  OR
+        if(NOT CMAKE_C_COMPILER_ID STREQUAL "MSVC"  OR
                CMAKE_GENERATOR STREQUAL "NMake Makefiles")
             # MSVC - для генераторов Visual Studio не работает, для "NMake
             # Makefiles" - туда-сюда, сообщения есть.
@@ -25,10 +25,13 @@ foreach(t IN ITEMS short_example short_example_cxx  # TODO function?
                      --build-nocmake
                      --build-noclean
                      --build-target "${t}_fail")
-            if(CMAKE_CXX_COMPILER_ID STREQUAL "Intel"  OR
-               CMAKE_CXX_COMPILER_ID STREQUAL "NVHPC"  OR
-               CMAKE_CXX_COMPILER_ID STREQUAL "PGI"  OR
-               CMAKE_CXX_COMPILER_ID STREQUAL "SunPro")
+            # TODO Возможно надо отделить c++ от c? После матрицы модульных
+            if(CMAKE_C_COMPILER_ID STREQUAL "GNU"  OR  # Переупорядочивает
+               CMAKE_C_COMPILER_ID STREQUAL "Intel"  OR
+               CMAKE_C_COMPILER_ID STREQUAL "MSVC"  OR  # Неточные строки?
+               CMAKE_C_COMPILER_ID STREQUAL "NVHPC"  OR
+               CMAKE_C_COMPILER_ID STREQUAL "PGI"  OR
+               CMAKE_C_COMPILER_ID STREQUAL "SunPro")
                 # TODO
                 # icc - `#pragma message...` идут после всех ошибок причём без
                 # номеров строк

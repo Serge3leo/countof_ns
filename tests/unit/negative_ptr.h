@@ -1,5 +1,4 @@
 static size_t TU_UNIT(void) {
-    int a[1] = { 0 };
-    int *p = a;
+    int *p;
     return TU_COUNTOF(p);
 }

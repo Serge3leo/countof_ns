@@ -73,15 +73,10 @@
     #else
         #error "With _COUNTOF_NS_WANT_STDC required C23 typeof(t)"
     #endif
-    #define _countof_ns_unsafe(a)  (sizeof(*(a)) ? sizeof(a)/sizeof(*(a)) : 0)
+    #define _countof_ns_unsafe(a)  (!sizeof(*(a)) ? 0 \
+                : sizeof(a)/( sizeof(*(a)) ? sizeof(*(a)) : (size_t)-1 ))
     #if __STDC_NO_VLA__ || !_COUNTOF_NS_WANT_C11_VLA
         #define _COUNTOF_NS_VLA_UNSUPPORTED  (1)
-#if 0  // TODO XXX удалить, ввиду MSVC
-        #define _countof_ns_must_be(a)  ((size_t)!sizeof(struct{unsigned foo:( \
-                _Generic(&(a), \
-                    _countof_ns_typeof(*(a)) (*)[_countof_ns_unsafe(a)]: 1, \
-                    default: -1) );}))
-#else
         // Использование традиционного `sizeof(struct{int:(-1)})` невозможно
         // ввиду MSVC Level 1 warning C4116: unnamed type definition in
         // parentheses.
@@ -95,13 +90,8 @@
         #define _countof_ns_must_be(a) ((size_t)!sizeof(char[_Generic(&(a), \
                     _countof_ns_typeof(*(a)) (*)[_countof_ns_unsafe(a)]: 1, \
                     default: -1)]))
-#endif
-    #elif 1
-        #define _countof_ns_must_be(a)  (0*sizeof( \
-                    (_countof_ns_typeof(a) **)&(a) - \
-                    (_countof_ns_typeof(*(a))(**)[_countof_ns_unsafe(a)])&(a)))
     #else
-        #define _countof_ns_must_be(a)  ((size_t)( \
+        #define _countof_ns_must_be(a)  (0*sizeof( \
                     (_countof_ns_typeof(a) **)&(a) - \
                     (_countof_ns_typeof(*(a))(**)[_countof_ns_unsafe(a)])&(a)))
     #endif
