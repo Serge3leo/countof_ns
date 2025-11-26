@@ -9,7 +9,7 @@
  */
 size_t TU_UNIT(void) {
     #ifndef TU_SELFTEST_FAIL
-        static_assert(0);
+        tu_static_assert(0);
     #endif
     TU_STATIC_ASSERT_AND_RETURN(1, 1);
 }

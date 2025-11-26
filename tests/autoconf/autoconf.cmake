@@ -46,7 +46,8 @@ elseif(CMAKE_C_COMPILER_ID MATCHES "Clang$" OR
                             -Wno-gnu-empty-initializer
                             -Wno-gnu-empty-struct
                             -Wno-gnu-flexible-array-union-member
-                            -Wno-zero-length-array)
+                            -Wno-zero-length-array
+                            -ferror-limit=9999)
 elseif(CMAKE_C_COMPILER_ID MATCHES "SunPro")
     set(TAC_ADD_DEFINITIONS -Wall -Wextra -pedantic)
     set(TAC_ADD_C_DEFINITIONS -errtags
