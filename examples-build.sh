@@ -5,27 +5,34 @@
 
 set -e
 
+cc_cmp_arg=
+ctest_args=
+cxx_cmp_arg=
 platform_arg=
 rm_arg=false
 verbose=false
-cc_cmp_arg=
-cxx_cmp_arg=
-while getopts rvp:c:C:h'?' flag ; do
+while getopts rvp:c:C:t:h-'?' flag ; do
     case "$flag" in
     r)  rm_arg=true;;
     v)  verbose=true;;
-    p)  platform_arg="$OPTARG";;
-    c)  cc_cmp_arg="$OPTARG";;
     C)  cxx_cmp_arg="$OPTARG";;
-    *)  echo '' "Usage: $0 [-rv] [-p platform] [-c C-compiler]" \
-                        "[-C C++-compiler] [--] [cmake_args]"
-        echo '  -r - Удалить содержимое директории сборки;'
-        echo '  -v - Расширенная печать;'
-        echo '  -p platform - Платформа, по умолчанию `uname -s`;'
-        echo '  -c C-compiler - Если не задан, то `cmake` сам его ищет;'
-        echo '  -C C++-compiler - Если не задан, то определяется по C компилятору;'
+    c)  cc_cmp_arg="$OPTARG";;
+    p)  platform_arg="$OPTARG";;
+    t)  ctest_args="$OPTARG";;
+    -)  break;;
+    *)  echo '' "Usage: $0 [-rv] [-p platform] [-c C-compiler] \\"
+        echo '' "    [-C C++-compiler] [-t string for ctest] [--]" \
+                     "[cmake_args]"
+        echo '  -r - Remove build directory contents;'
+        echo '  -v - Verbose launcher output;'
+        echo '  -p platform - Platform, by default `uname -s`;'
+        echo '  -c C-compiler - If not exist, use `cmake` defaults;'
+        echo '  -C C++-compiler - If not exist, detected by C compiler;'
         echo ''
-        echo 'Пример: ./mybuild.sh -p Xcode'
+        echo 'Examples:'
+        echo '  ./examples-build.sh -v -c clang-mp-21' \
+                        '-t '\''-R "_0[0n]"'\'' -- -DENABLE_COMPARISONS'
+        echo '  ./examples-build.sh -p Xcode'
         exit 2
     esac
 done
@@ -34,13 +41,18 @@ if "$verbose" ; then
     printf "rm_arg=%s platform_arg=%s cc_cmp_arg=%s cxx_cmp_arg=%s\n" \
            $rm_arg "$platform_arg" "$cc_cmp_arg" "$cxx_cmp_arg"
     printf "CMake arguments: %s\n" "$*"
+    if [ "$platform" != "Xcode" ] ; then
+        printf "CTest arguments: "
+        echo "$ctest_args" | xargs printf "'%s' "
+        printf "\n"
+    fi
 fi
 
 cc="$cc_cmp_arg"
 cxx="$cxx_cmp_arg"
 if [ -z "$cc_cmp_arg" ] ; then
     if [ "$cxx_cmp_arg" ] ; then
-        echo "$0: Если задан C++ компилятор, то должен быть задан C компилятор" 1>&2
+        echo "$0: If C++ compiler defined, must define C compiler" 1>&2
         exit 2
     fi
 elif [ -z "$cxx_cmp_arg" ] ; then
@@ -102,7 +114,11 @@ fi
 
 default_cmpl() {
     make
-    ctest
+    if [ -z "$ctest_args" ] ; then
+        ctest
+    else
+        echo "$ctest_args" | xargs ctest
+    fi
 }
 Xcode_args() {
     cmake_args="$cmake_args -G Xcode"
@@ -128,12 +144,13 @@ if [ -r CMakeLists.txt -a -r "$b" -a -d build ] && cmp -s "$0" "$b" ; then
 else
     ([ -r ../../CMakeLists.txt -a -r ../../"$b" -a -d ../../build ] &&
      cmp -s "$0" ../../"$b") || {
-        echo "$0: Необходимо находиться, либо в сборочном, " \
-             "либо в исходном каталоге" 1>&2
+        echo "$0: Must be launch either from the build directory, " \
+                  "either from the source directory" 1>&2
         exit 2
     }
     [ -z "$platform_arg" -a -z "$c_cmp_arg" -a -z "$cxx_cmp_arg"] || {
-        echo "$0: Ключи [-p/с/C platform/C/C++-compiler] должны быть опущены" 1>&2
+        echo "$0: Options [-p/с/C platform/C/C++-compiler]" \
+                  " must be ommited" 1>&2
         exit 2
     }
     bdir=$(basename `pwd`)
@@ -157,10 +174,13 @@ if "$rm_arg" ; then
     fi
     rm -rf "../../build/$bdir"/*
 else
+    "${platform}_args"
     if "$verbose" ; then
-        echo "cmake $cmake_args $* ../.."
+        echo "cmake -DCMAKE_C_COMPILER=\"$cc\"" \
+                    "-DCMAKE_CXX_COMPILER=\"$cxx\" $cmake_args $* ../.."
     fi
-    CC="$cc" CXX="$cxx" cmake $cmake_args "$@" ../..
+    cmake -DCMAKE_C_COMPILER="$cc" -DCMAKE_CXX_COMPILER="$cxx" \
+          $cmake_args "$@" ../..
     "${platform}_cmpl"
 fi
 exit 0

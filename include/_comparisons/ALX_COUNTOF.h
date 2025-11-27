@@ -2,8 +2,8 @@
 // SPDX-License-Identifier: CC-BY-SA-4.0
 // SPDX-FileCopyrightText: 2025 alx - recommends codidact (http://www.alejandro-colomar.es/)
 
-#ifndef COUNTOF_H_5700
-#define COUNTOF_H_5700
+#ifndef ALX_COUNTOF_H_5700
+#define ALX_COUNTOF_H_5700
 
 // https://stackoverflow.com/a/57537491/8585880
 //
@@ -37,21 +37,7 @@
 )
 #define must_be_array(arr)      must_be(is_array(arr))
 
-#define COUNTOF(arr)            (sizeof(arr) / sizeof((arr)[0]) + must_be_array(arr))
+#define ALX_COUNTOF(arr)            (sizeof(arr) / sizeof((arr)[0]) + must_be_array(arr))
 #define ARRAY_BYTES(arr)        (sizeof(arr) + must_be_array(arr))
 
-// TODO: May be, for wide comparisons:
-#if __STDC_VERSION__ < 202311L && _COUNTOF_wide_comparisons
-    #ifdef __cplusplus
-        #include <type_traits>
-        #define _COUNTOF_typeof(t)  std::remove_reference_t<decltype(t)>
-    #else
-        #define _COUNTOF_typeof(t)  __typeof__(t)
-    #endif
-
-    #undef is_same_typeof
-    #define is_same_typeof(a, b)  is_same_type(_COUNTOF_typeof(a),  \
-                                               _COUNTOF_typeof(b))
-#endif
-
-#endif  // COUNTOF_H_5700
+#endif  // ALX_COUNTOF_H_5700

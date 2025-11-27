@@ -10,6 +10,7 @@ set(CACHE TAC_ENABLE_WARNINGS TYPE BOOL
 set(CACHE TAC_POSITIVE_WERROR TYPE BOOL
                               HELP "Error on warnings (for debug only)"
                               VALUE FALSE)
+
 if (CMAKE_C_COMPILER_ID STREQUAL "") # TODO Pelles XXX Remove or?
     set(CXX_ENABLED FALSE)
     set(CMAKE_C_COMPILER_ID Pelles)
@@ -85,7 +86,8 @@ endif() # TODO Pelles XXX Remove or?
 set(tac_checks        have_zero_length_arrays have_alone_flexible_array
                       have_countof  # have_countof_zla have_countof_vla
                       have_cv_typeof have_empty_initializer
-                      have_empty_structure have_vla)
+                      have_empty_structure have_typeof have___typeof__
+                      have_vla)
 
 set(tac_error_checks  error_on_negative_array_size
                       # error_on_pointer_subtraction  # deprecated, !constexpr
@@ -155,3 +157,6 @@ message("CMAKE_C_COMPILER_ID=${CMAKE_C_COMPILER_ID} "
      "CMAKE_C_COMPILER_FRONTEND_VARIANT=${CMAKE_C_COMPILER_FRONTEND_VARIANT}")
 tac_report(rep)
 message("${rep}")
+if (NOT HAVE_TYPEOF AND NOT HAVE___TYPEOF__)
+    message(FATAL_ERROR "Don't have `typeof()` or `__typeof__()`")
+endif ()

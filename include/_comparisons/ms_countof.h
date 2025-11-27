@@ -8,7 +8,13 @@
 #ifndef MS_COUNTOF_H_9380
 #define MS_COUNTOF_H_9380
 
+#include <stddef.h>
+
 #ifdef __cplusplus
+    #ifndef _UNALIGNED
+        #define _UNALIGNED
+    #endif
+
     extern "C++"
     {
         template <typename _CountofType, size_t _SizeOfArray>

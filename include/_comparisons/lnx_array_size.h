@@ -5,8 +5,8 @@
 // 2025-11-20 00:24:41 - Создан.
 //
 
-#ifndef ARRAY_SIZE_H_6776
-#define ARRAY_SIZE_H_6776
+#ifndef LNX_ARRAY_SIZE_H_6776
+#define LNX_ARRAY_SIZE_H_6776
 
 // https://github.com/torvalds/linux/blob/23cb64fb76257309e396ea4cec8396d4a1dbae68/include/linux/compiler_types.h#L536C1-L538C1
 // linux/include/linux/compiler_types.h
@@ -31,9 +31,9 @@
 // #include <linux/compiler.h>
 
 /**
- * ARRAY_SIZE - get the number of elements in array @arr
+ * LNX_ARRAY_SIZE - get the number of elements in array @arr
  * @arr: array to be sized
  */
-#define ARRAY_SIZE(arr) (sizeof(arr) / sizeof((arr)[0]) + __must_be_array(arr))
+#define LNX_ARRAY_SIZE(arr) (sizeof(arr) / sizeof((arr)[0]) + __must_be_array(arr))
 
-#endif  // ARRAY_SIZE_H_6776
+#endif  // LNX_ARRAY_SIZE_H_6776
