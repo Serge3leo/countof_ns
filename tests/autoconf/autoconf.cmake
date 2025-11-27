@@ -4,61 +4,66 @@
 
 # Detect default compiler capability (no options) for tests
 
-if(CMAKE_C_COMPILER_ID STREQUAL "")
-    # TODO XXX Remove or?
+if(CMAKE_C_COMPILER_ID STREQUAL "") # TODO Pelles XXX Remove or?
+    set(CXX_ENABLED FALSE)
     set(CMAKE_C_COMPILER_ID Pelles)
     #set(CMAKE_C_COMPILER_FRONTEND_VARIANT "MSVC")
     set(CMAKE_C_COMPILER_ID "${CMAKE_C_COMPILER_ID}")
-    set(CMAKE_C_COMPILER_FRONTEND_VARIANT "${CMAKE_C_COMPILER_FRONTEND_VARIANT}")
+    set(CMAKE_C_COMPILER_FRONTEND_VARIANT
+        "${CMAKE_C_COMPILER_FRONTEND_VARIANT}")
     message("WARNING: chage to CMAKE_C_COMPILER_ID=${CMAKE_C_COMPILER_ID} "
      "CMAKE_C_COMPILER_FRONTEND_VARIANT=${CMAKE_C_COMPILER_FRONTEND_VARIANT}")
 else()
-    message("CMAKE_C_COMPILER_ID=${CMAKE_C_COMPILER_ID} "
-     "CMAKE_C_COMPILER_FRONTEND_VARIANT=${CMAKE_C_COMPILER_FRONTEND_VARIANT}")
+
 if(CMAKE_C_COMPILER_ID STREQUAL Intel)
     # TODO: skip C++ for oldest Intel icpc, my local troubles XXX
-    set(TAC_SKIP_CXX TRUE)
+    set(CXX_ENABLED FALSE)
 else()
-    set(TAC_SKIP_CXX FALSE)
+    set(CXX_ENABLED TRUE)
 endif()
-set(TAC_HAVE_ADD_DEFINITIONS "-DTAC_DONT_FAIL")
+
 if (MSVC)
-    list(APPEND TAC_HAVE_ADD_DEFINITIONS -WX)
+    # TODO set_property(my_app COMPILE_WARNING_AS_ERROR ON)
+    set(TAC_WERROR -WX)
 else()
-    set(TAC_ADD_DEFINITIONS -Wall -Wextra -)
-    list(APPEND TAC_HAVE_ADD_DEFINITIONS -Werror)
+    set(TAC_WERROR -Werror)
 endif()
 if (MSVC)
-    set(TAC_ADD_DEFINITIONS -W4 -D_CRT_SECURE_NO_WARNINGS)
+    string(APPEND cmn_flags "-W4 -D_CRT_SECURE_NO_WARNINGS")
     if (MSVC_VERSION GREATER_EQUAL 1914)
-            # https://gitlab.kitware.com/cmake/cmake/-/issues/18837
-        list(APPEND TAC_ADD_DEFINITIONS "/Zc:__cplusplus")
+        # https://gitlab.kitware.com/cmake/cmake/-/issues/18837
+        string(APPEND cmn_flags " /Zc:__cplusplus")
     endif()
 elseif(CMAKE_C_COMPILER_ID STREQUAL "GNU")
-    set(TAC_ADD_DEFINITIONS -Wall -Wextra)
+    string(APPEND cmn_flags "-Wall -Wextra")
 elseif(CMAKE_C_COMPILER_ID MATCHES "Clang$" OR
        CMAKE_C_COMPILER_ID MATCHES "^Intel")
-    set(TAC_ADD_DEFINITIONS -Wall -Wextra -pedantic -Wno-unknown-warning-option
-                            -Wno-c23-extensions  # TODO
-                            -Wno-c2y-extensions  # countof()
-                            -Wno-c99-extensions  # C++ flexible array members
-                            -Wno-flexible-array-extensions
-                            -Wno-gnu-empty-initializer
-                            -Wno-gnu-empty-struct
-                            -Wno-gnu-flexible-array-union-member
-                            -Wno-zero-length-array
-                            -ferror-limit=9999)
+    string(APPEND cmn_flags "-Wall -Wextra -pedantic"
+                            " -Wno-unknown-warning-option"
+                            " -Wno-c23-extensions"  # TODO
+                            " -Wno-c2y-extensions"  # countof()
+                            " -Wno-c99-extensions"  # C++ flexible array members
+                            " -Wno-flexible-array-extensions"
+                            " -Wno-gnu-empty-initializer"
+                            " -Wno-gnu-empty-struct"
+                            " -Wno-gnu-flexible-array-union-member"
+                            " -Wno-zero-length-array"
+                            " -ferror-limit=9999")
 elseif(CMAKE_C_COMPILER_ID MATCHES "SunPro")
-    set(TAC_ADD_DEFINITIONS -Wall -Wextra -pedantic)
-    set(TAC_ADD_C_DEFINITIONS -errtags
-            -erroff=E_KW_IS_AN_EXTENSION_OF_ANSI,E_NONPORTABLE_BIT_FIELD_TYPE)
+    string(APPEND cmn_flags "-Wall -Wextra -pedantic")
+    string(APPEND CMAKE_C_FLAGS " -errtags"
+                                " -erroff=E_KW_IS_AN_EXTENSION_OF_ANSI"
+                                        ",E_NONPORTABLE_BIT_FIELD_TYPE")
 elseif(CMAKE_C_COMPILER_ID MATCHES "NVHPC")
-    set(TAC_ADD_DEFINITIONS -Wall -Wextra -pedantic
-                            --diag_suppress warning_directive)
+    string(APPEND cmn_flags "-Wall -Wextra -pedantic"
+                            " --diag_suppress warning_directive")
 else()
-    set(TAC_ADD_DEFINITIONS -Wall -Wextra -pedantic)
+    string(APPEND cmn_flags "-Wall -Wextra -pedantic")
 endif()
-endif()
+string(APPEND CMAKE_C_FLAGS " ${cmn_flags}")
+string(APPEND CMAKE_CXX_FLAGS " ${cmn_flags}")
+
+endif() # TODO Pelles XXX Remove or?
 
 set(tac_checks        have_zero_length_arrays have_alone_flexible_array
                       have_countof  # have_countof_zla have_countof_vla
@@ -70,6 +75,24 @@ set(tac_error_checks  error_on_negative_array_size
                       error_on_sizeof_pointer_subtraction
                       error_on_struct_bit_field error_on_struct_static_assert)
 
+function(tac_register var)
+    set(${var} TRUE PARENT_SCOPE)
+    set(CMAKE_C_FLAGS "${CMAKE_C_FLAGS} -D${var}=1" PARENT_SCOPE)
+    set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -D${var}=1" PARENT_SCOPE)
+    # TODO list(APPEND COMPILE_DEFINITIONS ${CCHK})
+    # TODO add_compile_definitions(${CCHK})
+endfunction()
+
+function(tac_report rep)
+    foreach(chk IN ITEMS ${tac_checks} ${tac_error_checks})
+        string(TOUPPER "${chk}" CHK)
+        if(${${CHK}})
+            string(APPEND out "${CHK}\n")
+        endif()
+    endforeach()
+    set("${rep}" "${out}" PARENT_SCOPE)
+endfunction()
+
 foreach(cchk IN ITEMS ${tac_checks} ${tac_error_checks})
     set(src "${TAC_SOURCE_DIR}/${cchk}.c")
     set(cchks ${cchk})
@@ -77,18 +100,24 @@ foreach(cchk IN ITEMS ${tac_checks} ${tac_error_checks})
         list(PREPEND cchks "have_${cchk}")
     endif()
     foreach(chk IN ITEMS ${cchks})
-        set(cd ${TAC_ADD_DEFINITIONS} ${TAC_DEFINITIONS})
         if("${chk}" MATCHES "^have_")
-            list(PREPEND cd ${TAC_HAVE_ADD_DEFINITIONS}
-                 ${TAC_ADD_C_DEFINITIONS})
+            set(df "${TAC_WERROR} -DTAC_DONT_FAIL")
+        else()
+            set(df "")
         endif()
         # message("before ${chk}=${chk} run_${chk}=${run_${chk}} compile_${chk}=${compile_${chk}}")
         if("${compile_${chk}}" STREQUAL "")
-            message("Detecting ${chk}")
+            if(NOT ${chk} MATCHES "^have_error_")
+                message("Detecting ${chk}")
+            endif()
             try_run(run_${chk} compile_${chk} "${CMAKE_CURRENT_BINARY_DIR}"
                     SOURCES "${src}"
-                    COMPILE_DEFINITIONS ${cd})
+                    COMPILE_DEFINITIONS "${df}"
+                    # COMPILE_OUTPUT_VARIABLE cout
+                    # RUN_OUTPUT_VARIABLE rout
+                    )
             # message("after ${cchk}=${chk} run_${chk}=${run_${chk}} compile_${chk}=${compile_${chk}}")
+            # message("\n===\n${chk}, TAC_WERROR=${TAC_WERROR}, df=${df} cout:\n${cout}\n--- rout:\n${rout}\n===")
         endif()
     endforeach()
     string(TOUPPER "${cchk}" CCHK)
@@ -96,14 +125,16 @@ foreach(cchk IN ITEMS ${tac_checks} ${tac_error_checks})
         # message("run_have_${cchk}=${run_have_${cchk}} ompile_have_${cchk}={compile_have_${cchk}} compile_${cchk}=${compile_${cchk}}")
         if(("${run_have_${cchk}}" EQUAL 0) AND "${compile_have_${cchk}}"
            AND NOT "${compile_${cchk}}")
-            list(APPEND TAC_DEFINITIONS "-D${CCHK}=1")
-            string(APPEND TAC_REPORT "${CCHK}\n")
+            tac_register(${CCHK})
         endif()
     else()
         if("${run_${cchk}}" EQUAL 0)
-            list(APPEND TAC_DEFINITIONS "-D${CCHK}=1")
-            string(APPEND TAC_REPORT "${CCHK}\n")
+            tac_register(${CCHK})
         endif()
     endif()
 endforeach()
-message("${TAC_REPORT}")
+
+message("CMAKE_C_COMPILER_ID=${CMAKE_C_COMPILER_ID} "
+     "CMAKE_C_COMPILER_FRONTEND_VARIANT=${CMAKE_C_COMPILER_FRONTEND_VARIANT}")
+tac_report(rep)
+message("${rep}")

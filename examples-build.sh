@@ -92,7 +92,13 @@ elif [ -z "$cxx_cmp_arg" ] ; then
 fi
 
 bcc=`basename "$cc"`
+if [ "$bcc" != "$cc" ] ; then
+    bcc="need-path-$bcc"
+fi
 bcxx=`basename "$cxx"`
+if [ "$bcxx" != "$cxx" ] ; then
+    bcc="need-path-$bcxx"
+fi
 
 default_cmpl() {
     make
@@ -132,6 +138,8 @@ else
     }
     bdir=$(basename `pwd`)
     platform=`expr "$bdir" : "\(.*\)_[^_]*_[^_]*"`
+    cc=`expr "$bdir" : ".*_\([^_]*\)_[^_]*"`
+    cxx=`expr "$bdir" : ".*_[^_]*_\([^_]*\)"`
     src_dir=false
 fi
 if "$verbose" ; then
