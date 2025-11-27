@@ -32,6 +32,7 @@
 #endif
 
 #include <assert.h>
+#include <stdlib.h>
 #include <stdio.h>
 
 #if defined(__cplusplus) && __cplusplus < 201103L
@@ -47,12 +48,16 @@
 
                             // TODO: Strange: do{ } while(0)
 #define TU_STATIC_ASSERT_AND_RETURN(a, b)  \
-                tu_static_assert((a) == (b)); \
-                return (a) - (b)
+            tu_static_assert((a) == (b)); \
+            return (a) - (b)
 
 #define TU_ASSERT_AND_RETURN(a, b)  \
-                assert((a) == (b)); \
-                return (a) - (b)
+            if ((a) != (b)) { \
+                printf("Fail %zu TU_ASSERT_AND_RETURN(%s, %s) [%zu, %zu]\n", \
+                       (size_t)(b), (#a), (#b), (size_t)(a), (size_t)(b)); \
+                exit(EXIT_FAILURE); \
+            } \
+            return (a) - (b)
 
 #define _TU_STR1(S)  #S
 #define _TU_STR(S)  _TU_STR1(S)

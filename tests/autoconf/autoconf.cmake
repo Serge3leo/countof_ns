@@ -4,7 +4,13 @@
 
 # Detect default compiler capability (no options) for tests
 
-if(CMAKE_C_COMPILER_ID STREQUAL "") # TODO Pelles XXX Remove or?
+set(CACHE TAC_ENABLE_WARNINGS TYPE BOOL
+                              HELP "Enable maximum warnings (for debug only)"
+                              VALUE FALSE)
+set(CACHE TAC_POSITIVE_WERROR TYPE BOOL
+                              HELP "Error on warnings (for debug only)"
+                              VALUE FALSE)
+if (CMAKE_C_COMPILER_ID STREQUAL "") # TODO Pelles XXX Remove or?
     set(CXX_ENABLED FALSE)
     set(CMAKE_C_COMPILER_ID Pelles)
     #set(CMAKE_C_COMPILER_FRONTEND_VARIANT "MSVC")
@@ -15,50 +21,61 @@ if(CMAKE_C_COMPILER_ID STREQUAL "") # TODO Pelles XXX Remove or?
      "CMAKE_C_COMPILER_FRONTEND_VARIANT=${CMAKE_C_COMPILER_FRONTEND_VARIANT}")
 else()
 
-if(CMAKE_C_COMPILER_ID STREQUAL Intel)
+if (CMAKE_C_COMPILER_ID STREQUAL Intel)
     # TODO: skip C++ for oldest Intel icpc, my local troubles XXX
     set(CXX_ENABLED FALSE)
 else()
     set(CXX_ENABLED TRUE)
 endif()
-
 if (MSVC)
-    # TODO set_property(my_app COMPILE_WARNING_AS_ERROR ON)
-    set(TAC_WERROR -WX)
-else()
-    set(TAC_WERROR -Werror)
-endif()
-if (MSVC)
-    string(APPEND cmn_flags "-W4 -D_CRT_SECURE_NO_WARNINGS")
+    string(APPEND cmn_flags " -D_CRT_SECURE_NO_WARNINGS")
     if (MSVC_VERSION GREATER_EQUAL 1914)
         # https://gitlab.kitware.com/cmake/cmake/-/issues/18837
         string(APPEND cmn_flags " /Zc:__cplusplus")
     endif()
-elseif(CMAKE_C_COMPILER_ID STREQUAL "GNU")
-    string(APPEND cmn_flags "-Wall -Wextra")
 elseif(CMAKE_C_COMPILER_ID MATCHES "Clang$" OR
        CMAKE_C_COMPILER_ID MATCHES "^Intel")
-    string(APPEND cmn_flags "-Wall -Wextra -pedantic"
-                            " -Wno-unknown-warning-option"
-                            " -Wno-c23-extensions"  # TODO
-                            " -Wno-c2y-extensions"  # countof()
-                            " -Wno-c99-extensions"  # C++ flexible array members
-                            " -Wno-flexible-array-extensions"
-                            " -Wno-gnu-empty-initializer"
-                            " -Wno-gnu-empty-struct"
-                            " -Wno-gnu-flexible-array-union-member"
-                            " -Wno-zero-length-array"
-                            " -ferror-limit=9999")
-elseif(CMAKE_C_COMPILER_ID MATCHES "SunPro")
-    string(APPEND cmn_flags "-Wall -Wextra -pedantic")
-    string(APPEND CMAKE_C_FLAGS " -errtags"
-                                " -erroff=E_KW_IS_AN_EXTENSION_OF_ANSI"
-                                        ",E_NONPORTABLE_BIT_FIELD_TYPE")
-elseif(CMAKE_C_COMPILER_ID MATCHES "NVHPC")
-    string(APPEND cmn_flags "-Wall -Wextra -pedantic"
-                            " --diag_suppress warning_directive")
-else()
-    string(APPEND cmn_flags "-Wall -Wextra -pedantic")
+        string(APPEND cmn_flags " -ferror-limit=9999")
+endif()
+if (TAC_POSITIVE_WERROR)
+    if (MSVC)
+        # TODO set_property(my_app COMPILE_WARNING_AS_ERROR ON)
+        set(TAC_WERROR -WX)
+    else()
+        set(TAC_WERROR -Werror)
+    endif()
+endif()
+if (TAC_ENABLE_WARNINGS)
+    if (MSVC)
+        string(APPEND cmn_flags " /W4")
+    elseif(CMAKE_C_COMPILER_ID STREQUAL "GNU")
+        string(APPEND cmn_flags " -Wall -Wextra")
+    elseif(CMAKE_C_COMPILER_ID MATCHES "Clang$" OR
+           CMAKE_C_COMPILER_ID MATCHES "^Intel")
+        string(APPEND cmn_flags " -Wall -Wextra -pedantic"
+                                " -Wno-unknown-warning-option"
+                                " -Wno-c23-extensions"  # TODO
+                                " -Wno-c2y-extensions"  # countof()
+                                " -Wno-c99-extensions"  # C++ flexible array members
+                                " -Wno-division-by-zero"  # TODO
+                                " -Wno-flexible-array-extensions"
+                                " -Wno-gnu-empty-initializer"
+                                " -Wno-gnu-empty-struct"
+                                " -Wno-gnu-flexible-array-union-member"
+                                " -Wno-zero-length-array"
+                                " -ferror-limit=9999")
+    elseif(CMAKE_C_COMPILER_ID MATCHES "SunPro")
+        string(APPEND cmn_flags " -Wall -Wextra -pedantic")
+        string(APPEND CMAKE_C_FLAGS " -errtags"
+                                    " -erroff=E_KW_IS_AN_EXTENSION_OF_ANSI"
+                                            ",E_NONPORTABLE_BIT_FIELD_TYPE")
+    elseif(CMAKE_C_COMPILER_ID MATCHES "NVHPC")
+        string(APPEND cmn_flags " -Wall -Wextra -pedantic"
+                                " --diag_suppress warning_directive"
+                                " --diag_suppress no_named_fields")
+    else()
+        string(APPEND cmn_flags " -Wall -Wextra -pedantic")
+    endif()
 endif()
 string(APPEND CMAKE_C_FLAGS " ${cmn_flags}")
 string(APPEND CMAKE_CXX_FLAGS " ${cmn_flags}")
