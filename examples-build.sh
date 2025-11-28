@@ -6,7 +6,7 @@
 set -e
 
 cc_cmp_arg=
-ctest_args=
+ctest_args='-L default'
 cxx_cmp_arg=
 platform_arg=
 rm_arg=false
@@ -24,14 +24,15 @@ while getopts rvp:c:C:t:h-'?' flag ; do
         echo '' "    [-C C++-compiler] [-t string for ctest] [--]" \
                      "[cmake_args]"
         echo '  -r - Remove build directory contents;'
+        echo "  -t - ctest arguments string, by default: '$ctest_args';"
         echo '  -v - Verbose launcher output;'
         echo '  -p platform - Platform, by default `uname -s`;'
-        echo '  -c C-compiler - If not exist, use `cmake` defaults;'
+        echo '  -c C-compiler - If not exist, use cmake defaults;'
         echo '  -C C++-compiler - If not exist, detected by C compiler;'
         echo ''
         echo 'Examples:'
         echo '  ./examples-build.sh -v -c clang-mp-21' \
-                        '-t '\''-R "_0[0n]"'\'' -- -DENABLE_COMPARISONS'
+                        '-t '\''-R "_[n0]0"'\'' -- --preset cmp'
         echo '  ./examples-build.sh -p Xcode'
         exit 2
     esac
@@ -128,7 +129,7 @@ default_cmpl() {
     exit $rc
 }
 Xcode_args() {
-    cmake_args="$cmake_args -G Xcode"
+    cmake_args="--preset default $cmake_args -G Xcode"
 }
 Xcode_cmpl() {
     open *.xcodeproj
@@ -184,16 +185,16 @@ else
     "${platform}_args"
     if [ -z "$cc" ] ; then
         if "$verbose" ; then
-            echo "cmake $cmake_args $* ../.."
+            echo "cmake --preset default $cmake_args $* ../.."
         fi
-        cmake $cmake_args "$@" ../..
+        cmake --preset default $cmake_args "$@" ../..
     else
         if "$verbose" ; then
-            echo "cmake -DCMAKE_C_COMPILER=\"$cc\"" \
+            echo "cmake --preset default -DCMAKE_C_COMPILER=\"$cc\"" \
                         "-DCMAKE_CXX_COMPILER=\"$cxx\" $cmake_args $* ../.."
         fi
-        cmake -DCMAKE_C_COMPILER="$cc" -DCMAKE_CXX_COMPILER="$cxx" \
-              $cmake_args "$@" ../..
+        cmake --preset default -DCMAKE_C_COMPILER="$cc" \
+              -DCMAKE_CXX_COMPILER="$cxx" $cmake_args "$@" ../..
     fi
     "${platform}_cmpl"
 fi

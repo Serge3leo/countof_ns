@@ -1,0 +1,43 @@
+{
+  "version": 6,
+  "cmakeMinimumRequired": {
+    "major": 3,
+    "minor": 25
+  },
+  "configurePresets": [
+    {
+      "name": "default",
+      "displayName": "Default general",
+      "cacheVariables": {
+        "COMPARISONS": "OFF",
+        "TAC_ENABLE_WARNINGS": "OFF",
+        "TAC_POSITIVE_WERROR": "OFF"
+      }
+    },
+    {
+      "name": "debug",
+      "displayName": "Debug checks",
+      "inherits": "default",
+      "cacheVariables": {
+        "TAC_ENABLE_WARNINGS": "ON",
+        "TAC_POSITIVE_WERROR": "ON"
+      }
+    },
+    {
+      "name": "cmp",
+      "displayName": "Comparisons number methods",
+      "inherits": "default",
+      "cacheVariables": {
+        "COMPARISONS": "ON"
+      }
+    },
+    {
+      "name": "verbose-cmp",
+      "displayName": "Comparisons number methods",
+      "inherits": "cmp",
+      "cacheVariables": {
+        "TAC_ENABLE_WARNINGS": "ON"
+      }
+    }
+  ]
+}
