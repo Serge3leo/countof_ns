@@ -114,11 +114,18 @@ fi
 
 default_cmpl() {
     make
+    rc=0
     if [ -z "$ctest_args" ] ; then
-        ctest
+        ctest || {
+            rc=$?
+        }
     else
-        echo "$ctest_args" | xargs ctest
+        echo "$ctest_args" | xargs ctest || {
+            rc=$?
+        }
     fi
+    gawk -f ../../tests/check_test_log.gawk Testing/Temporary/LastTest.log
+    exit $rc
 }
 Xcode_args() {
     cmake_args="$cmake_args -G Xcode"
@@ -175,12 +182,19 @@ if "$rm_arg" ; then
     rm -rf "../../build/$bdir"/*
 else
     "${platform}_args"
-    if "$verbose" ; then
-        echo "cmake -DCMAKE_C_COMPILER=\"$cc\"" \
-                    "-DCMAKE_CXX_COMPILER=\"$cxx\" $cmake_args $* ../.."
+    if [ -z "$cc" ] ; then
+        if "$verbose" ; then
+            echo "cmake $cmake_args $* ../.."
+        fi
+        cmake $cmake_args "$@" ../..
+    else
+        if "$verbose" ; then
+            echo "cmake -DCMAKE_C_COMPILER=\"$cc\"" \
+                        "-DCMAKE_CXX_COMPILER=\"$cxx\" $cmake_args $* ../.."
+        fi
+        cmake -DCMAKE_C_COMPILER="$cc" -DCMAKE_CXX_COMPILER="$cxx" \
+              $cmake_args "$@" ../..
     fi
-    cmake -DCMAKE_C_COMPILER="$cc" -DCMAKE_CXX_COMPILER="$cxx" \
-          $cmake_args "$@" ../..
     "${platform}_cmpl"
 fi
 exit 0

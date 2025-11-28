@@ -15,7 +15,7 @@
 
 #include TU_COUNTOF_INC
 
-#if _COUNTOF_NS_VLA_UNSUPPORTED
+#if _COUNTOF_NS_VLA_UNSUPPORTED || !defined(countof_ns)
     #if _COUNTOF_NS_WANT_C11_VLA && !__cplusplus
         #error "Wrong autoconf of VLA"
     #endif
