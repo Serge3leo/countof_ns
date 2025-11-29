@@ -1,3 +1,4 @@
+// vim:set sw=4 ts=8 et fileencoding=utf8:
 static size_t TU_UNIT(void) {
     // Former: short_example.h:72: fail += countof_ns(p1)
     int a2[56][23] = { { 0 } };
