@@ -76,17 +76,15 @@ endfunction ()
 
 function (process_hdr params hdr pos werror)
     list(GET params 0 dflt)
-    list(GET params 1 have)
-    list(GET params 2 cxx)
-    list(GET params 3 tu_countof_func)
-    list(GET params 4 tu_countof_inc)
+    list(GET params 1 langs)
+    list(GET params 2 tu_countof_func)
+    list(GET params 3 tu_countof_inc)
     string(REGEX REPLACE ".h$" "" base "${hdr}")
 
-    if (NOT "${have}" OR  # TODO
-       ("${hdr}" MATCHES "_vla" AND NOT HAVE_VLA) OR
-       ("${hdr}" MATCHES "_zla" AND NOT HAVE_ZERO_LENGTH_ARRAYS) OR
-       ("${hdr}" MATCHES "_struct" AND NOT HAVE_EMPTY_STRUCTURE) OR
-       ("${hdr}" MATCHES "_alone" AND NOT HAVE_ALONE_FLEXIBLE_ARRAY))
+    if (("${hdr}" MATCHES "_vla" AND NOT HAVE_VLA) OR
+        ("${hdr}" MATCHES "_zla" AND NOT HAVE_ZERO_LENGTH_ARRAYS) OR
+        ("${hdr}" MATCHES "_struct" AND NOT HAVE_EMPTY_STRUCTURE) OR
+        ("${hdr}" MATCHES "_alone" AND NOT HAVE_ALONE_FLEXIBLE_ARRAY))
         return()
     endif ()
 
@@ -97,62 +95,76 @@ function (process_hdr params hdr pos werror)
             "-DTU_COUNTOF_FUNC=${tu_countof_func}"
             "-DTU_COUNTOF_INC=\"${tu_countof_inc}\"")
     list(APPEND hdr "${CMAKE_SOURCE_DIR}/include/${tu_countof_inc}")
-    process_test("${base}" "${tu_countof_func}" "${dflt}" "${pos}"
-                           tu_stub.c "${hdr}" "${inc}")
-    if (HAVE_VLA AND "${dflt}")
+    if (langs MATCHES "CLANG")
+        process_test("${base}" "${tu_countof_func}" "${dflt}" "${pos}"
+                               tu_stub.c "${hdr}" "${inc}")
+    endif ()
+    if (langs MATCHES "CLANG" AND "${dflt}" AND HAVE_VLA)
         process_test("${base}_c11" "${tu_countof_func}" "${dflt}" "${pos}"
                                    tu_stub.c "${hdr}" "${inc}")
         target_compile_options("${base}_c11" PRIVATE -D_COUNTOF_NS_WANT_C11_VLA)
     endif ()
-    if (CXX_ENABLED AND NOT "${base}" MATCHES "_vla" AND "${cxx}")
+    if (langs MATCHES "CXX" AND CXX_ENABLED AND NOT "${base}" MATCHES "_vla")
         process_test("${base}_cxx" "${tu_countof_func}" "${dflt}" "${pos}"
                                    tu_stub_cxx.cpp "${hdr}" "${inc}")
     endif ()
 endfunction ()
 
-try_compile(HAVE_ALX_COUNTOF
-            SOURCE_FROM_CONTENT builtin_types_compatible_p.c [=[
-        #include <assert.h>
-        #if __has_builtin(__builtin_types_compatible_p)
-            // JZMG_ARRAY_LEN() use `static_assert()`, not `_Static_assert()`
-            static_assert(1);
-            int main(void) {}
-        #endif
-        ]=])
-if (HAVE_EMPTY_STRUCTURE AND ERROR_ON_STRUCT_STATIC_ASSERT)
-    # Strictly: _Static_assert&__builtin_types_compatible_p, but redundant
-    set(HAVE_LNX_ARRAY_SIZE TRUE)
-endif ()
-
-set(ARRAY_LEN_params FALSE TRUE TRUE
-    "JZMG_ARRAY_LEN" "_comparisons/JZMG_ARRAY_LEN.h")
-set(array_size_params FALSE "${HAVE_LNX_ARRAY_SIZE}" FALSE
-    "LNX_ARRAY_SIZE" "_comparisons/lnx_array_size.h")
-set(COUNTOF_params FALSE "${HAVE_ALX_COUNTOF}" FALSE
-    "ALX_COUNTOF" "_comparisons/ALX_COUNTOF.h")
-set(countof_params FALSE "${HAVE_COUNTOF}" FALSE
-    "stdc_countof" "_comparisons/stdc_countof.h")
-set(countof_ns_params TRUE TRUE TRUE
+set(countof_ns_params TRUE "CLANG CXX"
     "countof_ns" "countof_ns.h")
-set(ms_countof_params FALSE TRUE TRUE
-    "ms_countof" "_comparisons/ms_countof.h")
+set(cmp_list countof_ns_params)
 
-foreach (params IN ITEMS countof_ns_params countof_params ARRAY_LEN_params
-                         COUNTOF_params array_size_params ms_countof_params)
-    list(GET ${params} 0 dflt)
-    list(GET ${params} 1 have)
-    list(GET ${params} 3 tu_countof_func)
-    if (NOT dflt)
-        if (NOT COMPARISONS)
-            continue ()
-        endif ()
-        if (NOT have)
-            set(tgt "${tu_countof_func}-Don_t_have")
-            add_test(NAME "${tgt}" COMMAND ${CMAKE_COMMAND} -E false)
-            set_tests_properties("${tgt}" PROPERTIES SKIP_RETURN_CODE 1)
-            continue ()
-        endif ()
+if (COMPARISONS)
+    if (HAVE_COUNTOF)
+        set(countof_params FALSE "CLANG"
+            "stdc_countof" "_comparisons/stdc_countof.h")
+        list(APPEND cmp_list countof_params)
+    endif()
+
+    try_compile(HAVE_STD_SIZE SOURCE_FROM_CONTENT have_std_size.cpp [=[
+            #include <vector>
+            int a[1];
+            static_assert(1 == std::size(a));
+            int main(void) {}
+            ]=])
+    if (HAVE_STD_SIZE)
+        set(std_size_params FALSE "CXX"
+            "std_size" "_comparisons/std_size.h")
+        list(APPEND cmp_list std_size_params)
     endif ()
+
+    set(ARRAY_LEN_params FALSE "CLANG CXX"
+        "JZMG_ARRAY_LEN" "_comparisons/JZMG_ARRAY_LEN.h")
+    list(APPEND cmp_list ARRAY_LEN_params)
+
+    if (HAVE_EMPTY_STRUCTURE AND ERROR_ON_STRUCT_STATIC_ASSERT)
+        # Strictly: _Static_assert&__builtin_types_compatible_p, but redundant
+        set(array_size_params FALSE "CLANG"
+            "LNX_ARRAY_SIZE" "_comparisons/lnx_array_size.h")
+        list(APPEND cmp_list array_size_params)
+    endif ()
+
+    try_compile(HAVE_ALX_COUNTOF
+                SOURCE_FROM_CONTENT builtin_types_compatible_p.c [=[
+            #include <assert.h>
+            #if __has_builtin(__builtin_types_compatible_p)
+                // ALX_COUNTOF() use `static_assert()`, not `_Static_assert()`
+                static_assert(1);
+                int main(void) {}
+            #endif
+            ]=])
+    if (HAVE_ALX_COUNTOF)
+        set(COUNTOF_params FALSE "CLANG"
+            "ALX_COUNTOF" "_comparisons/ALX_COUNTOF.h")
+        list(APPEND cmp_list COUNTOF_params)
+    endif ()
+
+    set(ms_countof_params FALSE "CLANG CXX"
+        "ms_countof" "_comparisons/ms_countof.h")
+    list(APPEND cmp_list ms_countof_params)
+endif()
+
+foreach (params IN ITEMS ${cmp_list})
     foreach (h IN LISTS check_hdr pos_hdr)
         process_hdr("${${params}}" "${h}" TRUE "${TAC_WERROR}")
     endforeach ()
