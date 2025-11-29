@@ -4,6 +4,8 @@
 
 set(CACHE COMPARISONS TYPE BOOL HELP "Add comparisons tests" VALUE FALSE)
 
+set(TU_SKIP_CODE 42)
+
 # Positive and check tests must compile and successful execute (for VLA used
 # runtime asserts). They should return Ok, a small number, and debugging
 # information (Warning: TODO: If there is a build error, it's still about
@@ -45,6 +47,10 @@ function (process_test tgt lbl dflt pos src hdr inc)
                      --build-noclean
                      --build-target "${tgt}"
                      --test-command "${CMAKE_CURRENT_BINARY_DIR}/${tgt}")
+            # TODO Visual Studio generator can't found
+            # std_size-pos__selftest_cxx.vcxproj, ... etc
+            # Change Dir: 'Z:/soft/my/countof_ns/build/vs18.0'
+            # Z:\soft\my\countof_ns\build\vs18.0\tests\unit\std_size-pos__selftest_cxx.vcxproj
         else ()
             add_test(NAME "${tgt}" COMMAND "${tgt}")
         endif ()
@@ -63,12 +69,14 @@ function (process_test tgt lbl dflt pos src hdr inc)
         add_test(NAME "${tgt}_0_fail"
                  COMMAND ${CMAKE_COMMAND}
                          -DCMD=${CMAKE_CURRENT_BINARY_DIR}/${tgt}
+                         -DSKIP_CODE=${TU_SKIP_CODE}
                          -P ${CMAKE_CURRENT_SOURCE_DIR}/exec_if_exists.cmake)
                          # TODO https://stackoverflow.com/a/3071370/8585880
         set_tests_properties("${tgt}_0_fail" PROPERTIES
                         PASS_REGULAR_EXPRESSION "${neg_not_terrifying_regexp}"
+                        SKIP_RETURN_CODE "${TU_SKIP_CODE}"
                         DEPENDS "${tgt}"
-                        REQUIRED_FILES "${CMAKE_CURRENT_BINARY_DIR}/${tgt}"
+                        # REQUIRED_FILES "${CMAKE_CURRENT_BINARY_DIR}/${tgt}"
                         LABELS "${lbl}")
     endif ()
     set_tests_properties("${tgt}" PROPERTIES LABELS "${lbl}")

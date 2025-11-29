@@ -5,10 +5,9 @@
 #ifndef TU_STUB_H_8927
 #define TU_STUB_H_8927
 
-#define TU_SKIP_EXIT_STATUS  (42)
-#define TU_0_FAIL          (TU_SKIP_EXIT_STATUS)
-#define TU_LE_DESIRED_FAIL (EXIT_SUCCESS)
-#define TU_GT_DESIRED_FAIL (EXIT_FAILURE)
+#define TU_0_FAIL          (1)
+#define TU_LE_DESIRED_FAIL (2)
+#define TU_GT_DESIRED_FAIL (3)
 
 #ifndef TU_COUNTOF_INC
     #define TU_COUNTOF_INC  "countof_ns.h"

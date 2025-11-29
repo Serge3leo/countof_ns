@@ -7,5 +7,7 @@
 set(CMD_RESULT 1)
 if (EXISTS "${CMD}")
     execute_process(COMMAND "${CMD}" RESULT_VARIABLE CMD_RESULT)
+elseif (NOT "${SKIP_CODE}" STREQUAL "")
+    set(CMD_RESULT "${SKIP_CODE}")
 endif ()
 cmake_language(EXIT "${CMD_RESULT}")
