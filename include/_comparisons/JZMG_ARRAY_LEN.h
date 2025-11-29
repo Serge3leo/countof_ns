@@ -5,6 +5,10 @@
 #ifndef JZMG_ARRAY_LEN_H_4790
 #define JZMG_ARRAY_LEN_H_4790
 
+#if _MSC_VER
+    #define typeof  __typeof__
+#endif
+
 // https://stackoverflow.com/a/77001872/8585880
 // https://stackoverflow.com/a/77028426/8585880
 //
