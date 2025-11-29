@@ -73,7 +73,7 @@
                 TU_REPORT(); \
                 if (0 == (computed)) { \
                     exit(TU_0_FAIL); \
-                } else if ((computed) <= (desired)) { \
+                } else if ((long long)(computed) <= (long long)(desired)) { \
                     exit(TU_LE_DESIRED_FAIL); \
                 } \
             } \

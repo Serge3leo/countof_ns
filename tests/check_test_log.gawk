@@ -58,7 +58,7 @@ END {
           " (float:", total_flt, ", div:", total_div, "strings)" 
 }
 
-/Divide|Divisi/ {
+/Divide|[^-]Divisi/ {
     test_case_cnt++;
     test_case_div++;
     test_case_div_msg = $0;

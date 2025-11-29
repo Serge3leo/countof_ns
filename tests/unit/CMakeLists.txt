@@ -60,12 +60,12 @@ function (process_test tgt lbl dflt pos src hdr inc)
                  WORKING_DIRECTORY ${CMAKE_BINARY_DIR})
         set_tests_properties("${tgt}" PROPERTIES WILL_FAIL TRUE)
 
-        add_test(NAME "${tgt}_start_failed"
+        add_test(NAME "${tgt}_0_fail"
                  COMMAND ${CMAKE_COMMAND}
                          -DCMD=${CMAKE_CURRENT_BINARY_DIR}/${tgt}
                          -P ${CMAKE_CURRENT_SOURCE_DIR}/exec_if_exists.cmake)
                          # TODO https://stackoverflow.com/a/3071370/8585880
-        set_tests_properties("${tgt}_start_failed" PROPERTIES
+        set_tests_properties("${tgt}_0_fail" PROPERTIES
                         PASS_REGULAR_EXPRESSION "${neg_not_terrifying_regexp}"
                         DEPENDS "${tgt}"
                         REQUIRED_FILES "${CMAKE_CURRENT_BINARY_DIR}/${tgt}"
