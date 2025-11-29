@@ -6,14 +6,10 @@
  *  $ ./examples-build.sh -r
  *  $ CXXFLAGS=-DTU_SELFTEST_FAIL=1 \
  *  $ CFLAGS=-DTU_SELFTEST_FAIL=1 ./examples-build.sh
- *
- *  For MSVC add /wd"4702" or remove /WX
  */
 size_t TU_UNIT(void) {
     #ifndef TU_SELFTEST_FAIL
-        TU_STATIC_ASSERT_AND_RETURN(1, 1);
-    #else
-        assert(0);
-        return 42;
+        tu_static_assert(0);
     #endif
+    TU_FAIL("neg__selftest.h", 0, sizeof(char));
 }

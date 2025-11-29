@@ -5,6 +5,11 @@
 #ifndef TU_STUB_H_8927
 #define TU_STUB_H_8927
 
+#define TU_SKIP_EXIT_STATUS  (42)
+#define TU_0_FAIL          (TU_SKIP_EXIT_STATUS)
+#define TU_LE_DESIRED_FAIL (EXIT_SUCCESS)
+#define TU_GT_DESIRED_FAIL (EXIT_FAILURE)
+
 #ifndef TU_COUNTOF_INC
     #define TU_COUNTOF_INC  "countof_ns.h"
 #endif
@@ -46,28 +51,58 @@
     #define tu_static_assert(e)  assert(e)
 #endif
 
-                            // TODO: Strange: do{ } while(0)
-#define TU_STATIC_ASSERT_AND_RETURN(a, b)  \
-            tu_static_assert((a) == (b)); \
-            return (a) - (b)
-
-#define TU_ASSERT_AND_RETURN(a, b)  \
-            if ((a) != (b)) { \
-                printf("Fail %zu TU_ASSERT_AND_RETURN(%s, %s) [%zu, %zu]\n", \
-                       (size_t)(b), (#a), (#b), (size_t)(a), (size_t)(b)); \
-                exit(EXIT_FAILURE); \
-            } \
-            return (a) - (b)
+// Report on the test source
 
 #define _TU_STR1(S)  #S
 #define _TU_STR(S)  _TU_STR1(S)
 #define TU_REPORT()  do { \
-            printf("%s:%s:%s: OK(%zu), for %s:%s()%s, %s %s\n", \
+            printf("%s:%s:%s for %s:%s()%s, %s %s\n", \
                     __FILE__, TU_UNIT_INC, _TU_STR(TU_UNIT), \
-                    TU_UNIT(), \
                     TU_COUNTOF_INC, _TU_STR(TU_COUNTOF_FUNC), \
                     TU_C11_VLA, TU_LANG, _TU_STR(TU_LVER)); \
         } while(0)
+
+// Negative tests
+
+#define _TU_TODO_MAGIC (0x390da063)
+
+#define TU_FAIL(method, desired, computed)  do { \
+            if(_TU_TODO_MAGIC != (computed)) { \
+                printf("Fail %zu desired=%zu %s(%s, ...) ", \
+                       (computed), (size_t)(desired), (method), (#desired)); \
+                TU_REPORT(); \
+                if (0 == (computed)) { \
+                    exit(TU_0_FAIL); \
+                } else if ((computed) <= (desired)) { \
+                    exit(TU_LE_DESIRED_FAIL); \
+                } \
+            } \
+        } while(0)
+
+// Positive tests
+
+#define _TU_ASSERT_AND_RETURN(method, desired, computed)  do { \
+            if ((desired) == (computed)) { \
+                /* clang/icx */ \
+                /* For UB (divide zero, etc) won't choose this branch. */ \
+                printf("Ok %zu %s(%s=%zu, ...) ", \
+                       (computed), (method), (#desired), (size_t)(desired)); \
+                TU_REPORT(); \
+                exit(EXIT_SUCCESS); \
+            } \
+            TU_FAIL((method), (desired), (computed)); \
+            return _TU_TODO_MAGIC; \
+        } while(0)
+
+#define TU_ASSERT_AND_RETURN(desired, computed) \
+            _TU_ASSERT_AND_RETURN("TU_ASSERT_AND_RETURN", (desired), (computed))
+
+#define TU_STATIC_ASSERT_AND_RETURN(desired, computed)  do { \
+            tu_static_assert((desired) == (computed)); \
+            _TU_ASSERT_AND_RETURN("TU_STATIC_ASSERT_AND_RETURN", \
+                                  (desired), (computed)); \
+        } while(0)
+
 
 #include TU_UNIT_INC
 

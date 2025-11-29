@@ -4,17 +4,35 @@
 
 set(CACHE COMPARISONS TYPE BOOL HELP "Add comparisons tests" VALUE FALSE)
 
-file(GLOB positive_hdr RELATIVE "${CMAKE_CURRENT_SOURCE_DIR}" "positive_*.h")
-file(GLOB negative_hdr RELATIVE "${CMAKE_CURRENT_SOURCE_DIR}" "negative_*.h")
+# Positive and check tests must compile and successful execute (for VLA used
+# runtime asserts). They should return Ok, a small number, and debugging
+# information (Warning: TODO: If there is a build error, it's still about
+# "Required regular expression not found...").
+
+# TODO For compassions Visual Studio generator is not reliable, "NMake
+# Makefiles" is working as expected is working as expected.
+
+file(GLOB check_hdr RELATIVE "${CMAKE_CURRENT_SOURCE_DIR}" "check_*.h")
+file(GLOB pos_hdr RELATIVE "${CMAKE_CURRENT_SOURCE_DIR}" "pos_*.h")
+set(pos_pass_regexp "Ok [0-9] TU_[A-Z_]*ASSERT_AND_RETURN")
+
+# Negative tests must don't compile. But, for comparison purposes, we are
+# trying to find out what a wrongly compiled test does.
+
+file(GLOB neg_hdr RELATIVE "${CMAKE_CURRENT_SOURCE_DIR}" "neg_*.h")
+set(neg_not_terrifying_regexp "Fail 0 desired=")
 
 function (process_test tgt lbl dflt pos src hdr inc)
+    if ("${dflt}")
+        list(APPEND lbl "default")
+    endif ()
     add_executable("${tgt}" "${src}" "${hdr}")
     target_compile_options("${tgt}" PRIVATE "${inc}")
     target_link_libraries("${tgt}" PRIVATE CounofNS::CounofNS)
     if (pos)
         target_compile_options("${tgt}" PRIVATE "${TAC_WERROR}")
         if (NOT "${dflt}" OR
-           (${tgt} MATCHES "_vla_" AND NOT ${tgt} MATCHES "_vla$") OR
+           (${tgt} MATCHES "_vla" AND NOT ${tgt} MATCHES "_c11$") OR
            (${tgt} MATCHES "_n0" AND NOT ${tgt} MATCHES "_cxx$") OR
            (${tgt} MATCHES "_cv" AND NOT HAVE_CV_TYPEOF))
             set_target_properties("${tgt}" PROPERTIES EXCLUDE_FROM_ALL TRUE)
@@ -30,20 +48,28 @@ function (process_test tgt lbl dflt pos src hdr inc)
         else ()
             add_test(NAME "${tgt}" COMMAND "${tgt}")
         endif ()
+        set_tests_properties("${tgt}" PROPERTIES
+                             PASS_REGULAR_EXPRESSION "${pos_pass_regexp}")
     else ()
         set_target_properties("${tgt}" PROPERTIES EXCLUDE_FROM_ALL TRUE)
-        add_test("${tgt}" "${CMAKE_CTEST_COMMAND}"
-                 --build-and-test "${CMAKE_SOURCE_DIR}"
-                                  "${CMAKE_BINARY_DIR}"
-                 --build-generator "${CMAKE_GENERATOR}"
-                 --build-makeprogram "${CMAKE_MAKE_PROGRAM}"
-                 --build-nocmake
-                 --build-noclean
-                 --build-target "${tgt}")
-        set_property(TEST "${tgt}" PROPERTY WILL_FAIL TRUE)
-    endif ()
-    if ("${dflt}")
-        list(APPEND lbl "default")
+        add_test(NAME "${tgt}"
+                 COMMAND ${CMAKE_COMMAND}
+                    --build .
+                    --target "${tgt}"
+                    --config $<CONFIGURATION>
+                 WORKING_DIRECTORY ${CMAKE_BINARY_DIR})
+        set_tests_properties("${tgt}" PROPERTIES WILL_FAIL TRUE)
+
+        add_test(NAME "${tgt}_start_failed"
+                 COMMAND ${CMAKE_COMMAND}
+                         -DCMD=${CMAKE_CURRENT_BINARY_DIR}/${tgt}
+                         -P ${CMAKE_CURRENT_SOURCE_DIR}/exec_if_exists.cmake)
+                         # TODO https://stackoverflow.com/a/3071370/8585880
+        set_tests_properties("${tgt}_start_failed" PROPERTIES
+                        PASS_REGULAR_EXPRESSION "${neg_not_terrifying_regexp}"
+                        DEPENDS "${tgt}"
+                        REQUIRED_FILES "${CMAKE_CURRENT_BINARY_DIR}/${tgt}"
+                        LABELS "${lbl}")
     endif ()
     set_tests_properties("${tgt}" PROPERTIES LABELS "${lbl}")
 endfunction ()
@@ -57,10 +83,10 @@ function (process_hdr params hdr pos werror)
     string(REGEX REPLACE ".h$" "" base "${hdr}")
 
     if (NOT "${have}" OR  # TODO
-       ("${hdr}" MATCHES "_vla_" AND NOT HAVE_VLA) OR
-       ("${hdr}" MATCHES "_zla_" AND NOT HAVE_ZERO_LENGTH_ARRAYS) OR
-       ("${hdr}" MATCHES "_struct_" AND NOT HAVE_EMPTY_STRUCTURE) OR
-       ("${hdr}" MATCHES "_alone_" AND NOT HAVE_ALONE_FLEXIBLE_ARRAY))
+       ("${hdr}" MATCHES "_vla" AND NOT HAVE_VLA) OR
+       ("${hdr}" MATCHES "_zla" AND NOT HAVE_ZERO_LENGTH_ARRAYS) OR
+       ("${hdr}" MATCHES "_struct" AND NOT HAVE_EMPTY_STRUCTURE) OR
+       ("${hdr}" MATCHES "_alone" AND NOT HAVE_ALONE_FLEXIBLE_ARRAY))
         return()
     endif ()
 
@@ -74,11 +100,11 @@ function (process_hdr params hdr pos werror)
     process_test("${base}" "${tu_countof_func}" "${dflt}" "${pos}"
                            tu_stub.c "${hdr}" "${inc}")
     if (HAVE_VLA AND "${dflt}")
-        process_test("${base}_vla" "${tu_countof_func}" "${dflt}" "${pos}"
+        process_test("${base}_c11" "${tu_countof_func}" "${dflt}" "${pos}"
                                    tu_stub.c "${hdr}" "${inc}")
-        target_compile_options("${base}_vla" PRIVATE -D_COUNTOF_NS_WANT_C11_VLA)
+        target_compile_options("${base}_c11" PRIVATE -D_COUNTOF_NS_WANT_C11_VLA)
     endif ()
-    if (CXX_ENABLED AND NOT "${base}" MATCHES "_vla_" AND "${cxx}")
+    if (CXX_ENABLED AND NOT "${base}" MATCHES "_vla" AND "${cxx}")
         process_test("${base}_cxx" "${tu_countof_func}" "${dflt}" "${pos}"
                                    tu_stub_cxx.cpp "${hdr}" "${inc}")
     endif ()
@@ -127,10 +153,10 @@ foreach (params IN ITEMS countof_ns_params countof_params ARRAY_LEN_params
             continue ()
         endif ()
     endif ()
-    foreach (h IN LISTS positive_hdr)
+    foreach (h IN LISTS check_hdr pos_hdr)
         process_hdr("${${params}}" "${h}" TRUE "${TAC_WERROR}")
     endforeach ()
-    foreach (h IN LISTS negative_hdr)
+    foreach (h IN LISTS neg_hdr)
         process_hdr("${${params}}" "${h}" FALSE "")
     endforeach ()
 endforeach ()

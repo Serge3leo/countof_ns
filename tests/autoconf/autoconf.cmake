@@ -48,7 +48,7 @@ if (TAC_POSITIVE_WERROR)
 endif()
 if (TAC_ENABLE_WARNINGS)
     if (MSVC)
-        string(APPEND cmn_flags " /W4")
+        string(APPEND cmn_flags " /W4 /wd4127 ")
     elseif(CMAKE_C_COMPILER_ID STREQUAL "GNU")
         string(APPEND cmn_flags " -Wall -Wextra")
     elseif(CMAKE_C_COMPILER_ID MATCHES "Clang$" OR
@@ -69,7 +69,9 @@ if (TAC_ENABLE_WARNINGS)
         string(APPEND cmn_flags " -Wall -Wextra -pedantic")
         string(APPEND CMAKE_C_FLAGS " -errtags"
                                     " -erroff=E_KW_IS_AN_EXTENSION_OF_ANSI"
-                                            ",E_NONPORTABLE_BIT_FIELD_TYPE")
+                                            ",E_NONPORTABLE_BIT_FIELD_TYPE"
+                                            ",E_END_OF_LOOP_CODE_NOT_REACHED"
+                                            ",E_STATEMENT_NOT_REACHED")
     elseif(CMAKE_C_COMPILER_ID MATCHES "NVHPC")
         string(APPEND cmn_flags " -Wall -Wextra -pedantic"
                                 " --diag_suppress warning_directive"
