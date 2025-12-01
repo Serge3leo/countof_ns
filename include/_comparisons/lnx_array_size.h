@@ -1,9 +1,6 @@
 // vim:set sw=4 ts=8 et fileencoding=utf8:
 // SPDX-License-Identifier: GPL-2.0
-// SPDX-FileCopyrightText: 2025 Сергей Леонтьев (leo@sai.msu.ru)
-// История:
-// 2025-11-20 00:24:41 - Создан.
-//
+// SPDX-FileCopyrightText: See Linux Kernel Copyright text, by references
 
 #ifndef LNX_ARRAY_SIZE_H_6776
 #define LNX_ARRAY_SIZE_H_6776

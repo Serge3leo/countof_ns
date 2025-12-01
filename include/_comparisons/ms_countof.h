@@ -3,7 +3,6 @@
 // SPDX-FileCopyrightText: Microsoft Corporation. All rights reserved.
 // Change log:
 // 2025-11-20 00:50:45 - Quoting.
-//
 
 #ifndef MS_COUNTOF_H_9380
 #define MS_COUNTOF_H_9380
