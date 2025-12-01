@@ -3,19 +3,18 @@
 # SPDX-FileCopyrightText: 2025 Сергей Леонтьев (leo@sai.msu.ru)
 
 set(examples_logs_dir "${CMAKE_SOURCE_DIR}/examples/junit-logs")
+# WARNING: `ctest --output-junit...` truncates the output to 1024 bytes for
+# successful tests
 add_test(_check_logs_config ${CMAKE_COMMAND}
-        -P ${CMAKE_CURRENT_SOURCE_DIR}/echo_3.cmake
-              "CL_TAG='${CL_TAG}'
-               TAC_WERROR='${TAC_WERROR}'
-               CXX_ENABLED='${CXX_ENABLED}'
-               CMAKE_C_COMPILER_ID='${CMAKE_C_COMPILER_ID}'
-               CMAKE_C_COMPILER_VERSION='${CMAKE_C_COMPILER_VERSION}'
-               CMAKE_C_FLAGS='${CMAKE_C_FLAGS}'
-               CMAKE_CXX_COMPILER_ID='${CMAKE_C_COMPILER_ID}'
-               CMAKE_CXX_COMPILER_VERSION='${CMAKE_C_COMPILER_VERSION}'
-               CMAKE_CXX_FLAGS='${CMAKE_C_FLAGS}'
-               ")
-set_tests_properties(_check_logs_config PROPERTIES LABELS default)
+    -P ${CMAKE_CURRENT_SOURCE_DIR}/echo_3.cmake
+    "CL_TAG='${CL_TAG}'
+    CMAKE_C_COMPILER_ID='${CMAKE_C_COMPILER_ID}'
+    CMAKE_C_COMPILER_VERSION='${CMAKE_C_COMPILER_VERSION}'
+    CMAKE_C_FLAGS='${CMAKE_C_FLAGS}'
+    TAC_WERROR='${TAC_WERROR}'
+    CXX_ENABLED='${CXX_ENABLED}'
+    ")
+set_tests_properties(_check_logs_config PROPERTIES LABELS "default;check_logs")
 
 set(selftest_code -1)
 find_package(Python3)
@@ -31,7 +30,12 @@ else()
     file(GLOB logs "${examples_logs_dir}/*.xml")
     foreach (log IN ITEMS ${logs})
         get_filename_component(base ${log} NAME_WLE)
-        add_test("post_check_${base}" ${post_check} --log ${log})
+        set(test "post_check_${base}")
+        add_test("${test}" ${post_check} ${log})
+        set_tests_properties("${test}" PROPERTIES LABELS check_logs)
+        if ("${base}" STREQUAL "${CMAKE_C_COMPILER_ID}-${CL_TAG}")
+            set_tests_properties("${test}" PROPERTIES LABELS default)
+        endif ()
     endforeach ()
 endif ()
 

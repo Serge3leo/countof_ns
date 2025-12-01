@@ -14,6 +14,8 @@
 
 [default]
 skip = [ "post_check_.*-.*" ]
+# WARNING: short_example.h, truncating up to 1024
+ignore_warning = [ "Warning: Unrecognized #pr" ]
 stable_failure = [
     # countof_ns()
     "pos_vla(|_(cv|00|0n))",  # VLA without _COUNTOF_NS_WANT_С11_VLA

@@ -42,3 +42,6 @@
 
 # cmake users presets files
 CMakeUserPresets.json
+
+# vim files
+*.swp

@@ -1,0 +1,106 @@
+# vim:set sw=4 ts=8 et fileencoding=utf8:
+# SPDX-License-Identifier: BSD-2-Clause
+# SPDX-FileCopyrightText: 2025 Сергей Леонтьев (leo@sai.msu.ru)
+
+# GNU 11.3.0 - 15.2.0
+#
+# HAVE_ZERO_LENGTH_ARRAYS
+# gcc 15+: HAVE_ALONE_FLEXIBLE_ARRAY
+# HAVE_CV_TYPEOF
+# HAVE_EMPTY_INITIALIZER
+# HAVE_EMPTY_STRUCTURE
+# HAVE_TYPEOF
+# HAVE___TYPEOF__
+# HAVE_VLA
+# ERROR_ON_NEGATIVE_ARRAY_SIZE
+# ERROR_ON_SIZEOF_POINTER_SUBTRACTION
+# ERROR_ON_STRUCT_BIT_FIELD
+# ERROR_ON_STRUCT_STATIC_ASSERT
+
+[default]
+skip = [ "post_check_.*-.*" ]
+ignore_warning = [ "warning: must error.*-w#pragma-messages" ]
+ignore_divide_by_zero_warning = [ "-Wno-division-by-zero" ]
+must_not_failure = [
+  # Comparisons
+    "stdc_countof-.*"
+]
+stable_failure = [
+  # countof_ns()
+    #"pos_cv_array(|_c11)",  # __typeof__() === ttypeof_unqual()
+    "pos_vla(|_(cv|00|0n))",  # VLA without _COUNTOF_NS_WANT_С11_VLA
+    "pos_.*(|alone|struct|vla|zla)_n0(|_c11)",  # Zero by zero uncertainty (cases 0/0 != 0)
+    "pos_vla(|_alone|_struct)_zla_00", # Zero by zero uncertainty
+    "pos_vla_zla_0n",  # TODO Probably in generic association is a variably modified
+    #"neg(|_cv|_vla)_ptr_c11(|_0_fail)",  # Does not conform to c11 semantics
+
+  # Comparisons
+    "(std_size|ms_countof)-pos.*_zla_0[0n]_cxx",
+    "(JZMG|LNX|ALX|ms)_.*-pos(|_vla)(_alone|_struct|_vla|_zla)(|_zla)_[n0]0",  # divide_by_zero
+    "ms_countof-neg(|_cv|_vla|_zla|_vla_zla|_zla_vla)_ptr(|_0_fail)",
+    "JZMG_ARRAY_LEN-pos_(alone|zla)_n0_cxx",
+    ]
+must_not_fpe = [
+  # countof_ns()
+    "(pos|neg)_.*",
+  # Comparisons
+    "stdc_countof-.*",
+    "std_size-.*"
+    ]
+stable_fpe = [
+    "(JZMG_ARRAY_LEN|LNX_ARRAY_SIZE|ALX_COUNTOF|ms_countof)-pos_vla_00",
+    "(JZMG|LNX|ALX|ms)_.*-pos_vla_n0",
+    "(JZMG|LNX|ALX|ms)_.*-pos_vla_alone_n0",
+    "(JZMG|LNX|ALX|ms)_.*-pos_vla_alone_zla_00",
+    "(JZMG|LNX|ALX|ms)_.*-pos_vla_struct_n0",
+    "(JZMG|LNX|ALX|ms)_.*-pos_vla_struct_zla_00",
+    "(JZMG|LNX|ALX|ms)_.*-pos_vla_zla_00",
+    "(JZMG|LNX|ALX|ms)_.*-pos_vla_zla_n0",
+    ]
+random_fpe = [
+    "ms_countof-neg_vla_zla_ptr_0_fail",
+    "ms_countof-neg_zla_vla_ptr_0_fail",
+    "ms_countof-neg_zla_ptr_0_fail",
+]
+must_not_divide_by_zero_warning = [
+  # countof_ns()
+    "(pos|neg)_.*",
+  # Comparisons
+    "stdc_countof-.*",
+    "std_size-.*"
+]
+stable_divide_by_zero_warning = [
+    "(JZMG|LNX|ALX|ms)_.*-pos_(|alone_|struct_)zla_(|_zla)[n0]0",
+    "(JZMG|LNX|ALX|ms)_.*-pos_(alone|struct)_n0",
+    #".*-pos_(struct|vla|zla)(|_zla)_[n0]0",  # divide_by_zero
+    #".*-neg_zla_ptr",
+    ]
+random_divide_by_zero_warning = [
+    "(JZMG|LNX|ALX|ms)_.*-pos_.*_.*_[n0]0",
+    "(JZMG|LNX|ALX|ms)_.*-neg_zla_ptr",
+    #".*-pos_(|alone_|struct_)zla_(|_zla)[n0]0",
+    ]
+must_warning = [
+  # countof_ns()
+    "(pos|neg)_.*",
+  # Comparisons
+    "stdc_countof-.*",
+    "std_size-.*"
+]
+random_warning = [
+    "(JZMG_ARRAY_LEN|LNX_ARRAY_SIZE|ALX_COUNTOF|ms_countof)-neg.*_ptr",
+    "(JZMG|LNX|ALX|ms)_.*-(pos|neg)_.*",  # TODO divide_by_zero_warning is warning, disable by cmp
+    ]
+[verbose]
+random_fpe = [
+    "ms_countof-neg_zla_ptr_0_fail",
+    ]
+stable_divide_by_zero_warning = [
+    "(JZMG|LNX|ALX)_.*-neg.*_ptr",
+    ]
+random_divide_by_zero_warning = [
+    "ms_countof-neg.*_ptr",
+    ]
+stable_warning = [
+    "(JZMG_ARRAY_LEN|LNX_ARRAY_SIZE|ALX_COUNTOF)-neg.*_ptr"
+    ]

@@ -27,12 +27,19 @@ class cond:
     def __init__(self, args: "argparse.Namespace", ccfg: map, cond: str):
         self.args = args
         self.cond = cond
+        self.ignore = ccfg.get('ignore_' + cond, [])
         self.must_not = ccfg.get('must_not_' + cond, [])
         self.random = ccfg.get('random_' + cond, [])
         self.stable = ccfg.get('stable_' + cond, [])
         self.unexpected = 0
         self.wanted = 0
         self.matched = 0
+
+    def censored(self, case: "junitparser.TestCase"):
+        s = str(case.system_out) + str(case.system_err)
+        for ip in self.ignore:
+            s = re.sub(ip, " :-CENSORED-: ", s, flags=re.IGNORECASE)
+        return s
 
     def match(self, case: "junitparser.TestCase"):
         return True
@@ -78,34 +85,33 @@ class fpe(cond):
         super().__init__(args, ccfg, self.__class__.__name__)
 
     def match(self, case: "junitparser.TestCase"):
-        s = str(case.system_out) + str(case.system_err)
-        return re.findall("(.*(Floa|Exceptio).*)", s, re.IGNORECASE)
+        return re.findall("(.*(Floa|Exceptio).*)",
+                          self.censored(case), flags=re.IGNORECASE)
 
 class divide_by_zero_warning(cond):
     def __init__(self, args: "argparse.Namespace", ccfg: map):
         super().__init__(args, ccfg, self.__class__.__name__)
 
     def match(self, case: "junitparser.TestCase"):
-        s = str(case.system_out).replace("-Wno-division-by-zero",
-                                         "-Wno-d.....on-by-zero")
-        s += str(case.system_err)
-        return re.findall("(.*(Divide|Divisi).*)", s, re.IGNORECASE)
+        return re.findall("(.*(Divide|Divisi).*)",
+                          self.censored(case), flags=re.IGNORECASE)
 
 class warning(cond):
     def __init__(self, args: "argparse.Namespace", ccfg: map):
         super().__init__(args, ccfg, self.__class__.__name__)
 
     def match(self, case: "junitparser.TestCase"):
-        s = (str(case.system_out).lower()
-                .replace("warning: unrecognized #pr",
-                         "warn...: unrecognized #pr"))
-        s += str(case.system_err)
-        return re.findall("(.*( warning: ).*)", s, re.IGNORECASE)
+        return re.findall("(.*( warning: ).*)",
+                          self.censored(case), flags=re.IGNORECASE)
 
 def process_suite(args: "argparse.Namespace",
                   suite: "junitparser.TestSuite") -> bool:
     for c in suite:
         if c.name == "_check_logs_config":
+            if args.verbose:
+                print(f"Suite _check_logs_config:")
+                print(c.system_out)
+                print()
             cfg = tomllib.loads(c.system_out)
             if 'CL_TAG' in cfg and 'CMAKE_C_COMPILER_ID' in cfg:
                 break
@@ -116,10 +122,6 @@ def process_suite(args: "argparse.Namespace",
     else:
         print("Error: don't have _check_logs_config", file=sys.stderr)
         exit(4)
-    if args.verbose:
-        print(f"Suite _check_logs_config:")
-        pprint.pprint(cfg)
-        print()
     cl_tag = cfg.get('CL_TAG')
     cmpl_id = cfg.get('CMAKE_C_COMPILER_ID')
     with open(f"{args.dir}/{cmpl_id}.toml", "rb") as f:
@@ -157,11 +159,12 @@ def process_suite(args: "argparse.Namespace",
 
 if __name__ == '__main__':
     parser = argparse.ArgumentParser()
+    parser.add_argument("log", nargs='?',
+                        help="JUnit XML log file", default="")
     parser.add_argument("--dir",
                         help="directory of compiler ID descriptions",
-                        default=os.path.dirname(__file__) + "/expected")
-    parser.add_argument("--log",
-                        help="JUnit XML log file")
+                        default=os.path.join(os.path.dirname(__file__),
+                                             "expected"))
     parser.add_argument("--verbose", action="store_true",
                         help="verbose output")
     parser.add_argument("--selftest", action="store_true",
@@ -169,8 +172,8 @@ if __name__ == '__main__':
     args = parser.parse_args()
     if args.selftest:
         exit()
-    if not args.log or not args.dir:
-        print("Error: Require both dir and log arguments\n", file=sys.stderr)
+    if not args.log:
+        print("Error: Require log file\n", file=sys.stderr)
         parser.print_help()
         exit(3)
     res = True

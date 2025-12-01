@@ -142,13 +142,13 @@ default_cmpl() {
     if "$PYTHON" "$POST_CHECK" --selftest ; then
         if "$verbose" ; then
             vpc="--verbose"
-            echo "$PYTHON $POST_CHECK --log $JLT" $vpc 1>&2
+            echo "$PYTHON $POST_CHECK $JLT" $vpc 1>&2
         else
             vpc=""
         fi
-        "$PYTHON" "$POST_CHECK" --log "$JLT" $vpc
+        "$PYTHON" "$POST_CHECK" "$JLT" $vpc
     else
-        echo "No $PYTHON, skip $POST_CHECK --log $JLT" 1>&2
+        echo "No $PYTHON, skip $POST_CHECK $JLT" 1>&2
     fi
     exit $rc
 }

@@ -34,13 +34,9 @@ if (MSVC)
         # https://gitlab.kitware.com/cmake/cmake/-/issues/18837
         string(APPEND cmn_flags " /Zc:__cplusplus")
     endif()
-elseif(CMAKE_C_COMPILER_ID MATCHES "Clang$" OR
-       CMAKE_C_COMPILER_ID MATCHES "^Intel")
-        string(APPEND cmn_flags " -ferror-limit=9999")
 endif()
 if (TAC_POSITIVE_WERROR)
     if (MSVC)
-        # TODO set_property(my_app COMPILE_WARNING_AS_ERROR ON)
         set(TAC_WERROR -WX)
     else()
         set(TAC_WERROR -Werror)
@@ -52,7 +48,7 @@ if (TAC_ENABLE_WARNINGS)
     elseif(CMAKE_C_COMPILER_ID STREQUAL "GNU")
         string(APPEND cmn_flags " -Wall -Wextra")
     elseif(CMAKE_C_COMPILER_ID MATCHES "Clang$" OR
-           CMAKE_C_COMPILER_ID MATCHES "^Intel")
+           CMAKE_C_COMPILER_ID MATCHES "IntelLLVM")
         string(APPEND cmn_flags " -Wall -Wextra -pedantic"
                                 " -Wno-unknown-warning-option"
                                 " -Wno-c23-extensions"  # TODO
