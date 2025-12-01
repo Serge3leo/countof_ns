@@ -1,0 +1,49 @@
+# vim:set sw=4 ts=8 et fileencoding=utf8:
+# SPDX-License-Identifier: BSD-2-Clause
+# SPDX-FileCopyrightText: 2025 Сергей Леонтьев (leo@sai.msu.ru)
+
+# IntelLLVM 2025.3.0
+#
+# HAVE_ZERO_LENGTH_ARRAYS
+# HAVE_ALONE_FLEXIBLE_ARRAY
+# HAVE_COUNTOF
+# HAVE_CV_TYPEOF
+# HAVE_EMPTY_INITIALIZER
+# HAVE_EMPTY_STRUCTURE
+# HAVE_TYPEOF
+# HAVE___TYPEOF__
+# HAVE_VLA
+# ERROR_ON_NEGATIVE_ARRAY_SIZE
+# ERROR_ON_SIZEOF_POINTER_SUBTRACTION - C11 semantic
+# ERROR_ON_STRUCT_BIT_FIELD
+# ERROR_ON_STRUCT_STATIC_ASSERT
+
+[default]
+skip = [ "post_check_.*-.*" ]
+must_not_failure = [ "stdc_countof-.*" ]
+stable_failure = [
+    # countof_ns()
+    #"pos_cv_array(|_c11)",  # __typeof__() === ttypeof_unqual()
+    "pos_vla(|_(cv|00|0n))",  # VLA without _COUNTOF_NS_WANT_С11_VLA
+    "pos_.*(alone|struct|vla|zla)_n0(|_c11)",  # Zero by zero uncertainty (cases 0/0 != 0)
+    "pos_vla(|_alone|_struct)_zla_00", # Zero by zero uncertainty
+    "pos_vla_zla_0n",  # TODO XXX ???
+    #"neg(|_cv|_vla)_ptr_c11(|_0_fail)",  # Does not conform to c11 semantics
+
+    # Comparisons
+    "(std_size|ms_countof)-pos.*_zla_0[0n]_cxx",
+    ".*-pos(|_vla)(_alone|_struct|_vla|_zla)(|_zla)_[n0]0",  # divide_by_zero
+    "ms_countof-neg(|_cv|_vla|_zla|_vla_zla|_zla_vla)_ptr(|_0_fail)",
+    "JZMG_ARRAY_LEN-pos_(alone|zla)_n0_cxx",
+    ]
+must_not_fpe = [ "stdc_countof-.*", "std_size-.*" ]
+stable_fpe = [
+    #"(JZMG_ARRAY_LEN|ms_countof)-pos_vla_[n0]0",  # divide_by_zero
+    ]
+must_not_divide_by_zero = [ "stdc_countof-.*", "std_size-.*" ]
+stable_divide_by_zero = [
+    ".*-pos_(|alone_|struct_)zla_(|_zla)[n0]0",
+    ".*-pos_(alone|struct)_n0",
+    #".*-pos_(struct|vla|zla)(|_zla)_[n0]0",  # divide_by_zero
+    #".*-neg_zla_ptr",
+    ]

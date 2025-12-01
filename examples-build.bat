@@ -21,7 +21,7 @@ cd build\%platform%
 if not "%1"=="" (
     cmake -G %generator% ..\..
     nmake
-    ctest
+    ctest --output-junit Testing\Temporary\LastTest-junit.xml
 ) else (
     cmake ..\..
     start .

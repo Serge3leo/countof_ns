@@ -2,8 +2,7 @@
 # SPDX-License-Identifier: BSD-2-Clause
 # SPDX-FileCopyrightText: 2025 Сергей Леонтьев (leo@sai.msu.ru)
 
-add_subdirectory(unit)
-add_subdirectory(complex)
-add_subdirectory(check_logs)
+# TODO: need review. This is magic, may be, need convert to normal echo
+# interfaces?
 
-enable_testing()
+message(${CMAKE_ARGV3})

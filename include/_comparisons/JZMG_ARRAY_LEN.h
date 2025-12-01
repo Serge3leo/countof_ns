@@ -5,7 +5,7 @@
 #ifndef JZMG_ARRAY_LEN_H_4790
 #define JZMG_ARRAY_LEN_H_4790
 
-#if _MSC_VER
+#if __STDC_VERSION__ < 202311L && !defined(typeof)
     #define typeof  __typeof__
 #endif
 

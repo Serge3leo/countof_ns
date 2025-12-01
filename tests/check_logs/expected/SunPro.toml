@@ -1,0 +1,40 @@
+# vim:set sw=4 ts=8 et fileencoding=utf8:
+# SPDX-License-Identifier: BSD-2-Clause
+# SPDX-FileCopyrightText: 2025 Сергей Леонтьев (leo@sai.msu.ru)
+
+# SunPro 5.15
+#
+# HAVE_CV_TYPEOF
+# HAVE___TYPEOF__
+# HAVE_VLA
+# ERROR_ON_NEGATIVE_ARRAY_SIZE
+# ERROR_ON_STRUCT_BIT_FIELD
+# ERROR_ON_STRUCT_STATIC_ASSERT
+# Don't detected ERROR_ON_SIZEOF_POINTER_SUBTRACTION - C99 semantic
+
+[default]
+skip = [ "post_check_.*-.*" ]
+stable_failure = [
+    # countof_ns()
+    "pos_vla(|_(cv|00|0n))",  # VLA without _COUNTOF_NS_WANT_С11_VLA
+    "pos_vla_n0(|_c11)",  # Zero by zero uncertainty (cases 0/0 != 0)
+    "neg(|_cv|_vla)_ptr_c11(|_0_fail)",  # Does not conform to C11 semantics
+
+    # Comparisons
+    "(JZMG_ARRAY_LEN|ms_countof)-pos_vla_[n0]0",  # divide_by_zero
+    "(JZMG_ARRAY_LEN|ms_countof)-neg(|_cv|_vla)_ptr(|_0_fail)",
+    ]
+stable_fpe = [
+    "(JZMG_ARRAY_LEN|ms_countof)-pos_vla_[n0]0",  # divide_by_zero
+    ]
+random_warning = [
+    "neg_other_c11",  # Does not conform to C11 semantics
+    "neg(|_cv|_vla)_ptr_c11",  # Does not conform to C11 semantics
+    "long_example_vla_fail",
+
+    ".*-(pos|neg).*",  # Ignore warnings about compassions
+    ]
+[debug]
+stable_warning = [
+    "neg(|_cv|_vla)_ptr_c11",  # Does not conform to C11 semantics
+    ]

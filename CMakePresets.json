@@ -9,6 +9,7 @@
       "name": "default",
       "displayName": "Default general",
       "cacheVariables": {
+	"CL_TAG": "default",
         "COMPARISONS": "OFF",
         "TAC_ENABLE_WARNINGS": "OFF",
         "TAC_POSITIVE_WERROR": "OFF"
@@ -19,6 +20,7 @@
       "displayName": "Debug checks",
       "inherits": "default",
       "cacheVariables": {
+	"CL_TAG": "debug",
         "TAC_ENABLE_WARNINGS": "ON",
         "TAC_POSITIVE_WERROR": "ON"
       }
@@ -36,6 +38,7 @@
       "displayName": "Comparisons number methods",
       "inherits": "cmp",
       "cacheVariables": {
+	"CL_TAG": "verbose",
         "TAC_ENABLE_WARNINGS": "ON"
       }
     }

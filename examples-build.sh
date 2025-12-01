@@ -115,17 +115,41 @@ fi
 
 default_cmpl() {
     make
+
+    PYTHON=${PYTHON:-python3}
+    PC_DIR=${PC_DIR:-../../tests/check_logs}
+    POST_CHECK=${POST_CHECK:-$PC_DIR/post_check.py}
+    LT_DIR=${LT_DIR:-Testing/Temporary}
+    JLT="${LT_DIR}/LastTest-junit.xml"
+
+    mkdir -p "$LT_DIR"
+
     rc=0
     if [ -z "$ctest_args" ] ; then
-        ctest || {
+        ctest --output-junit "$JLT" || {
             rc=$?
         }
     else
-        echo "$ctest_args" | xargs ctest || {
+        echo "$ctest_args" | \
+          xargs ctest --output-junit "$JLT" || {
             rc=$?
         }
     fi
-    gawk -f ../../tests/check_test_log.gawk Testing/Temporary/LastTest.log
+    if "$verbose" ; then
+        echo gawk -f "$PC_DIR"/check_test_log.gawk Testing/Temporary/LastTest.log
+    fi
+    gawk -f "$PC_DIR"/check_test_log.gawk Testing/Temporary/LastTest.log
+    if "$PYTHON" "$POST_CHECK" --selftest ; then
+        if "$verbose" ; then
+            vpc="--verbose"
+            echo "$PYTHON $POST_CHECK --log $JLT" $vpc 1>&2
+        else
+            vpc=""
+        fi
+        "$PYTHON" "$POST_CHECK" --log "$JLT" $vpc
+    else
+        echo "No $PYTHON, skip $POST_CHECK --log $JLT" 1>&2
+    fi
     exit $rc
 }
 Xcode_args() {

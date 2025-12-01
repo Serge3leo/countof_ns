@@ -141,11 +141,13 @@ if (COMPARISONS)
         list(APPEND cmp_list std_size_params)
     endif ()
 
-    set(ARRAY_LEN_params FALSE "CLANG CXX"
-        "JZMG_ARRAY_LEN" "_comparisons/JZMG_ARRAY_LEN.h")
-    list(APPEND cmp_list ARRAY_LEN_params)
+    if (HAVE_TYPEOF OR HAVE___TYPEOF__)
+        set(ARRAY_LEN_params FALSE "CLANG CXX"
+            "JZMG_ARRAY_LEN" "_comparisons/JZMG_ARRAY_LEN.h")
+        list(APPEND cmp_list ARRAY_LEN_params)
+    endif ()
 
-    if (HAVE_EMPTY_STRUCTURE AND ERROR_ON_STRUCT_STATIC_ASSERT)
+    if (HAVE_EMPTY_STRUCTURE AND ERROR_ON_STRUCT_STATIC_ASSERT AND HAVE_TYPEOF)
         # Strictly: _Static_assert&__builtin_types_compatible_p, but redundant
         set(array_size_params FALSE "CLANG"
             "LNX_ARRAY_SIZE" "_comparisons/lnx_array_size.h")
@@ -161,7 +163,7 @@ if (COMPARISONS)
                 int main(void) {}
             #endif
             ]=])
-    if (HAVE_ALX_COUNTOF)
+    if (HAVE_ALX_COUNTOF AND HAVE_TYPEOF)
         set(COUNTOF_params FALSE "CLANG"
             "ALX_COUNTOF" "_comparisons/ALX_COUNTOF.h")
         list(APPEND cmp_list COUNTOF_params)

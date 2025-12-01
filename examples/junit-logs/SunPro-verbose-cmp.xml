@@ -1,0 +1,1451 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<testsuite name="(empty)"
+	tests="120"
+	failures="29"
+	disabled="0"
+	skipped="23"
+	hostname=""
+	time="12"
+	timestamp="2025-12-01T02:51:36"
+	>
+	<testcase name="pos__selftest" classname="pos__selftest" time="0.0020413" status="run">
+		<properties>
+			<property name="cmake_labels" value="countof_ns;default"/>
+		</properties>
+		<system-out>Ok 1 TU_STATIC_ASSERT_AND_RETURN((1)=1, ...) /home/parallels/soft/my/countof_ns/tests/unit/pos__selftest.h:pos__selftest.h:TU_UNIT for countof_ns.h:countof_ns(), C 201112L
+</system-out>
+	</testcase>
+	<testcase name="pos__selftest_c11" classname="pos__selftest_c11" time="0.00198297" status="run">
+		<properties>
+			<property name="cmake_labels" value="countof_ns;default"/>
+		</properties>
+		<system-out>Ok 1 TU_STATIC_ASSERT_AND_RETURN((1)=1, ...) /home/parallels/soft/my/countof_ns/tests/unit/pos__selftest.h:pos__selftest.h:TU_UNIT for countof_ns.h:countof_ns() with C11&amp;VLA, C 201112L
+</system-out>
+	</testcase>
+	<testcase name="pos__selftest_cxx" classname="pos__selftest_cxx" time="0.00301312" status="run">
+		<properties>
+			<property name="cmake_labels" value="countof_ns;default"/>
+		</properties>
+		<system-out>Ok 1 TU_STATIC_ASSERT_AND_RETURN((1)=1, ...) /home/parallels/soft/my/countof_ns/tests/unit/pos__selftest.h:pos__selftest.h:TU_UNIT for countof_ns.h:countof_ns(), C++ 201402L
+</system-out>
+	</testcase>
+	<testcase name="pos_array" classname="pos_array" time="0.00189933" status="run">
+		<properties>
+			<property name="cmake_labels" value="countof_ns;default"/>
+		</properties>
+		<system-out>Ok 1 TU_STATIC_ASSERT_AND_RETURN((1)=1, ...) /home/parallels/soft/my/countof_ns/tests/unit/pos_array.h:pos_array.h:TU_UNIT for countof_ns.h:countof_ns(), C 201112L
+</system-out>
+	</testcase>
+	<testcase name="pos_array_c11" classname="pos_array_c11" time="0.00186678" status="run">
+		<properties>
+			<property name="cmake_labels" value="countof_ns;default"/>
+		</properties>
+		<system-out>Ok 1 TU_STATIC_ASSERT_AND_RETURN((1)=1, ...) /home/parallels/soft/my/countof_ns/tests/unit/pos_array.h:pos_array.h:TU_UNIT for countof_ns.h:countof_ns() with C11&amp;VLA, C 201112L
+</system-out>
+	</testcase>
+	<testcase name="pos_array_cxx" classname="pos_array_cxx" time="0.00327187" status="run">
+		<properties>
+			<property name="cmake_labels" value="countof_ns;default"/>
+		</properties>
+		<system-out>Ok 1 TU_STATIC_ASSERT_AND_RETURN((1)=1, ...) /home/parallels/soft/my/countof_ns/tests/unit/pos_array.h:pos_array.h:TU_UNIT for countof_ns.h:countof_ns(), C++ 201402L
+</system-out>
+	</testcase>
+	<testcase name="pos_cv_array" classname="pos_cv_array" time="0.00201453" status="run">
+		<properties>
+			<property name="cmake_labels" value="countof_ns;default"/>
+		</properties>
+		<system-out>Ok 1 TU_STATIC_ASSERT_AND_RETURN((1)=1, ...) /home/parallels/soft/my/countof_ns/tests/unit/pos_cv_array.h:pos_cv_array.h:TU_UNIT for countof_ns.h:countof_ns(), C 201112L
+</system-out>
+	</testcase>
+	<testcase name="pos_cv_array_c11" classname="pos_cv_array_c11" time="0.00175814" status="run">
+		<properties>
+			<property name="cmake_labels" value="countof_ns;default"/>
+		</properties>
+		<system-out>Ok 1 TU_STATIC_ASSERT_AND_RETURN((1)=1, ...) /home/parallels/soft/my/countof_ns/tests/unit/pos_cv_array.h:pos_cv_array.h:TU_UNIT for countof_ns.h:countof_ns() with C11&amp;VLA, C 201112L
+</system-out>
+	</testcase>
+	<testcase name="pos_cv_array_cxx" classname="pos_cv_array_cxx" time="0.00303291" status="run">
+		<properties>
+			<property name="cmake_labels" value="countof_ns;default"/>
+		</properties>
+		<system-out>Ok 1 TU_STATIC_ASSERT_AND_RETURN((1)=1, ...) /home/parallels/soft/my/countof_ns/tests/unit/pos_cv_array.h:pos_cv_array.h:TU_UNIT for countof_ns.h:countof_ns(), C++ 201402L
+</system-out>
+	</testcase>
+	<testcase name="pos_vla" classname="pos_vla" time="0.17335" status="fail">
+		<failure message="Failed"/>
+		<properties>
+			<property name="cmake_labels" value="countof_ns;default"/>
+		</properties>
+		<system-out>Internal cmake changing into directory: /home/parallels/soft/my/countof_ns/build/Linux_suncc_sunCC
+Change Dir: '/home/parallels/soft/my/countof_ns/build/Linux_suncc_sunCC'
+
+Run Build Command(s): /usr/bin/gmake -f Makefile pos_vla
+[  0%] Built target CounofNS
+[  0%] Building C object tests/unit/CMakeFiles/pos_vla.dir/tu_stub.c.o
+"/home/parallels/soft/my/countof_ns/tests/unit/pos_vla.h", line 5: incomplete or variably modified type in generic association: pointer to array[*] of int
+"/home/parallels/soft/my/countof_ns/tests/unit/pos_vla.h", line 5: cannot recover from previous errors
+cc: acomp failed for /home/parallels/soft/my/countof_ns/tests/unit/tu_stub.c
+gmake[3]: *** [tests/unit/CMakeFiles/pos_vla.dir/build.make:78: tests/unit/CMakeFiles/pos_vla.dir/tu_stub.c.o] Ошибка 2
+gmake[2]: *** [CMakeFiles/Makefile2:950: tests/unit/CMakeFiles/pos_vla.dir/all] Ошибка 2
+gmake[1]: *** [CMakeFiles/Makefile2:957: tests/unit/CMakeFiles/pos_vla.dir/rule] Ошибка 2
+gmake: *** [Makefile:394: pos_vla] Ошибка 2
+
+</system-out>
+	</testcase>
+	<testcase name="pos_vla_c11" classname="pos_vla_c11" time="0.00165768" status="run">
+		<properties>
+			<property name="cmake_labels" value="countof_ns;default"/>
+		</properties>
+		<system-out>Ok 1 TU_ASSERT_AND_RETURN((d1)=1, ...) /home/parallels/soft/my/countof_ns/tests/unit/pos_vla.h:pos_vla.h:TU_UNIT for countof_ns.h:countof_ns() with C11&amp;VLA, C 201112L
+</system-out>
+	</testcase>
+	<testcase name="pos_vla_00" classname="pos_vla_00" time="0.171612" status="fail">
+		<failure message="Failed"/>
+		<properties>
+			<property name="cmake_labels" value="countof_ns;default"/>
+		</properties>
+		<system-out>Internal cmake changing into directory: /home/parallels/soft/my/countof_ns/build/Linux_suncc_sunCC
+Change Dir: '/home/parallels/soft/my/countof_ns/build/Linux_suncc_sunCC'
+
+Run Build Command(s): /usr/bin/gmake -f Makefile pos_vla_00
+[  0%] Built target CounofNS
+[  0%] Building C object tests/unit/CMakeFiles/pos_vla_00.dir/tu_stub.c.o
+"/home/parallels/soft/my/countof_ns/tests/unit/pos_vla_00.h", line 5: incomplete or variably modified type in generic association: pointer to array[*] of array[*] of int
+"/home/parallels/soft/my/countof_ns/tests/unit/pos_vla_00.h", line 5: cannot recover from previous errors
+cc: acomp failed for /home/parallels/soft/my/countof_ns/tests/unit/tu_stub.c
+gmake[3]: *** [tests/unit/CMakeFiles/pos_vla_00.dir/build.make:78: tests/unit/CMakeFiles/pos_vla_00.dir/tu_stub.c.o] Ошибка 2
+gmake[2]: *** [CMakeFiles/Makefile2:1014: tests/unit/CMakeFiles/pos_vla_00.dir/all] Ошибка 2
+gmake[1]: *** [CMakeFiles/Makefile2:1021: tests/unit/CMakeFiles/pos_vla_00.dir/rule] Ошибка 2
+gmake: *** [Makefile:420: pos_vla_00] Ошибка 2
+
+</system-out>
+	</testcase>
+	<testcase name="pos_vla_00_c11" classname="pos_vla_00_c11" time="0.00170882" status="run">
+		<properties>
+			<property name="cmake_labels" value="countof_ns;default"/>
+		</properties>
+		<system-out>Ok 0 TU_ASSERT_AND_RETURN((d0)=0, ...) /home/parallels/soft/my/countof_ns/tests/unit/pos_vla_00.h:pos_vla_00.h:TU_UNIT for countof_ns.h:countof_ns() with C11&amp;VLA, C 201112L
+</system-out>
+	</testcase>
+	<testcase name="pos_vla_0n" classname="pos_vla_0n" time="0.168714" status="fail">
+		<failure message="Failed"/>
+		<properties>
+			<property name="cmake_labels" value="countof_ns;default"/>
+		</properties>
+		<system-out>Internal cmake changing into directory: /home/parallels/soft/my/countof_ns/build/Linux_suncc_sunCC
+Change Dir: '/home/parallels/soft/my/countof_ns/build/Linux_suncc_sunCC'
+
+Run Build Command(s): /usr/bin/gmake -f Makefile pos_vla_0n
+[  0%] Built target CounofNS
+gmake[3]: Предупреждение: время изменения файла «tests/unit/CMakeFiles/pos_vla_0n.dir/depend.make» находится в будущем (0,038)
+[100%] Building C object tests/unit/CMakeFiles/pos_vla_0n.dir/tu_stub.c.o
+"/home/parallels/soft/my/countof_ns/tests/unit/pos_vla_0n.h", line 5: incomplete or variably modified type in generic association: pointer to array[*] of array[*] of int
+"/home/parallels/soft/my/countof_ns/tests/unit/pos_vla_0n.h", line 5: cannot recover from previous errors
+cc: acomp failed for /home/parallels/soft/my/countof_ns/tests/unit/tu_stub.c
+gmake[3]: *** [tests/unit/CMakeFiles/pos_vla_0n.dir/build.make:78: tests/unit/CMakeFiles/pos_vla_0n.dir/tu_stub.c.o] Ошибка 2
+gmake[2]: *** [CMakeFiles/Makefile2:1078: tests/unit/CMakeFiles/pos_vla_0n.dir/all] Ошибка 2
+gmake[1]: *** [CMakeFiles/Makefile2:1085: tests/unit/CMakeFiles/pos_vla_0n.dir/rule] Ошибка 2
+gmake: *** [Makefile:446: pos_vla_0n] Ошибка 2
+
+</system-out>
+	</testcase>
+	<testcase name="pos_vla_0n_c11" classname="pos_vla_0n_c11" time="0.00191683" status="run">
+		<properties>
+			<property name="cmake_labels" value="countof_ns;default"/>
+		</properties>
+		<system-out>Ok 0 TU_ASSERT_AND_RETURN((d0)=0, ...) /home/parallels/soft/my/countof_ns/tests/unit/pos_vla_0n.h:pos_vla_0n.h:TU_UNIT for countof_ns.h:countof_ns() with C11&amp;VLA, C 201112L
+</system-out>
+	</testcase>
+	<testcase name="pos_vla_cv" classname="pos_vla_cv" time="0.167967" status="fail">
+		<failure message="Failed"/>
+		<properties>
+			<property name="cmake_labels" value="countof_ns;default"/>
+		</properties>
+		<system-out>Internal cmake changing into directory: /home/parallels/soft/my/countof_ns/build/Linux_suncc_sunCC
+Change Dir: '/home/parallels/soft/my/countof_ns/build/Linux_suncc_sunCC'
+
+Run Build Command(s): /usr/bin/gmake -f Makefile pos_vla_cv
+[  0%] Built target CounofNS
+[  0%] Building C object tests/unit/CMakeFiles/pos_vla_cv.dir/tu_stub.c.o
+"/home/parallels/soft/my/countof_ns/tests/unit/pos_vla_cv.h", line 5: incomplete or variably modified type in generic association: pointer to array[*] of volatile int
+"/home/parallels/soft/my/countof_ns/tests/unit/pos_vla_cv.h", line 5: cannot recover from previous errors
+cc: acomp failed for /home/parallels/soft/my/countof_ns/tests/unit/tu_stub.c
+gmake[3]: *** [tests/unit/CMakeFiles/pos_vla_cv.dir/build.make:78: tests/unit/CMakeFiles/pos_vla_cv.dir/tu_stub.c.o] Ошибка 2
+gmake[2]: *** [CMakeFiles/Makefile2:1142: tests/unit/CMakeFiles/pos_vla_cv.dir/all] Ошибка 2
+gmake[1]: *** [CMakeFiles/Makefile2:1149: tests/unit/CMakeFiles/pos_vla_cv.dir/rule] Ошибка 2
+gmake: *** [Makefile:472: pos_vla_cv] Ошибка 2
+
+</system-out>
+	</testcase>
+	<testcase name="pos_vla_cv_c11" classname="pos_vla_cv_c11" time="0.00171539" status="run">
+		<properties>
+			<property name="cmake_labels" value="countof_ns;default"/>
+		</properties>
+		<system-out>Ok 1 TU_ASSERT_AND_RETURN((d1)=1, ...) /home/parallels/soft/my/countof_ns/tests/unit/pos_vla_cv.h:pos_vla_cv.h:TU_UNIT for countof_ns.h:countof_ns() with C11&amp;VLA, C 201112L
+</system-out>
+	</testcase>
+	<testcase name="pos_vla_n0" classname="pos_vla_n0" time="0.168102" status="fail">
+		<failure message="Failed"/>
+		<properties>
+			<property name="cmake_labels" value="countof_ns;default"/>
+		</properties>
+		<system-out>Internal cmake changing into directory: /home/parallels/soft/my/countof_ns/build/Linux_suncc_sunCC
+Change Dir: '/home/parallels/soft/my/countof_ns/build/Linux_suncc_sunCC'
+
+Run Build Command(s): /usr/bin/gmake -f Makefile pos_vla_n0
+[  0%] Built target CounofNS
+[100%] Building C object tests/unit/CMakeFiles/pos_vla_n0.dir/tu_stub.c.o
+"/home/parallels/soft/my/countof_ns/tests/unit/pos_vla_n0.h", line 5: incomplete or variably modified type in generic association: pointer to array[*] of array[*] of int
+"/home/parallels/soft/my/countof_ns/tests/unit/pos_vla_n0.h", line 5: cannot recover from previous errors
+cc: acomp failed for /home/parallels/soft/my/countof_ns/tests/unit/tu_stub.c
+gmake[3]: *** [tests/unit/CMakeFiles/pos_vla_n0.dir/build.make:78: tests/unit/CMakeFiles/pos_vla_n0.dir/tu_stub.c.o] Ошибка 2
+gmake[2]: *** [CMakeFiles/Makefile2:1206: tests/unit/CMakeFiles/pos_vla_n0.dir/all] Ошибка 2
+gmake[1]: *** [CMakeFiles/Makefile2:1213: tests/unit/CMakeFiles/pos_vla_n0.dir/rule] Ошибка 2
+gmake: *** [Makefile:498: pos_vla_n0] Ошибка 2
+
+</system-out>
+	</testcase>
+	<testcase name="pos_vla_n0_c11" classname="pos_vla_n0_c11" time="0.324088" status="fail">
+		<failure message="Failed"/>
+		<properties>
+			<property name="cmake_labels" value="countof_ns;default"/>
+		</properties>
+		<system-out>Internal cmake changing into directory: /home/parallels/soft/my/countof_ns/build/Linux_suncc_sunCC
+Change Dir: '/home/parallels/soft/my/countof_ns/build/Linux_suncc_sunCC'
+
+Run Build Command(s): /usr/bin/gmake -f Makefile pos_vla_n0_c11
+[  0%] Built target CounofNS
+[ 50%] Building C object tests/unit/CMakeFiles/pos_vla_n0_c11.dir/tu_stub.c.o
+[100%] Linking C executable pos_vla_n0_c11
+[100%] Built target pos_vla_n0_c11
+
+Running test command: "/home/parallels/soft/my/countof_ns/build/Linux_suncc_sunCC/tests/unit/pos_vla_n0_c11"
+Test command failed: /home/parallels/soft/my/countof_ns/build/Linux_suncc_sunCC/tests/unit/pos_vla_n0_c11
+Fail 0 desired=1 TU_ASSERT_AND_RETURN(((d1)), ...) /home/parallels/soft/my/countof_ns/tests/unit/pos_vla_n0.h:pos_vla_n0.h:TU_UNIT for countof_ns.h:countof_ns() with C11&amp;VLA, C 201112L
+
+</system-out>
+	</testcase>
+	<testcase name="neg__selftest" classname="neg__selftest" time="0.174417" status="run">
+		<properties>
+			<property name="cmake_labels" value="countof_ns;default"/>
+		</properties>
+		<system-out>[  0%] Built target CounofNS
+[100%] Building C object tests/unit/CMakeFiles/neg__selftest.dir/tu_stub.c.o
+"/home/parallels/soft/my/countof_ns/tests/unit/neg__selftest.h", line 12: static assertion failed: "0"
+cc: acomp failed for /home/parallels/soft/my/countof_ns/tests/unit/tu_stub.c
+gmake[3]: *** [tests/unit/CMakeFiles/neg__selftest.dir/build.make:78: tests/unit/CMakeFiles/neg__selftest.dir/tu_stub.c.o] Ошибка 2
+gmake[2]: *** [CMakeFiles/Makefile2:1270: tests/unit/CMakeFiles/neg__selftest.dir/all] Ошибка 2
+gmake[1]: *** [CMakeFiles/Makefile2:1277: tests/unit/CMakeFiles/neg__selftest.dir/rule] Ошибка 2
+gmake: *** [Makefile:524: neg__selftest] Ошибка 2
+</system-out>
+	</testcase>
+	<testcase name="neg__selftest_0_fail" classname="neg__selftest_0_fail" time="0.0120669" status="notrun">
+		<skipped message="SKIP_RETURN_CODE=42"/>
+		<properties>
+			<property name="cmake_labels" value="countof_ns;default"/>
+		</properties>
+		<system-out></system-out>
+	</testcase>
+	<testcase name="neg__selftest_c11" classname="neg__selftest_c11" time="0.16735" status="run">
+		<properties>
+			<property name="cmake_labels" value="countof_ns;default"/>
+		</properties>
+		<system-out>[  0%] Built target CounofNS
+[100%] Building C object tests/unit/CMakeFiles/neg__selftest_c11.dir/tu_stub.c.o
+"/home/parallels/soft/my/countof_ns/tests/unit/neg__selftest.h", line 12: static assertion failed: "0"
+cc: acomp failed for /home/parallels/soft/my/countof_ns/tests/unit/tu_stub.c
+gmake[3]: *** [tests/unit/CMakeFiles/neg__selftest_c11.dir/build.make:78: tests/unit/CMakeFiles/neg__selftest_c11.dir/tu_stub.c.o] Ошибка 2
+gmake[2]: *** [CMakeFiles/Makefile2:1302: tests/unit/CMakeFiles/neg__selftest_c11.dir/all] Ошибка 2
+gmake[1]: *** [CMakeFiles/Makefile2:1309: tests/unit/CMakeFiles/neg__selftest_c11.dir/rule] Ошибка 2
+gmake: *** [Makefile:537: neg__selftest_c11] Ошибка 2
+</system-out>
+	</testcase>
+	<testcase name="neg__selftest_c11_0_fail" classname="neg__selftest_c11_0_fail" time="0.0120394" status="notrun">
+		<skipped message="SKIP_RETURN_CODE=42"/>
+		<properties>
+			<property name="cmake_labels" value="countof_ns;default"/>
+		</properties>
+		<system-out></system-out>
+	</testcase>
+	<testcase name="neg__selftest_cxx" classname="neg__selftest_cxx" time="0.216997" status="run">
+		<properties>
+			<property name="cmake_labels" value="countof_ns;default"/>
+		</properties>
+		<system-out>[  0%] Built target CounofNS
+[ 50%] Building CXX object tests/unit/CMakeFiles/neg__selftest_cxx.dir/tu_stub_cxx.cpp.o
+"/home/parallels/soft/my/countof_ns/tests/unit/neg__selftest.h", line 12: Error: Static assertion failed: 0.
+1 Error(s) detected.
+gmake[3]: *** [tests/unit/CMakeFiles/neg__selftest_cxx.dir/build.make:78: tests/unit/CMakeFiles/neg__selftest_cxx.dir/tu_stub_cxx.cpp.o] Ошибка 2
+gmake[2]: *** [CMakeFiles/Makefile2:1334: tests/unit/CMakeFiles/neg__selftest_cxx.dir/all] Ошибка 2
+gmake[1]: *** [CMakeFiles/Makefile2:1341: tests/unit/CMakeFiles/neg__selftest_cxx.dir/rule] Ошибка 2
+gmake: *** [Makefile:550: neg__selftest_cxx] Ошибка 2
+</system-out>
+	</testcase>
+	<testcase name="neg__selftest_cxx_0_fail" classname="neg__selftest_cxx_0_fail" time="0.0121198" status="notrun">
+		<skipped message="SKIP_RETURN_CODE=42"/>
+		<properties>
+			<property name="cmake_labels" value="countof_ns;default"/>
+		</properties>
+		<system-out></system-out>
+	</testcase>
+	<testcase name="neg_cv_ptr" classname="neg_cv_ptr" time="0.167425" status="run">
+		<properties>
+			<property name="cmake_labels" value="countof_ns;default"/>
+		</properties>
+		<system-out>[  0%] Built target CounofNS
+[  0%] Building C object tests/unit/CMakeFiles/neg_cv_ptr.dir/tu_stub.c.o
+"/home/parallels/soft/my/countof_ns/tests/unit/neg_cv_ptr.h", line 4: zero or negative subscript
+cc: acomp failed for /home/parallels/soft/my/countof_ns/tests/unit/tu_stub.c
+gmake[3]: *** [tests/unit/CMakeFiles/neg_cv_ptr.dir/build.make:78: tests/unit/CMakeFiles/neg_cv_ptr.dir/tu_stub.c.o] Ошибка 2
+gmake[2]: *** [CMakeFiles/Makefile2:1366: tests/unit/CMakeFiles/neg_cv_ptr.dir/all] Ошибка 2
+gmake[1]: *** [CMakeFiles/Makefile2:1373: tests/unit/CMakeFiles/neg_cv_ptr.dir/rule] Ошибка 2
+gmake: *** [Makefile:563: neg_cv_ptr] Ошибка 2
+</system-out>
+	</testcase>
+	<testcase name="neg_cv_ptr_0_fail" classname="neg_cv_ptr_0_fail" time="0.0122027" status="notrun">
+		<skipped message="SKIP_RETURN_CODE=42"/>
+		<properties>
+			<property name="cmake_labels" value="countof_ns;default"/>
+		</properties>
+		<system-out></system-out>
+	</testcase>
+	<testcase name="neg_cv_ptr_c11" classname="neg_cv_ptr_c11" time="0.153011" status="fail">
+		<failure message="Failed"/>
+		<properties>
+			<property name="cmake_labels" value="countof_ns;default"/>
+		</properties>
+		<system-out>[  0%] Built target CounofNS
+[100%] Built target neg_cv_ptr_c11
+</system-out>
+	</testcase>
+	<testcase name="neg_cv_ptr_c11_0_fail" classname="neg_cv_ptr_c11_0_fail" time="0.0137414" status="fail">
+		<failure message="Failed"/>
+		<properties>
+			<property name="cmake_labels" value="countof_ns;default"/>
+		</properties>
+		<system-out>Fail 2 desired=0 main(0, ...) /home/parallels/soft/my/countof_ns/tests/unit/tu_stub.c:neg_cv_ptr.h:TU_UNIT for countof_ns.h:countof_ns() with C11&amp;VLA, C 201112L
+</system-out>
+	</testcase>
+	<testcase name="neg_cv_ptr_cxx" classname="neg_cv_ptr_cxx" time="0.211808" status="run">
+		<properties>
+			<property name="cmake_labels" value="countof_ns;default"/>
+		</properties>
+		<system-out>[  0%] Built target CounofNS
+[100%] Building CXX object tests/unit/CMakeFiles/neg_cv_ptr_cxx.dir/tu_stub_cxx.cpp.o
+"/home/parallels/soft/my/countof_ns/include/countof_ns.h", line 107: Error: Static assertion failed: Argument must be zero-length array.
+"/home/parallels/soft/my/countof_ns/tests/unit/neg_cv_ptr.h", line 4:     Where: While instantiating "unsigned long _countof_ns_aux&lt;8, 4, const volatile int*&gt;(const volatile int*const&amp;)".
+"/home/parallels/soft/my/countof_ns/tests/unit/neg_cv_ptr.h", line 4:     Where: Instantiated from non-template code.
+1 Error(s) detected.
+gmake[3]: *** [tests/unit/CMakeFiles/neg_cv_ptr_cxx.dir/build.make:78: tests/unit/CMakeFiles/neg_cv_ptr_cxx.dir/tu_stub_cxx.cpp.o] Ошибка 2
+gmake[2]: *** [CMakeFiles/Makefile2:1430: tests/unit/CMakeFiles/neg_cv_ptr_cxx.dir/all] Ошибка 2
+gmake[1]: *** [CMakeFiles/Makefile2:1437: tests/unit/CMakeFiles/neg_cv_ptr_cxx.dir/rule] Ошибка 2
+gmake: *** [Makefile:589: neg_cv_ptr_cxx] Ошибка 2
+</system-out>
+	</testcase>
+	<testcase name="neg_cv_ptr_cxx_0_fail" classname="neg_cv_ptr_cxx_0_fail" time="0.0120601" status="notrun">
+		<skipped message="SKIP_RETURN_CODE=42"/>
+		<properties>
+			<property name="cmake_labels" value="countof_ns;default"/>
+		</properties>
+		<system-out></system-out>
+	</testcase>
+	<testcase name="neg_other" classname="neg_other" time="0.173042" status="run">
+		<properties>
+			<property name="cmake_labels" value="countof_ns;default"/>
+		</properties>
+		<system-out>[  0%] Built target CounofNS
+[100%] Building C object tests/unit/CMakeFiles/neg_other.dir/tu_stub.c.o
+"/home/parallels/soft/my/countof_ns/tests/unit/neg_other.h", line 4: cannot dereference non-pointer type
+"/home/parallels/soft/my/countof_ns/tests/unit/neg_other.h", line 4: cannot dereference non-pointer type
+"/home/parallels/soft/my/countof_ns/tests/unit/neg_other.h", line 4: cannot dereference non-pointer type
+"/home/parallels/soft/my/countof_ns/tests/unit/neg_other.h", line 4: cannot dereference non-pointer type
+"/home/parallels/soft/my/countof_ns/tests/unit/neg_other.h", line 4: cannot dereference non-pointer type
+"/home/parallels/soft/my/countof_ns/tests/unit/neg_other.h", line 4: cannot dereference non-pointer type
+"/home/parallels/soft/my/countof_ns/tests/unit/neg_other.h", line 4: cannot dereference non-pointer type
+"/home/parallels/soft/my/countof_ns/tests/unit/neg_other.h", line 4: zero or negative subscript
+cc: acomp failed for /home/parallels/soft/my/countof_ns/tests/unit/tu_stub.c
+gmake[3]: *** ...
+[This part of the test output was removed since it exceeds the threshold of 1024 bytes.]
+</system-out>
+	</testcase>
+	<testcase name="neg_other_0_fail" classname="neg_other_0_fail" time="0.0118019" status="notrun">
+		<skipped message="SKIP_RETURN_CODE=42"/>
+		<properties>
+			<property name="cmake_labels" value="countof_ns;default"/>
+		</properties>
+		<system-out></system-out>
+	</testcase>
+	<testcase name="neg_other_c11" classname="neg_other_c11" time="0.166231" status="run">
+		<properties>
+			<property name="cmake_labels" value="countof_ns;default"/>
+		</properties>
+		<system-out>[  0%] Built target CounofNS
+[ 50%] Building C object tests/unit/CMakeFiles/neg_other_c11.dir/tu_stub.c.o
+"/home/parallels/soft/my/countof_ns/tests/unit/neg_other.h", line 4: cannot dereference non-pointer type
+"/home/parallels/soft/my/countof_ns/tests/unit/neg_other.h", line 4: cannot dereference non-pointer type
+"/home/parallels/soft/my/countof_ns/tests/unit/neg_other.h", line 4: cannot dereference non-pointer type
+"/home/parallels/soft/my/countof_ns/tests/unit/neg_other.h", line 4: cannot dereference non-pointer type
+"/home/parallels/soft/my/countof_ns/tests/unit/neg_other.h", line 4: cannot dereference non-pointer type
+"/home/parallels/soft/my/countof_ns/tests/unit/neg_other.h", line 4: cannot dereference non-pointer type
+"/home/parallels/soft/my/countof_ns/tests/unit/neg_other.h", line 4: cannot dereference non-pointer type
+"/home/parallels/soft/my/countof_ns/tests/unit/neg_other.h", line 4: warning: improper pointer subtraction (E_BAD_POINTER_SUBTRACTION)
+cc: acomp failed for /home/parallels/soft/my/cou...
+[This part of the test output was removed since it exceeds the threshold of 1024 bytes.]
+</system-out>
+	</testcase>
+	<testcase name="neg_other_c11_0_fail" classname="neg_other_c11_0_fail" time="0.0126453" status="notrun">
+		<skipped message="SKIP_RETURN_CODE=42"/>
+		<properties>
+			<property name="cmake_labels" value="countof_ns;default"/>
+		</properties>
+		<system-out></system-out>
+	</testcase>
+	<testcase name="neg_other_cxx" classname="neg_other_cxx" time="0.21597" status="run">
+		<properties>
+			<property name="cmake_labels" value="countof_ns;default"/>
+		</properties>
+		<system-out>[  0%] Built target CounofNS
+[  0%] Building CXX object tests/unit/CMakeFiles/neg_other_cxx.dir/tu_stub_cxx.cpp.o
+"/home/parallels/soft/my/countof_ns/tests/unit/neg_other.h", line 4: Error: The operation "* int" is illegal.
+"/home/parallels/soft/my/countof_ns/tests/unit/neg_other.h", line 4: Error: Could not find a match for _countof_ns_aux&lt;A, E, T, N&gt;(int) needed in TU_UNIT().
+2 Error(s) detected.
+gmake[3]: *** [tests/unit/CMakeFiles/neg_other_cxx.dir/build.make:78: tests/unit/CMakeFiles/neg_other_cxx.dir/tu_stub_cxx.cpp.o] Ошибка 2
+gmake[2]: *** [CMakeFiles/Makefile2:1526: tests/unit/CMakeFiles/neg_other_cxx.dir/all] Ошибка 2
+gmake[1]: *** [CMakeFiles/Makefile2:1533: tests/unit/CMakeFiles/neg_other_cxx.dir/rule] Ошибка 2
+gmake: *** [Makefile:628: neg_other_cxx] Ошибка 2
+</system-out>
+	</testcase>
+	<testcase name="neg_other_cxx_0_fail" classname="neg_other_cxx_0_fail" time="0.0123224" status="notrun">
+		<skipped message="SKIP_RETURN_CODE=42"/>
+		<properties>
+			<property name="cmake_labels" value="countof_ns;default"/>
+		</properties>
+		<system-out></system-out>
+	</testcase>
+	<testcase name="neg_ptr" classname="neg_ptr" time="0.169071" status="run">
+		<properties>
+			<property name="cmake_labels" value="countof_ns;default"/>
+		</properties>
+		<system-out>[  0%] Built target CounofNS
+[  0%] Building C object tests/unit/CMakeFiles/neg_ptr.dir/tu_stub.c.o
+"/home/parallels/soft/my/countof_ns/tests/unit/neg_ptr.h", line 6: zero or negative subscript
+"/home/parallels/soft/my/countof_ns/tests/unit/neg_ptr.h", line 7: zero or negative subscript
+cc: acomp failed for /home/parallels/soft/my/countof_ns/tests/unit/tu_stub.c
+gmake[3]: *** [tests/unit/CMakeFiles/neg_ptr.dir/build.make:78: tests/unit/CMakeFiles/neg_ptr.dir/tu_stub.c.o] Ошибка 2
+gmake[2]: *** [CMakeFiles/Makefile2:1558: tests/unit/CMakeFiles/neg_ptr.dir/all] Ошибка 2
+gmake[1]: *** [CMakeFiles/Makefile2:1565: tests/unit/CMakeFiles/neg_ptr.dir/rule] Ошибка 2
+gmake: *** [Makefile:641: neg_ptr] Ошибка 2
+</system-out>
+	</testcase>
+	<testcase name="neg_ptr_0_fail" classname="neg_ptr_0_fail" time="0.0121317" status="notrun">
+		<skipped message="SKIP_RETURN_CODE=42"/>
+		<properties>
+			<property name="cmake_labels" value="countof_ns;default"/>
+		</properties>
+		<system-out></system-out>
+	</testcase>
+	<testcase name="neg_ptr_c11" classname="neg_ptr_c11" time="0.153482" status="fail">
+		<failure message="Failed"/>
+		<properties>
+			<property name="cmake_labels" value="countof_ns;default"/>
+		</properties>
+		<system-out>[  0%] Built target CounofNS
+[100%] Built target neg_ptr_c11
+</system-out>
+	</testcase>
+	<testcase name="neg_ptr_c11_0_fail" classname="neg_ptr_c11_0_fail" time="0.0139888" status="fail">
+		<failure message="Failed"/>
+		<properties>
+			<property name="cmake_labels" value="countof_ns;default"/>
+		</properties>
+		<system-out>Debug /home/parallels/soft/my/countof_ns/tests/unit/neg_ptr.h:3:TU_UNIT
+Debug /home/parallels/soft/my/countof_ns/tests/unit/neg_ptr.h:5:TU_UNIT TU_COUNTOF(p)=2 
+Fail 2 desired=0 main(0, ...) /home/parallels/soft/my/countof_ns/tests/unit/tu_stub.c:neg_ptr.h:TU_UNIT for countof_ns.h:countof_ns() with C11&amp;VLA, C 201112L
+</system-out>
+	</testcase>
+	<testcase name="neg_ptr_cxx" classname="neg_ptr_cxx" time="0.208914" status="run">
+		<properties>
+			<property name="cmake_labels" value="countof_ns;default"/>
+		</properties>
+		<system-out>[  0%] Built target CounofNS
+gmake[3]: Предупреждение: время изменения файла «tests/unit/CMakeFiles/neg_ptr_cxx.dir/depend.make» находится в будущем (0,024)
+[100%] Building CXX object tests/unit/CMakeFiles/neg_ptr_cxx.dir/tu_stub_cxx.cpp.o
+"/home/parallels/soft/my/countof_ns/include/countof_ns.h", line 107: Error: Static assertion failed: Argument must be zero-length array.
+"/home/parallels/soft/my/countof_ns/tests/unit/neg_ptr.h", line 6:     Where: While instantiating "unsigned long _countof_ns_aux&lt;8, 4, int*&gt;(int*const&amp;)".
+"/home/parallels/soft/my/countof_ns/tests/unit/neg_ptr.h", line 6:     Where: Instantiated from non-template code.
+1 Error(s) detected.
+gmake[3]: *** [tests/unit/CMakeFiles/neg_ptr_cxx.dir/build.make:78: tests/unit/CMakeFiles/neg_ptr_cxx.dir/tu_stub_cxx.cpp.o] Ошибка 2
+gmake[2]: *** [CMakeFiles/Makefile2:1622: tests/unit/CMakeFiles/neg_ptr_cxx.dir/all] Ошибка 2
+gmake[1]: *** [CMakeFiles/Makefile2:1629: tests/unit/CMakeFiles/...
+[This part of the test output was removed since it exceeds the threshold of 1024 bytes.]
+</system-out>
+	</testcase>
+	<testcase name="neg_ptr_cxx_0_fail" classname="neg_ptr_cxx_0_fail" time="0.0121896" status="notrun">
+		<skipped message="SKIP_RETURN_CODE=42"/>
+		<properties>
+			<property name="cmake_labels" value="countof_ns;default"/>
+		</properties>
+		<system-out></system-out>
+	</testcase>
+	<testcase name="neg_vla_ptr" classname="neg_vla_ptr" time="0.174184" status="run">
+		<properties>
+			<property name="cmake_labels" value="countof_ns;default"/>
+		</properties>
+		<system-out>[  0%] Built target CounofNS
+[ 50%] Building C object tests/unit/CMakeFiles/neg_vla_ptr.dir/tu_stub.c.o
+"/home/parallels/soft/my/countof_ns/tests/unit/neg_vla_ptr.h", line 6: incomplete or variably modified type in generic association: pointer to array[*] of array[*] of int
+"/home/parallels/soft/my/countof_ns/tests/unit/neg_vla_ptr.h", line 6: cannot recover from previous errors
+cc: acomp failed for /home/parallels/soft/my/countof_ns/tests/unit/tu_stub.c
+gmake[3]: *** [tests/unit/CMakeFiles/neg_vla_ptr.dir/build.make:78: tests/unit/CMakeFiles/neg_vla_ptr.dir/tu_stub.c.o] Ошибка 2
+gmake[2]: *** [CMakeFiles/Makefile2:1654: tests/unit/CMakeFiles/neg_vla_ptr.dir/all] Ошибка 2
+gmake[1]: *** [CMakeFiles/Makefile2:1661: tests/unit/CMakeFiles/neg_vla_ptr.dir/rule] Ошибка 2
+gmake: *** [Makefile:680: neg_vla_ptr] Ошибка 2
+</system-out>
+	</testcase>
+	<testcase name="neg_vla_ptr_0_fail" classname="neg_vla_ptr_0_fail" time="0.0124363" status="notrun">
+		<skipped message="SKIP_RETURN_CODE=42"/>
+		<properties>
+			<property name="cmake_labels" value="countof_ns;default"/>
+		</properties>
+		<system-out></system-out>
+	</testcase>
+	<testcase name="neg_vla_ptr_c11" classname="neg_vla_ptr_c11" time="0.157683" status="fail">
+		<failure message="Failed"/>
+		<properties>
+			<property name="cmake_labels" value="countof_ns;default"/>
+		</properties>
+		<system-out>[  0%] Built target CounofNS
+[100%] Built target neg_vla_ptr_c11
+</system-out>
+	</testcase>
+	<testcase name="neg_vla_ptr_c11_0_fail" classname="neg_vla_ptr_c11_0_fail" time="0.0142661" status="fail">
+		<failure message="Failed"/>
+		<properties>
+			<property name="cmake_labels" value="countof_ns;default"/>
+		</properties>
+		<system-out>Fail 2 desired=0 main(0, ...) /home/parallels/soft/my/countof_ns/tests/unit/tu_stub.c:neg_vla_ptr.h:TU_UNIT for countof_ns.h:countof_ns() with C11&amp;VLA, C 201112L
+</system-out>
+	</testcase>
+	<testcase name="JZMG_ARRAY_LEN-pos__selftest" classname="JZMG_ARRAY_LEN-pos__selftest" time="0.15425" status="run">
+		<properties>
+			<property name="cmake_labels" value="JZMG_ARRAY_LEN"/>
+		</properties>
+		<system-out>Internal cmake changing into directory: /home/parallels/soft/my/countof_ns/build/Linux_suncc_sunCC
+Change Dir: '/home/parallels/soft/my/countof_ns/build/Linux_suncc_sunCC'
+
+Run Build Command(s): /usr/bin/gmake -f Makefile JZMG_ARRAY_LEN-pos__selftest
+[  0%] Built target CounofNS
+[100%] Built target JZMG_ARRAY_LEN-pos__selftest
+
+Running test command: "/home/parallels/soft/my/countof_ns/build/Linux_suncc_sunCC/tests/unit/JZMG_ARRAY_LEN-pos__selftest"
+Ok 1 TU_STATIC_ASSERT_AND_RETURN((1)=1, ...) /home/parallels/soft/my/countof_ns/tests/unit/pos__selftest.h:pos__selftest.h:TU_UNIT for _comparisons/JZMG_ARRAY_LEN.h:JZMG_ARRAY_LEN(), C 201112L
+
+</system-out>
+	</testcase>
+	<testcase name="JZMG_ARRAY_LEN-pos__selftest_cxx" classname="JZMG_ARRAY_LEN-pos__selftest_cxx" time="0.154235" status="run">
+		<properties>
+			<property name="cmake_labels" value="JZMG_ARRAY_LEN"/>
+		</properties>
+		<system-out>Internal cmake changing into directory: /home/parallels/soft/my/countof_ns/build/Linux_suncc_sunCC
+Change Dir: '/home/parallels/soft/my/countof_ns/build/Linux_suncc_sunCC'
+
+Run Build Command(s): /usr/bin/gmake -f Makefile JZMG_ARRAY_LEN-pos__selftest_cxx
+[  0%] Built target CounofNS
+[100%] Built target JZMG_ARRAY_LEN-pos__selftest_cxx
+
+Running test command: "/home/parallels/soft/my/countof_ns/build/Linux_suncc_sunCC/tests/unit/JZMG_ARRAY_LEN-pos__selftest_cxx"
+Ok 1 TU_STATIC_ASSERT_AND_RETURN((1)=1, ...) /home/parallels/soft/my/countof_ns/tests/unit/pos__selftest.h:pos__selftest.h:TU_UNIT for _comparisons/JZMG_ARRAY_LEN.h:JZMG_ARRAY_LEN(), C++ 201402L
+
+</system-out>
+	</testcase>
+	<testcase name="JZMG_ARRAY_LEN-pos_array" classname="JZMG_ARRAY_LEN-pos_array" time="0.153376" status="run">
+		<properties>
+			<property name="cmake_labels" value="JZMG_ARRAY_LEN"/>
+		</properties>
+		<system-out>Internal cmake changing into directory: /home/parallels/soft/my/countof_ns/build/Linux_suncc_sunCC
+Change Dir: '/home/parallels/soft/my/countof_ns/build/Linux_suncc_sunCC'
+
+Run Build Command(s): /usr/bin/gmake -f Makefile JZMG_ARRAY_LEN-pos_array
+[  0%] Built target CounofNS
+gmake[3]: Предупреждение: время изменения файла «tests/unit/CMakeFiles/JZMG_ARRAY_LEN-pos_array.dir/depend.make» находится в будущем (0,11)
+gmake[3]: предупреждение: Неправильный ход часов.  Сборка может быть неполной.
+[100%] Built target JZMG_ARRAY_LEN-pos_array
+
+Running test command: "/home/parallels/soft/my/countof_ns/build/Linux_suncc_sunCC/tests/unit/JZMG_ARRAY_LEN-pos_array"
+Ok 1 TU_STATIC_ASSERT_AND_RETURN((1)=1, ...) /home/parallels/soft/my/countof_ns/tests/unit/pos_array.h:pos_array.h:TU_UNIT for _comparisons/JZMG_ARRAY_LEN.h:JZMG_ARRAY_LEN(), C 201112L
+
+</system-out>
+	</testcase>
+	<testcase name="JZMG_ARRAY_LEN-pos_array_cxx" classname="JZMG_ARRAY_LEN-pos_array_cxx" time="0.159987" status="run">
+		<properties>
+			<property name="cmake_labels" value="JZMG_ARRAY_LEN"/>
+		</properties>
+		<system-out>Internal cmake changing into directory: /home/parallels/soft/my/countof_ns/build/Linux_suncc_sunCC
+Change Dir: '/home/parallels/soft/my/countof_ns/build/Linux_suncc_sunCC'
+
+Run Build Command(s): /usr/bin/gmake -f Makefile JZMG_ARRAY_LEN-pos_array_cxx
+[  0%] Built target CounofNS
+[100%] Built target JZMG_ARRAY_LEN-pos_array_cxx
+
+Running test command: "/home/parallels/soft/my/countof_ns/build/Linux_suncc_sunCC/tests/unit/JZMG_ARRAY_LEN-pos_array_cxx"
+Ok 1 TU_STATIC_ASSERT_AND_RETURN((1)=1, ...) /home/parallels/soft/my/countof_ns/tests/unit/pos_array.h:pos_array.h:TU_UNIT for _comparisons/JZMG_ARRAY_LEN.h:JZMG_ARRAY_LEN(), C++ 201402L
+
+</system-out>
+	</testcase>
+	<testcase name="JZMG_ARRAY_LEN-pos_cv_array" classname="JZMG_ARRAY_LEN-pos_cv_array" time="0.162401" status="run">
+		<properties>
+			<property name="cmake_labels" value="JZMG_ARRAY_LEN"/>
+		</properties>
+		<system-out>Internal cmake changing into directory: /home/parallels/soft/my/countof_ns/build/Linux_suncc_sunCC
+Change Dir: '/home/parallels/soft/my/countof_ns/build/Linux_suncc_sunCC'
+
+Run Build Command(s): /usr/bin/gmake -f Makefile JZMG_ARRAY_LEN-pos_cv_array
+[  0%] Built target CounofNS
+[100%] Built target JZMG_ARRAY_LEN-pos_cv_array
+
+Running test command: "/home/parallels/soft/my/countof_ns/build/Linux_suncc_sunCC/tests/unit/JZMG_ARRAY_LEN-pos_cv_array"
+Ok 1 TU_STATIC_ASSERT_AND_RETURN((1)=1, ...) /home/parallels/soft/my/countof_ns/tests/unit/pos_cv_array.h:pos_cv_array.h:TU_UNIT for _comparisons/JZMG_ARRAY_LEN.h:JZMG_ARRAY_LEN(), C 201112L
+
+</system-out>
+	</testcase>
+	<testcase name="JZMG_ARRAY_LEN-pos_cv_array_cxx" classname="JZMG_ARRAY_LEN-pos_cv_array_cxx" time="0.155733" status="run">
+		<properties>
+			<property name="cmake_labels" value="JZMG_ARRAY_LEN"/>
+		</properties>
+		<system-out>Internal cmake changing into directory: /home/parallels/soft/my/countof_ns/build/Linux_suncc_sunCC
+Change Dir: '/home/parallels/soft/my/countof_ns/build/Linux_suncc_sunCC'
+
+Run Build Command(s): /usr/bin/gmake -f Makefile JZMG_ARRAY_LEN-pos_cv_array_cxx
+[  0%] Built target CounofNS
+[100%] Built target JZMG_ARRAY_LEN-pos_cv_array_cxx
+
+Running test command: "/home/parallels/soft/my/countof_ns/build/Linux_suncc_sunCC/tests/unit/JZMG_ARRAY_LEN-pos_cv_array_cxx"
+Ok 1 TU_STATIC_ASSERT_AND_RETURN((1)=1, ...) /home/parallels/soft/my/countof_ns/tests/unit/pos_cv_array.h:pos_cv_array.h:TU_UNIT for _comparisons/JZMG_ARRAY_LEN.h:JZMG_ARRAY_LEN(), C++ 201402L
+
+</system-out>
+	</testcase>
+	<testcase name="JZMG_ARRAY_LEN-pos_vla" classname="JZMG_ARRAY_LEN-pos_vla" time="0.152377" status="run">
+		<properties>
+			<property name="cmake_labels" value="JZMG_ARRAY_LEN"/>
+		</properties>
+		<system-out>Internal cmake changing into directory: /home/parallels/soft/my/countof_ns/build/Linux_suncc_sunCC
+Change Dir: '/home/parallels/soft/my/countof_ns/build/Linux_suncc_sunCC'
+
+Run Build Command(s): /usr/bin/gmake -f Makefile JZMG_ARRAY_LEN-pos_vla
+[  0%] Built target CounofNS
+[100%] Built target JZMG_ARRAY_LEN-pos_vla
+
+Running test command: "/home/parallels/soft/my/countof_ns/build/Linux_suncc_sunCC/tests/unit/JZMG_ARRAY_LEN-pos_vla"
+Ok 1 TU_ASSERT_AND_RETURN((d1)=1, ...) /home/parallels/soft/my/countof_ns/tests/unit/pos_vla.h:pos_vla.h:TU_UNIT for _comparisons/JZMG_ARRAY_LEN.h:JZMG_ARRAY_LEN(), C 201112L
+
+</system-out>
+	</testcase>
+	<testcase name="JZMG_ARRAY_LEN-pos_vla_00" classname="JZMG_ARRAY_LEN-pos_vla_00" time="0.167291" status="fail">
+		<failure message="Failed"/>
+		<properties>
+			<property name="cmake_labels" value="JZMG_ARRAY_LEN"/>
+		</properties>
+		<system-out>Internal cmake changing into directory: /home/parallels/soft/my/countof_ns/build/Linux_suncc_sunCC
+Change Dir: '/home/parallels/soft/my/countof_ns/build/Linux_suncc_sunCC'
+
+Run Build Command(s): /usr/bin/gmake -f Makefile JZMG_ARRAY_LEN-pos_vla_00
+[  0%] Built target CounofNS
+[100%] Built target JZMG_ARRAY_LEN-pos_vla_00
+
+Running test command: "/home/parallels/soft/my/countof_ns/build/Linux_suncc_sunCC/tests/unit/JZMG_ARRAY_LEN-pos_vla_00"
+Test command failed: /home/parallels/soft/my/countof_ns/build/Linux_suncc_sunCC/tests/unit/JZMG_ARRAY_LEN-pos_vla_00
+
+*** Exception executing: Floating-point exception
+</system-out>
+	</testcase>
+	<testcase name="JZMG_ARRAY_LEN-pos_vla_0n" classname="JZMG_ARRAY_LEN-pos_vla_0n" time="0.1537" status="run">
+		<properties>
+			<property name="cmake_labels" value="JZMG_ARRAY_LEN"/>
+		</properties>
+		<system-out>Internal cmake changing into directory: /home/parallels/soft/my/countof_ns/build/Linux_suncc_sunCC
+Change Dir: '/home/parallels/soft/my/countof_ns/build/Linux_suncc_sunCC'
+
+Run Build Command(s): /usr/bin/gmake -f Makefile JZMG_ARRAY_LEN-pos_vla_0n
+[  0%] Built target CounofNS
+gmake[3]: Предупреждение: время изменения файла «tests/unit/CMakeFiles/JZMG_ARRAY_LEN-pos_vla_0n.dir/depend.make» находится в будущем (0,15)
+gmake[3]: предупреждение: Неправильный ход часов.  Сборка может быть неполной.
+[100%] Built target JZMG_ARRAY_LEN-pos_vla_0n
+
+Running test command: "/home/parallels/soft/my/countof_ns/build/Linux_suncc_sunCC/tests/unit/JZMG_ARRAY_LEN-pos_vla_0n"
+Ok 0 TU_ASSERT_AND_RETURN((d0)=0, ...) /home/parallels/soft/my/countof_ns/tests/unit/pos_vla_0n.h:pos_vla_0n.h:TU_UNIT for _comparisons/JZMG_ARRAY_LEN.h:JZMG_ARRAY_LEN(), C 201112L
+
+</system-out>
+	</testcase>
+	<testcase name="JZMG_ARRAY_LEN-pos_vla_cv" classname="JZMG_ARRAY_LEN-pos_vla_cv" time="0.156672" status="run">
+		<properties>
+			<property name="cmake_labels" value="JZMG_ARRAY_LEN"/>
+		</properties>
+		<system-out>Internal cmake changing into directory: /home/parallels/soft/my/countof_ns/build/Linux_suncc_sunCC
+Change Dir: '/home/parallels/soft/my/countof_ns/build/Linux_suncc_sunCC'
+
+Run Build Command(s): /usr/bin/gmake -f Makefile JZMG_ARRAY_LEN-pos_vla_cv
+[  0%] Built target CounofNS
+[100%] Built target JZMG_ARRAY_LEN-pos_vla_cv
+
+Running test command: "/home/parallels/soft/my/countof_ns/build/Linux_suncc_sunCC/tests/unit/JZMG_ARRAY_LEN-pos_vla_cv"
+Ok 1 TU_ASSERT_AND_RETURN((d1)=1, ...) /home/parallels/soft/my/countof_ns/tests/unit/pos_vla_cv.h:pos_vla_cv.h:TU_UNIT for _comparisons/JZMG_ARRAY_LEN.h:JZMG_ARRAY_LEN(), C 201112L
+
+</system-out>
+	</testcase>
+	<testcase name="JZMG_ARRAY_LEN-pos_vla_n0" classname="JZMG_ARRAY_LEN-pos_vla_n0" time="0.156643" status="fail">
+		<failure message="Failed"/>
+		<properties>
+			<property name="cmake_labels" value="JZMG_ARRAY_LEN"/>
+		</properties>
+		<system-out>Internal cmake changing into directory: /home/parallels/soft/my/countof_ns/build/Linux_suncc_sunCC
+Change Dir: '/home/parallels/soft/my/countof_ns/build/Linux_suncc_sunCC'
+
+Run Build Command(s): /usr/bin/gmake -f Makefile JZMG_ARRAY_LEN-pos_vla_n0
+[  0%] Built target CounofNS
+[100%] Built target JZMG_ARRAY_LEN-pos_vla_n0
+
+Running test command: "/home/parallels/soft/my/countof_ns/build/Linux_suncc_sunCC/tests/unit/JZMG_ARRAY_LEN-pos_vla_n0"
+Test command failed: /home/parallels/soft/my/countof_ns/build/Linux_suncc_sunCC/tests/unit/JZMG_ARRAY_LEN-pos_vla_n0
+
+*** Exception executing: Floating-point exception
+</system-out>
+	</testcase>
+	<testcase name="JZMG_ARRAY_LEN-neg__selftest" classname="JZMG_ARRAY_LEN-neg__selftest" time="0.171262" status="run">
+		<properties>
+			<property name="cmake_labels" value="JZMG_ARRAY_LEN"/>
+		</properties>
+		<system-out>[  0%] Built target CounofNS
+[  0%] Building C object tests/unit/CMakeFiles/JZMG_ARRAY_LEN-neg__selftest.dir/tu_stub.c.o
+"/home/parallels/soft/my/countof_ns/tests/unit/neg__selftest.h", line 12: static assertion failed: "0"
+cc: acomp failed for /home/parallels/soft/my/countof_ns/tests/unit/tu_stub.c
+gmake[3]: *** [tests/unit/CMakeFiles/JZMG_ARRAY_LEN-neg__selftest.dir/build.make:78: tests/unit/CMakeFiles/JZMG_ARRAY_LEN-neg__selftest.dir/tu_stub.c.o] Ошибка 2
+gmake[2]: *** [CMakeFiles/Makefile2:2070: tests/unit/CMakeFiles/JZMG_ARRAY_LEN-neg__selftest.dir/all] Ошибка 2
+gmake[1]: *** [CMakeFiles/Makefile2:2077: tests/unit/CMakeFiles/JZMG_ARRAY_LEN-neg__selftest.dir/rule] Ошибка 2
+gmake: *** [Makefile:849: JZMG_ARRAY_LEN-neg__selftest] Ошибка 2
+</system-out>
+	</testcase>
+	<testcase name="JZMG_ARRAY_LEN-neg__selftest_0_fail" classname="JZMG_ARRAY_LEN-neg__selftest_0_fail" time="0.0118346" status="notrun">
+		<skipped message="SKIP_RETURN_CODE=42"/>
+		<properties>
+			<property name="cmake_labels" value="JZMG_ARRAY_LEN"/>
+		</properties>
+		<system-out></system-out>
+	</testcase>
+	<testcase name="JZMG_ARRAY_LEN-neg__selftest_cxx" classname="JZMG_ARRAY_LEN-neg__selftest_cxx" time="0.215687" status="run">
+		<properties>
+			<property name="cmake_labels" value="JZMG_ARRAY_LEN"/>
+		</properties>
+		<system-out>[  0%] Built target CounofNS
+[  0%] Building CXX object tests/unit/CMakeFiles/JZMG_ARRAY_LEN-neg__selftest_cxx.dir/tu_stub_cxx.cpp.o
+"/home/parallels/soft/my/countof_ns/include/_comparisons/JZMG_ARRAY_LEN.h", line 23: Warning: There are two consecutive underbars in "__array_len_aux".
+"/home/parallels/soft/my/countof_ns/tests/unit/neg__selftest.h", line 12: Error: Static assertion failed: 0.
+1 Error(s) and 1 Warning(s) detected.
+gmake[3]: *** [tests/unit/CMakeFiles/JZMG_ARRAY_LEN-neg__selftest_cxx.dir/build.make:78: tests/unit/CMakeFiles/JZMG_ARRAY_LEN-neg__selftest_cxx.dir/tu_stub_cxx.cpp.o] Ошибка 2
+gmake[2]: *** [CMakeFiles/Makefile2:2102: tests/unit/CMakeFiles/JZMG_ARRAY_LEN-neg__selftest_cxx.dir/all] Ошибка 2
+gmake[1]: *** [CMakeFiles/Makefile2:2109: tests/unit/CMakeFiles/JZMG_ARRAY_LEN-neg__selftest_cxx.dir/rule] Ошибка 2
+gmake: *** [Makefile:862: JZMG_ARRAY_LEN-neg__selftest_cxx] Ошибка 2
+</system-out>
+	</testcase>
+	<testcase name="JZMG_ARRAY_LEN-neg__selftest_cxx_0_fail" classname="JZMG_ARRAY_LEN-neg__selftest_cxx_0_fail" time="0.0121006" status="notrun">
+		<skipped message="SKIP_RETURN_CODE=42"/>
+		<properties>
+			<property name="cmake_labels" value="JZMG_ARRAY_LEN"/>
+		</properties>
+		<system-out></system-out>
+	</testcase>
+	<testcase name="JZMG_ARRAY_LEN-neg_cv_ptr" classname="JZMG_ARRAY_LEN-neg_cv_ptr" time="0.15317" status="fail">
+		<failure message="Failed"/>
+		<properties>
+			<property name="cmake_labels" value="JZMG_ARRAY_LEN"/>
+		</properties>
+		<system-out>[  0%] Built target CounofNS
+[100%] Built target JZMG_ARRAY_LEN-neg_cv_ptr
+</system-out>
+	</testcase>
+	<testcase name="JZMG_ARRAY_LEN-neg_cv_ptr_0_fail" classname="JZMG_ARRAY_LEN-neg_cv_ptr_0_fail" time="0.0140016" status="fail">
+		<failure message="Failed"/>
+		<properties>
+			<property name="cmake_labels" value="JZMG_ARRAY_LEN"/>
+		</properties>
+		<system-out>Fail 2 desired=0 main(0, ...) /home/parallels/soft/my/countof_ns/tests/unit/tu_stub.c:neg_cv_ptr.h:TU_UNIT for _comparisons/JZMG_ARRAY_LEN.h:JZMG_ARRAY_LEN(), C 201112L
+</system-out>
+	</testcase>
+	<testcase name="JZMG_ARRAY_LEN-neg_cv_ptr_cxx" classname="JZMG_ARRAY_LEN-neg_cv_ptr_cxx" time="0.213044" status="run">
+		<properties>
+			<property name="cmake_labels" value="JZMG_ARRAY_LEN"/>
+		</properties>
+		<system-out>[  0%] Built target CounofNS
+gmake[3]: Предупреждение: время изменения файла «tests/unit/CMakeFiles/JZMG_ARRAY_LEN-neg_cv_ptr_cxx.dir/depend.make» находится в будущем (0,075)
+[100%] Building CXX object tests/unit/CMakeFiles/JZMG_ARRAY_LEN-neg_cv_ptr_cxx.dir/tu_stub_cxx.cpp.o
+"/home/parallels/soft/my/countof_ns/include/_comparisons/JZMG_ARRAY_LEN.h", line 23: Warning: There are two consecutive underbars in "__array_len_aux".
+"/home/parallels/soft/my/countof_ns/tests/unit/neg_cv_ptr.h", line 4: Error: Could not find a match for __array_len_aux&lt;8&gt;::match_only_array&lt;T, M&gt;(const volatile int*) needed in TU_UNIT().
+1 Error(s) and 1 Warning(s) detected.
+gmake[3]: *** [tests/unit/CMakeFiles/JZMG_ARRAY_LEN-neg_cv_ptr_cxx.dir/build.make:78: tests/unit/CMakeFiles/JZMG_ARRAY_LEN-neg_cv_ptr_cxx.dir/tu_stub_cxx.cpp.o] Ошибка 2
+gmake[2]: *** [CMakeFiles/Makefile2:2166: tests/unit/CMakeFiles/JZMG_ARRAY_LEN-neg_cv_ptr_cxx.dir/all] Ошибка 2
+gmake[1]: *** [CMakeFil...
+[This part of the test output was removed since it exceeds the threshold of 1024 bytes.]
+</system-out>
+	</testcase>
+	<testcase name="JZMG_ARRAY_LEN-neg_cv_ptr_cxx_0_fail" classname="JZMG_ARRAY_LEN-neg_cv_ptr_cxx_0_fail" time="0.0121946" status="notrun">
+		<skipped message="SKIP_RETURN_CODE=42"/>
+		<properties>
+			<property name="cmake_labels" value="JZMG_ARRAY_LEN"/>
+		</properties>
+		<system-out></system-out>
+	</testcase>
+	<testcase name="JZMG_ARRAY_LEN-neg_other" classname="JZMG_ARRAY_LEN-neg_other" time="0.167217" status="run">
+		<properties>
+			<property name="cmake_labels" value="JZMG_ARRAY_LEN"/>
+		</properties>
+		<system-out>[  0%] Built target CounofNS
+[ 50%] Building C object tests/unit/CMakeFiles/JZMG_ARRAY_LEN-neg_other.dir/tu_stub.c.o
+"/home/parallels/soft/my/countof_ns/tests/unit/neg_other.h", line 4: cannot dereference non-pointer type
+"/home/parallels/soft/my/countof_ns/tests/unit/neg_other.h", line 4: cannot dereference non-pointer type
+"/home/parallels/soft/my/countof_ns/tests/unit/neg_other.h", line 4: cannot dereference non-pointer type
+"/home/parallels/soft/my/countof_ns/tests/unit/neg_other.h", line 4: warning: improper pointer subtraction (E_BAD_POINTER_SUBTRACTION)
+cc: acomp failed for /home/parallels/soft/my/countof_ns/tests/unit/tu_stub.c
+gmake[3]: *** [tests/unit/CMakeFiles/JZMG_ARRAY_LEN-neg_other.dir/build.make:78: tests/unit/CMakeFiles/JZMG_ARRAY_LEN-neg_other.dir/tu_stub.c.o] Ошибка 2
+gmake[2]: *** [CMakeFiles/Makefile2:2198: tests/unit/CMakeFiles/JZMG_ARRAY_LEN-neg_other.dir/all] Ошибка 2
+gmake[1]: *** [CMakeFiles/Makefile2:2205: tests/unit/CMakeFiles/JZMG_ARRAY_LEN-neg_other.dir/rule] Ошиб...
+[This part of the test output was removed since it exceeds the threshold of 1024 bytes.]
+</system-out>
+	</testcase>
+	<testcase name="JZMG_ARRAY_LEN-neg_other_0_fail" classname="JZMG_ARRAY_LEN-neg_other_0_fail" time="0.0119365" status="notrun">
+		<skipped message="SKIP_RETURN_CODE=42"/>
+		<properties>
+			<property name="cmake_labels" value="JZMG_ARRAY_LEN"/>
+		</properties>
+		<system-out></system-out>
+	</testcase>
+	<testcase name="JZMG_ARRAY_LEN-neg_other_cxx" classname="JZMG_ARRAY_LEN-neg_other_cxx" time="0.217659" status="run">
+		<properties>
+			<property name="cmake_labels" value="JZMG_ARRAY_LEN"/>
+		</properties>
+		<system-out>[  0%] Built target CounofNS
+[  0%] Building CXX object tests/unit/CMakeFiles/JZMG_ARRAY_LEN-neg_other_cxx.dir/tu_stub_cxx.cpp.o
+"/home/parallels/soft/my/countof_ns/include/_comparisons/JZMG_ARRAY_LEN.h", line 23: Warning: There are two consecutive underbars in "__array_len_aux".
+"/home/parallels/soft/my/countof_ns/tests/unit/neg_other.h", line 4: Error: Could not find a match for __array_len_aux&lt;4&gt;::match_only_array&lt;T, M&gt;(int) needed in TU_UNIT().
+1 Error(s) and 1 Warning(s) detected.
+gmake[3]: *** [tests/unit/CMakeFiles/JZMG_ARRAY_LEN-neg_other_cxx.dir/build.make:78: tests/unit/CMakeFiles/JZMG_ARRAY_LEN-neg_other_cxx.dir/tu_stub_cxx.cpp.o] Ошибка 2
+gmake[2]: *** [CMakeFiles/Makefile2:2230: tests/unit/CMakeFiles/JZMG_ARRAY_LEN-neg_other_cxx.dir/all] Ошибка 2
+gmake[1]: *** [CMakeFiles/Makefile2:2237: tests/unit/CMakeFiles/JZMG_ARRAY_LEN-neg_other_cxx.dir/rule] Ошибка 2
+gmake: *** [Makefile:914: JZMG_ARRAY_LEN-neg_other_cxx] Ошибка 2
+</system-out>
+	</testcase>
+	<testcase name="JZMG_ARRAY_LEN-neg_other_cxx_0_fail" classname="JZMG_ARRAY_LEN-neg_other_cxx_0_fail" time="0.0119376" status="notrun">
+		<skipped message="SKIP_RETURN_CODE=42"/>
+		<properties>
+			<property name="cmake_labels" value="JZMG_ARRAY_LEN"/>
+		</properties>
+		<system-out></system-out>
+	</testcase>
+	<testcase name="JZMG_ARRAY_LEN-neg_ptr" classname="JZMG_ARRAY_LEN-neg_ptr" time="0.153832" status="fail">
+		<failure message="Failed"/>
+		<properties>
+			<property name="cmake_labels" value="JZMG_ARRAY_LEN"/>
+		</properties>
+		<system-out>[  0%] Built target CounofNS
+[100%] Built target JZMG_ARRAY_LEN-neg_ptr
+</system-out>
+	</testcase>
+	<testcase name="JZMG_ARRAY_LEN-neg_ptr_0_fail" classname="JZMG_ARRAY_LEN-neg_ptr_0_fail" time="0.015099" status="fail">
+		<failure message="Failed"/>
+		<properties>
+			<property name="cmake_labels" value="JZMG_ARRAY_LEN"/>
+		</properties>
+		<system-out>Debug /home/parallels/soft/my/countof_ns/tests/unit/neg_ptr.h:3:TU_UNIT
+Debug /home/parallels/soft/my/countof_ns/tests/unit/neg_ptr.h:5:TU_UNIT TU_COUNTOF(p)=2 
+Fail 2 desired=0 main(0, ...) /home/parallels/soft/my/countof_ns/tests/unit/tu_stub.c:neg_ptr.h:TU_UNIT for _comparisons/JZMG_ARRAY_LEN.h:JZMG_ARRAY_LEN(), C 201112L
+</system-out>
+	</testcase>
+	<testcase name="JZMG_ARRAY_LEN-neg_ptr_cxx" classname="JZMG_ARRAY_LEN-neg_ptr_cxx" time="0.202407" status="run">
+		<properties>
+			<property name="cmake_labels" value="JZMG_ARRAY_LEN"/>
+		</properties>
+		<system-out>[  0%] Built target CounofNS
+[100%] Building CXX object tests/unit/CMakeFiles/JZMG_ARRAY_LEN-neg_ptr_cxx.dir/tu_stub_cxx.cpp.o
+"/home/parallels/soft/my/countof_ns/include/_comparisons/JZMG_ARRAY_LEN.h", line 23: Warning: There are two consecutive underbars in "__array_len_aux".
+"/home/parallels/soft/my/countof_ns/tests/unit/neg_ptr.h", line 6: Error: Could not find a match for __array_len_aux&lt;8&gt;::match_only_array&lt;T, M&gt;(int*) needed in TU_UNIT().
+"/home/parallels/soft/my/countof_ns/tests/unit/neg_ptr.h", line 7: Error: Could not find a match for __array_len_aux&lt;8&gt;::match_only_array&lt;T, M&gt;(int*) needed in TU_UNIT().
+2 Error(s) and 1 Warning(s) detected.
+gmake[3]: *** [tests/unit/CMakeFiles/JZMG_ARRAY_LEN-neg_ptr_cxx.dir/build.make:78: tests/unit/CMakeFiles/JZMG_ARRAY_LEN-neg_ptr_cxx.dir/tu_stub_cxx.cpp.o] Ошибка 2
+gmake[2]: *** [CMakeFiles/Makefile2:2294: tests/unit/CMakeFiles/JZMG_ARRAY_LEN-neg_ptr_cxx.dir/all] Ошибка 2
+gmake[1]: *** [CMakeFiles/Makefile2:2301: tests/unit/CMakeFiles/JZMG_ARRAY_LEN-n...
+[This part of the test output was removed since it exceeds the threshold of 1024 bytes.]
+</system-out>
+	</testcase>
+	<testcase name="JZMG_ARRAY_LEN-neg_ptr_cxx_0_fail" classname="JZMG_ARRAY_LEN-neg_ptr_cxx_0_fail" time="0.0122481" status="notrun">
+		<skipped message="SKIP_RETURN_CODE=42"/>
+		<properties>
+			<property name="cmake_labels" value="JZMG_ARRAY_LEN"/>
+		</properties>
+		<system-out></system-out>
+	</testcase>
+	<testcase name="JZMG_ARRAY_LEN-neg_vla_ptr" classname="JZMG_ARRAY_LEN-neg_vla_ptr" time="0.152999" status="fail">
+		<failure message="Failed"/>
+		<properties>
+			<property name="cmake_labels" value="JZMG_ARRAY_LEN"/>
+		</properties>
+		<system-out>[  0%] Built target CounofNS
+gmake[3]: Предупреждение: время изменения файла «tests/unit/CMakeFiles/JZMG_ARRAY_LEN-neg_vla_ptr.dir/depend.make» находится в будущем (0,03)
+gmake[3]: предупреждение: Неправильный ход часов.  Сборка может быть неполной.
+[100%] Built target JZMG_ARRAY_LEN-neg_vla_ptr
+</system-out>
+	</testcase>
+	<testcase name="JZMG_ARRAY_LEN-neg_vla_ptr_0_fail" classname="JZMG_ARRAY_LEN-neg_vla_ptr_0_fail" time="0.0138842" status="fail">
+		<failure message="Failed"/>
+		<properties>
+			<property name="cmake_labels" value="JZMG_ARRAY_LEN"/>
+		</properties>
+		<system-out>Fail 2 desired=0 main(0, ...) /home/parallels/soft/my/countof_ns/tests/unit/tu_stub.c:neg_vla_ptr.h:TU_UNIT for _comparisons/JZMG_ARRAY_LEN.h:JZMG_ARRAY_LEN(), C 201112L
+</system-out>
+	</testcase>
+	<testcase name="ms_countof-pos__selftest" classname="ms_countof-pos__selftest" time="0.153788" status="run">
+		<properties>
+			<property name="cmake_labels" value="ms_countof"/>
+		</properties>
+		<system-out>Internal cmake changing into directory: /home/parallels/soft/my/countof_ns/build/Linux_suncc_sunCC
+Change Dir: '/home/parallels/soft/my/countof_ns/build/Linux_suncc_sunCC'
+
+Run Build Command(s): /usr/bin/gmake -f Makefile ms_countof-pos__selftest
+[  0%] Built target CounofNS
+[100%] Built target ms_countof-pos__selftest
+
+Running test command: "/home/parallels/soft/my/countof_ns/build/Linux_suncc_sunCC/tests/unit/ms_countof-pos__selftest"
+Ok 1 TU_STATIC_ASSERT_AND_RETURN((1)=1, ...) /home/parallels/soft/my/countof_ns/tests/unit/pos__selftest.h:pos__selftest.h:TU_UNIT for _comparisons/ms_countof.h:ms_countof(), C 201112L
+
+</system-out>
+	</testcase>
+	<testcase name="ms_countof-pos__selftest_cxx" classname="ms_countof-pos__selftest_cxx" time="0.151315" status="run">
+		<properties>
+			<property name="cmake_labels" value="ms_countof"/>
+		</properties>
+		<system-out>Internal cmake changing into directory: /home/parallels/soft/my/countof_ns/build/Linux_suncc_sunCC
+Change Dir: '/home/parallels/soft/my/countof_ns/build/Linux_suncc_sunCC'
+
+Run Build Command(s): /usr/bin/gmake -f Makefile ms_countof-pos__selftest_cxx
+[  0%] Built target CounofNS
+[100%] Built target ms_countof-pos__selftest_cxx
+
+Running test command: "/home/parallels/soft/my/countof_ns/build/Linux_suncc_sunCC/tests/unit/ms_countof-pos__selftest_cxx"
+Ok 1 TU_STATIC_ASSERT_AND_RETURN((1)=1, ...) /home/parallels/soft/my/countof_ns/tests/unit/pos__selftest.h:pos__selftest.h:TU_UNIT for _comparisons/ms_countof.h:ms_countof(), C++ 201402L
+
+</system-out>
+	</testcase>
+	<testcase name="ms_countof-pos_array" classname="ms_countof-pos_array" time="0.157235" status="run">
+		<properties>
+			<property name="cmake_labels" value="ms_countof"/>
+		</properties>
+		<system-out>Internal cmake changing into directory: /home/parallels/soft/my/countof_ns/build/Linux_suncc_sunCC
+Change Dir: '/home/parallels/soft/my/countof_ns/build/Linux_suncc_sunCC'
+
+Run Build Command(s): /usr/bin/gmake -f Makefile ms_countof-pos_array
+[  0%] Built target CounofNS
+[100%] Built target ms_countof-pos_array
+
+Running test command: "/home/parallels/soft/my/countof_ns/build/Linux_suncc_sunCC/tests/unit/ms_countof-pos_array"
+Ok 1 TU_STATIC_ASSERT_AND_RETURN((1)=1, ...) /home/parallels/soft/my/countof_ns/tests/unit/pos_array.h:pos_array.h:TU_UNIT for _comparisons/ms_countof.h:ms_countof(), C 201112L
+
+</system-out>
+	</testcase>
+	<testcase name="ms_countof-pos_array_cxx" classname="ms_countof-pos_array_cxx" time="0.154645" status="run">
+		<properties>
+			<property name="cmake_labels" value="ms_countof"/>
+		</properties>
+		<system-out>Internal cmake changing into directory: /home/parallels/soft/my/countof_ns/build/Linux_suncc_sunCC
+Change Dir: '/home/parallels/soft/my/countof_ns/build/Linux_suncc_sunCC'
+
+Run Build Command(s): /usr/bin/gmake -f Makefile ms_countof-pos_array_cxx
+[  0%] Built target CounofNS
+[100%] Built target ms_countof-pos_array_cxx
+
+Running test command: "/home/parallels/soft/my/countof_ns/build/Linux_suncc_sunCC/tests/unit/ms_countof-pos_array_cxx"
+Ok 1 TU_STATIC_ASSERT_AND_RETURN((1)=1, ...) /home/parallels/soft/my/countof_ns/tests/unit/pos_array.h:pos_array.h:TU_UNIT for _comparisons/ms_countof.h:ms_countof(), C++ 201402L
+
+</system-out>
+	</testcase>
+	<testcase name="ms_countof-pos_cv_array" classname="ms_countof-pos_cv_array" time="0.158604" status="run">
+		<properties>
+			<property name="cmake_labels" value="ms_countof"/>
+		</properties>
+		<system-out>Internal cmake changing into directory: /home/parallels/soft/my/countof_ns/build/Linux_suncc_sunCC
+Change Dir: '/home/parallels/soft/my/countof_ns/build/Linux_suncc_sunCC'
+
+Run Build Command(s): /usr/bin/gmake -f Makefile ms_countof-pos_cv_array
+[  0%] Built target CounofNS
+[100%] Built target ms_countof-pos_cv_array
+
+Running test command: "/home/parallels/soft/my/countof_ns/build/Linux_suncc_sunCC/tests/unit/ms_countof-pos_cv_array"
+Ok 1 TU_STATIC_ASSERT_AND_RETURN((1)=1, ...) /home/parallels/soft/my/countof_ns/tests/unit/pos_cv_array.h:pos_cv_array.h:TU_UNIT for _comparisons/ms_countof.h:ms_countof(), C 201112L
+
+</system-out>
+	</testcase>
+	<testcase name="ms_countof-pos_cv_array_cxx" classname="ms_countof-pos_cv_array_cxx" time="0.156372" status="run">
+		<properties>
+			<property name="cmake_labels" value="ms_countof"/>
+		</properties>
+		<system-out>Internal cmake changing into directory: /home/parallels/soft/my/countof_ns/build/Linux_suncc_sunCC
+Change Dir: '/home/parallels/soft/my/countof_ns/build/Linux_suncc_sunCC'
+
+Run Build Command(s): /usr/bin/gmake -f Makefile ms_countof-pos_cv_array_cxx
+[  0%] Built target CounofNS
+gmake[3]: Предупреждение: время изменения файла «tests/unit/CMakeFiles/ms_countof-pos_cv_array_cxx.dir/depend.make» находится в будущем (0,066)
+gmake[3]: предупреждение: Неправильный ход часов.  Сборка может быть неполной.
+[100%] Built target ms_countof-pos_cv_array_cxx
+
+Running test command: "/home/parallels/soft/my/countof_ns/build/Linux_suncc_sunCC/tests/unit/ms_countof-pos_cv_array_cxx"
+Ok 1 TU_STATIC_ASSERT_AND_RETURN((1)=1, ...) /home/parallels/soft/my/countof_ns/tests/unit/pos_cv_array.h:pos_cv_array.h:TU_UNIT for _comparisons/ms_countof.h:ms_countof(), C++ 201402L
+
+</system-out>
+	</testcase>
+	<testcase name="ms_countof-pos_vla" classname="ms_countof-pos_vla" time="0.15454" status="run">
+		<properties>
+			<property name="cmake_labels" value="ms_countof"/>
+		</properties>
+		<system-out>Internal cmake changing into directory: /home/parallels/soft/my/countof_ns/build/Linux_suncc_sunCC
+Change Dir: '/home/parallels/soft/my/countof_ns/build/Linux_suncc_sunCC'
+
+Run Build Command(s): /usr/bin/gmake -f Makefile ms_countof-pos_vla
+[  0%] Built target CounofNS
+[100%] Built target ms_countof-pos_vla
+
+Running test command: "/home/parallels/soft/my/countof_ns/build/Linux_suncc_sunCC/tests/unit/ms_countof-pos_vla"
+Ok 1 TU_ASSERT_AND_RETURN((d1)=1, ...) /home/parallels/soft/my/countof_ns/tests/unit/pos_vla.h:pos_vla.h:TU_UNIT for _comparisons/ms_countof.h:ms_countof(), C 201112L
+
+</system-out>
+	</testcase>
+	<testcase name="ms_countof-pos_vla_00" classname="ms_countof-pos_vla_00" time="0.155638" status="fail">
+		<failure message="Failed"/>
+		<properties>
+			<property name="cmake_labels" value="ms_countof"/>
+		</properties>
+		<system-out>Internal cmake changing into directory: /home/parallels/soft/my/countof_ns/build/Linux_suncc_sunCC
+Change Dir: '/home/parallels/soft/my/countof_ns/build/Linux_suncc_sunCC'
+
+Run Build Command(s): /usr/bin/gmake -f Makefile ms_countof-pos_vla_00
+[  0%] Built target CounofNS
+[100%] Built target ms_countof-pos_vla_00
+
+Running test command: "/home/parallels/soft/my/countof_ns/build/Linux_suncc_sunCC/tests/unit/ms_countof-pos_vla_00"
+Test command failed: /home/parallels/soft/my/countof_ns/build/Linux_suncc_sunCC/tests/unit/ms_countof-pos_vla_00
+
+*** Exception executing: Floating-point exception
+</system-out>
+	</testcase>
+	<testcase name="ms_countof-pos_vla_0n" classname="ms_countof-pos_vla_0n" time="0.154542" status="run">
+		<properties>
+			<property name="cmake_labels" value="ms_countof"/>
+		</properties>
+		<system-out>Internal cmake changing into directory: /home/parallels/soft/my/countof_ns/build/Linux_suncc_sunCC
+Change Dir: '/home/parallels/soft/my/countof_ns/build/Linux_suncc_sunCC'
+
+Run Build Command(s): /usr/bin/gmake -f Makefile ms_countof-pos_vla_0n
+[  0%] Built target CounofNS
+[100%] Built target ms_countof-pos_vla_0n
+
+Running test command: "/home/parallels/soft/my/countof_ns/build/Linux_suncc_sunCC/tests/unit/ms_countof-pos_vla_0n"
+Ok 0 TU_ASSERT_AND_RETURN((d0)=0, ...) /home/parallels/soft/my/countof_ns/tests/unit/pos_vla_0n.h:pos_vla_0n.h:TU_UNIT for _comparisons/ms_countof.h:ms_countof(), C 201112L
+
+</system-out>
+	</testcase>
+	<testcase name="ms_countof-pos_vla_cv" classname="ms_countof-pos_vla_cv" time="0.163117" status="run">
+		<properties>
+			<property name="cmake_labels" value="ms_countof"/>
+		</properties>
+		<system-out>Internal cmake changing into directory: /home/parallels/soft/my/countof_ns/build/Linux_suncc_sunCC
+Change Dir: '/home/parallels/soft/my/countof_ns/build/Linux_suncc_sunCC'
+
+Run Build Command(s): /usr/bin/gmake -f Makefile ms_countof-pos_vla_cv
+[  0%] Built target CounofNS
+[100%] Built target ms_countof-pos_vla_cv
+
+Running test command: "/home/parallels/soft/my/countof_ns/build/Linux_suncc_sunCC/tests/unit/ms_countof-pos_vla_cv"
+Ok 1 TU_ASSERT_AND_RETURN((d1)=1, ...) /home/parallels/soft/my/countof_ns/tests/unit/pos_vla_cv.h:pos_vla_cv.h:TU_UNIT for _comparisons/ms_countof.h:ms_countof(), C 201112L
+
+</system-out>
+	</testcase>
+	<testcase name="ms_countof-pos_vla_n0" classname="ms_countof-pos_vla_n0" time="0.152112" status="fail">
+		<failure message="Failed"/>
+		<properties>
+			<property name="cmake_labels" value="ms_countof"/>
+		</properties>
+		<system-out>Internal cmake changing into directory: /home/parallels/soft/my/countof_ns/build/Linux_suncc_sunCC
+Change Dir: '/home/parallels/soft/my/countof_ns/build/Linux_suncc_sunCC'
+
+Run Build Command(s): /usr/bin/gmake -f Makefile ms_countof-pos_vla_n0
+[  0%] Built target CounofNS
+[100%] Built target ms_countof-pos_vla_n0
+
+Running test command: "/home/parallels/soft/my/countof_ns/build/Linux_suncc_sunCC/tests/unit/ms_countof-pos_vla_n0"
+Test command failed: /home/parallels/soft/my/countof_ns/build/Linux_suncc_sunCC/tests/unit/ms_countof-pos_vla_n0
+
+*** Exception executing: Floating-point exception
+</system-out>
+	</testcase>
+	<testcase name="ms_countof-neg__selftest" classname="ms_countof-neg__selftest" time="0.168635" status="run">
+		<properties>
+			<property name="cmake_labels" value="ms_countof"/>
+		</properties>
+		<system-out>[  0%] Built target CounofNS
+gmake[3]: Предупреждение: время изменения файла «tests/unit/CMakeFiles/ms_countof-neg__selftest.dir/depend.make» находится в будущем (0,11)
+[  0%] Building C object tests/unit/CMakeFiles/ms_countof-neg__selftest.dir/tu_stub.c.o
+"/home/parallels/soft/my/countof_ns/tests/unit/neg__selftest.h", line 12: static assertion failed: "0"
+cc: acomp failed for /home/parallels/soft/my/countof_ns/tests/unit/tu_stub.c
+gmake[3]: *** [tests/unit/CMakeFiles/ms_countof-neg__selftest.dir/build.make:78: tests/unit/CMakeFiles/ms_countof-neg__selftest.dir/tu_stub.c.o] Ошибка 2
+gmake[2]: *** [CMakeFiles/Makefile2:2710: tests/unit/CMakeFiles/ms_countof-neg__selftest.dir/all] Ошибка 2
+gmake[1]: *** [CMakeFiles/Makefile2:2717: tests/unit/CMakeFiles/ms_countof-neg__selftest.dir/rule] Ошибка 2
+gmake: *** [Makefile:1109: ms_countof-neg__selftest] Ошибка 2
+</system-out>
+	</testcase>
+	<testcase name="ms_countof-neg__selftest_0_fail" classname="ms_countof-neg__selftest_0_fail" time="0.0120648" status="notrun">
+		<skipped message="SKIP_RETURN_CODE=42"/>
+		<properties>
+			<property name="cmake_labels" value="ms_countof"/>
+		</properties>
+		<system-out></system-out>
+	</testcase>
+	<testcase name="ms_countof-neg__selftest_cxx" classname="ms_countof-neg__selftest_cxx" time="0.204988" status="run">
+		<properties>
+			<property name="cmake_labels" value="ms_countof"/>
+		</properties>
+		<system-out>[  0%] Built target CounofNS
+[100%] Building CXX object tests/unit/CMakeFiles/ms_countof-neg__selftest_cxx.dir/tu_stub_cxx.cpp.o
+"/home/parallels/soft/my/countof_ns/tests/unit/neg__selftest.h", line 12: Error: Static assertion failed: 0.
+1 Error(s) detected.
+gmake[3]: *** [tests/unit/CMakeFiles/ms_countof-neg__selftest_cxx.dir/build.make:78: tests/unit/CMakeFiles/ms_countof-neg__selftest_cxx.dir/tu_stub_cxx.cpp.o] Ошибка 2
+gmake[2]: *** [CMakeFiles/Makefile2:2742: tests/unit/CMakeFiles/ms_countof-neg__selftest_cxx.dir/all] Ошибка 2
+gmake[1]: *** [CMakeFiles/Makefile2:2749: tests/unit/CMakeFiles/ms_countof-neg__selftest_cxx.dir/rule] Ошибка 2
+gmake: *** [Makefile:1122: ms_countof-neg__selftest_cxx] Ошибка 2
+</system-out>
+	</testcase>
+	<testcase name="ms_countof-neg__selftest_cxx_0_fail" classname="ms_countof-neg__selftest_cxx_0_fail" time="0.0127363" status="notrun">
+		<skipped message="SKIP_RETURN_CODE=42"/>
+		<properties>
+			<property name="cmake_labels" value="ms_countof"/>
+		</properties>
+		<system-out></system-out>
+	</testcase>
+	<testcase name="ms_countof-neg_cv_ptr" classname="ms_countof-neg_cv_ptr" time="0.152167" status="fail">
+		<failure message="Failed"/>
+		<properties>
+			<property name="cmake_labels" value="ms_countof"/>
+		</properties>
+		<system-out>[  0%] Built target CounofNS
+[100%] Built target ms_countof-neg_cv_ptr
+</system-out>
+	</testcase>
+	<testcase name="ms_countof-neg_cv_ptr_0_fail" classname="ms_countof-neg_cv_ptr_0_fail" time="0.0142" status="fail">
+		<failure message="Failed"/>
+		<properties>
+			<property name="cmake_labels" value="ms_countof"/>
+		</properties>
+		<system-out>Fail 2 desired=0 main(0, ...) /home/parallels/soft/my/countof_ns/tests/unit/tu_stub.c:neg_cv_ptr.h:TU_UNIT for _comparisons/ms_countof.h:ms_countof(), C 201112L
+</system-out>
+	</testcase>
+	<testcase name="ms_countof-neg_cv_ptr_cxx" classname="ms_countof-neg_cv_ptr_cxx" time="0.219522" status="run">
+		<properties>
+			<property name="cmake_labels" value="ms_countof"/>
+		</properties>
+		<system-out>[  0%] Built target CounofNS
+[ 50%] Building CXX object tests/unit/CMakeFiles/ms_countof-neg_cv_ptr_cxx.dir/tu_stub_cxx.cpp.o
+"/home/parallels/soft/my/countof_ns/tests/unit/neg_cv_ptr.h", line 4: Error: Could not find a match for ms_countof_helper&lt;_CountofType, _SizeOfArray&gt;(const volatile int*) needed in TU_UNIT().
+1 Error(s) detected.
+gmake[3]: *** [tests/unit/CMakeFiles/ms_countof-neg_cv_ptr_cxx.dir/build.make:78: tests/unit/CMakeFiles/ms_countof-neg_cv_ptr_cxx.dir/tu_stub_cxx.cpp.o] Ошибка 2
+gmake[2]: *** [CMakeFiles/Makefile2:2806: tests/unit/CMakeFiles/ms_countof-neg_cv_ptr_cxx.dir/all] Ошибка 2
+gmake[1]: *** [CMakeFiles/Makefile2:2813: tests/unit/CMakeFiles/ms_countof-neg_cv_ptr_cxx.dir/rule] Ошибка 2
+gmake: *** [Makefile:1148: ms_countof-neg_cv_ptr_cxx] Ошибка 2
+</system-out>
+	</testcase>
+	<testcase name="ms_countof-neg_cv_ptr_cxx_0_fail" classname="ms_countof-neg_cv_ptr_cxx_0_fail" time="0.0119882" status="notrun">
+		<skipped message="SKIP_RETURN_CODE=42"/>
+		<properties>
+			<property name="cmake_labels" value="ms_countof"/>
+		</properties>
+		<system-out></system-out>
+	</testcase>
+	<testcase name="ms_countof-neg_other" classname="ms_countof-neg_other" time="0.178531" status="run">
+		<properties>
+			<property name="cmake_labels" value="ms_countof"/>
+		</properties>
+		<system-out>[  0%] Built target CounofNS
+[  0%] Building C object tests/unit/CMakeFiles/ms_countof-neg_other.dir/tu_stub.c.o
+"/home/parallels/soft/my/countof_ns/tests/unit/neg_other.h", line 4: cannot dereference non-pointer type
+cc: acomp failed for /home/parallels/soft/my/countof_ns/tests/unit/tu_stub.c
+gmake[3]: *** [tests/unit/CMakeFiles/ms_countof-neg_other.dir/build.make:78: tests/unit/CMakeFiles/ms_countof-neg_other.dir/tu_stub.c.o] Ошибка 2
+gmake[2]: *** [CMakeFiles/Makefile2:2838: tests/unit/CMakeFiles/ms_countof-neg_other.dir/all] Ошибка 2
+gmake[1]: *** [CMakeFiles/Makefile2:2845: tests/unit/CMakeFiles/ms_countof-neg_other.dir/rule] Ошибка 2
+gmake: *** [Makefile:1161: ms_countof-neg_other] Ошибка 2
+</system-out>
+	</testcase>
+	<testcase name="ms_countof-neg_other_0_fail" classname="ms_countof-neg_other_0_fail" time="0.0128988" status="notrun">
+		<skipped message="SKIP_RETURN_CODE=42"/>
+		<properties>
+			<property name="cmake_labels" value="ms_countof"/>
+		</properties>
+		<system-out></system-out>
+	</testcase>
+	<testcase name="ms_countof-neg_other_cxx" classname="ms_countof-neg_other_cxx" time="0.221169" status="run">
+		<properties>
+			<property name="cmake_labels" value="ms_countof"/>
+		</properties>
+		<system-out>[  0%] Built target CounofNS
+gmake[3]: Предупреждение: время изменения файла «tests/unit/CMakeFiles/ms_countof-neg_other_cxx.dir/depend.make» находится в будущем (0,092)
+[  0%] Building CXX object tests/unit/CMakeFiles/ms_countof-neg_other_cxx.dir/tu_stub_cxx.cpp.o
+"/home/parallels/soft/my/countof_ns/tests/unit/neg_other.h", line 4: Error: Could not find a match for ms_countof_helper&lt;_CountofType, _SizeOfArray&gt;(int) needed in TU_UNIT().
+1 Error(s) detected.
+gmake[3]: *** [tests/unit/CMakeFiles/ms_countof-neg_other_cxx.dir/build.make:78: tests/unit/CMakeFiles/ms_countof-neg_other_cxx.dir/tu_stub_cxx.cpp.o] Ошибка 2
+gmake[2]: *** [CMakeFiles/Makefile2:2870: tests/unit/CMakeFiles/ms_countof-neg_other_cxx.dir/all] Ошибка 2
+gmake[1]: *** [CMakeFiles/Makefile2:2877: tests/unit/CMakeFiles/ms_countof-neg_other_cxx.dir/rule] Ошибка 2
+gmake: *** [Makefile:1174: ms_countof-neg_other_cxx] Ошибка 2
+</system-out>
+	</testcase>
+	<testcase name="ms_countof-neg_other_cxx_0_fail" classname="ms_countof-neg_other_cxx_0_fail" time="0.0122479" status="notrun">
+		<skipped message="SKIP_RETURN_CODE=42"/>
+		<properties>
+			<property name="cmake_labels" value="ms_countof"/>
+		</properties>
+		<system-out></system-out>
+	</testcase>
+	<testcase name="ms_countof-neg_ptr" classname="ms_countof-neg_ptr" time="0.152952" status="fail">
+		<failure message="Failed"/>
+		<properties>
+			<property name="cmake_labels" value="ms_countof"/>
+		</properties>
+		<system-out>[  0%] Built target CounofNS
+[100%] Built target ms_countof-neg_ptr
+</system-out>
+	</testcase>
+	<testcase name="ms_countof-neg_ptr_0_fail" classname="ms_countof-neg_ptr_0_fail" time="0.0143032" status="fail">
+		<failure message="Failed"/>
+		<properties>
+			<property name="cmake_labels" value="ms_countof"/>
+		</properties>
+		<system-out>Debug /home/parallels/soft/my/countof_ns/tests/unit/neg_ptr.h:3:TU_UNIT
+Debug /home/parallels/soft/my/countof_ns/tests/unit/neg_ptr.h:5:TU_UNIT TU_COUNTOF(p)=2 
+Fail 2 desired=0 main(0, ...) /home/parallels/soft/my/countof_ns/tests/unit/tu_stub.c:neg_ptr.h:TU_UNIT for _comparisons/ms_countof.h:ms_countof(), C 201112L
+</system-out>
+	</testcase>
+	<testcase name="ms_countof-neg_ptr_cxx" classname="ms_countof-neg_ptr_cxx" time="0.218656" status="run">
+		<properties>
+			<property name="cmake_labels" value="ms_countof"/>
+		</properties>
+		<system-out>[  0%] Built target CounofNS
+[100%] Building CXX object tests/unit/CMakeFiles/ms_countof-neg_ptr_cxx.dir/tu_stub_cxx.cpp.o
+"/home/parallels/soft/my/countof_ns/tests/unit/neg_ptr.h", line 6: Error: Could not find a match for ms_countof_helper&lt;_CountofType, _SizeOfArray&gt;(int*) needed in TU_UNIT().
+"/home/parallels/soft/my/countof_ns/tests/unit/neg_ptr.h", line 7: Error: Could not find a match for ms_countof_helper&lt;_CountofType, _SizeOfArray&gt;(int*) needed in TU_UNIT().
+2 Error(s) detected.
+gmake[3]: *** [tests/unit/CMakeFiles/ms_countof-neg_ptr_cxx.dir/build.make:78: tests/unit/CMakeFiles/ms_countof-neg_ptr_cxx.dir/tu_stub_cxx.cpp.o] Ошибка 2
+gmake[2]: *** [CMakeFiles/Makefile2:2934: tests/unit/CMakeFiles/ms_countof-neg_ptr_cxx.dir/all] Ошибка 2
+gmake[1]: *** [CMakeFiles/Makefile2:2941: tests/unit/CMakeFiles/ms_countof-neg_ptr_cxx.dir/rule] Ошибка 2
+gmake: *** [Makefile:1200: ms_countof-neg_ptr_cxx] Ошибка 2
+</system-out>
+	</testcase>
+	<testcase name="ms_countof-neg_ptr_cxx_0_fail" classname="ms_countof-neg_ptr_cxx_0_fail" time="0.0119308" status="notrun">
+		<skipped message="SKIP_RETURN_CODE=42"/>
+		<properties>
+			<property name="cmake_labels" value="ms_countof"/>
+		</properties>
+		<system-out></system-out>
+	</testcase>
+	<testcase name="ms_countof-neg_vla_ptr" classname="ms_countof-neg_vla_ptr" time="0.155" status="fail">
+		<failure message="Failed"/>
+		<properties>
+			<property name="cmake_labels" value="ms_countof"/>
+		</properties>
+		<system-out>[  0%] Built target CounofNS
+[100%] Built target ms_countof-neg_vla_ptr
+</system-out>
+	</testcase>
+	<testcase name="ms_countof-neg_vla_ptr_0_fail" classname="ms_countof-neg_vla_ptr_0_fail" time="0.0138279" status="fail">
+		<failure message="Failed"/>
+		<properties>
+			<property name="cmake_labels" value="ms_countof"/>
+		</properties>
+		<system-out>Fail 2 desired=0 main(0, ...) /home/parallels/soft/my/countof_ns/tests/unit/tu_stub.c:neg_vla_ptr.h:TU_UNIT for _comparisons/ms_countof.h:ms_countof(), C 201112L
+</system-out>
+	</testcase>
+	<testcase name="short_example" classname="short_example" time="0.00178114" status="run">
+		<properties/>
+		<system-out>short_example: Ok (fail=0)
+</system-out>
+	</testcase>
+	<testcase name="short_example_fail" classname="short_example_fail" time="0.167056" status="run">
+		<properties/>
+		<system-out>Internal cmake changing into directory: /home/parallels/soft/my/countof_ns/build/Linux_suncc_sunCC
+Change Dir: '/home/parallels/soft/my/countof_ns/build/Linux_suncc_sunCC'
+
+Run Build Command(s): /usr/bin/gmake -f Makefile short_example_fail
+[  0%] Built target CounofNS
+[ 50%] Building C object examples/CMakeFiles/short_example_fail.dir/short_example.c.o
+"/home/parallels/soft/my/countof_ns/examples/short_example.h", line 71: warning: unrecognized #pragma ignored: message (E_UNRECOGNIZED_PRAGMA_IGNORED)
+"/home/parallels/soft/my/countof_ns/examples/short_example.h", line 72: zero or negative subscript
+"/home/parallels/soft/my/countof_ns/examples/short_example.h", line 72: zero or negative subscript
+"/home/parallels/soft/my/countof_ns/examples/short_example.h", line 73: warning: unrecognized #pragma ignored: message (E_UNRECOGNIZED_PRAGMA_IGNORED)
+"/home/parallels/soft/my/countof_ns/examples/short_example.h", line 74: zero or negative subscript
+"/home/parallels/soft/my/countof_ns/examples/short_example.h", line 7...
+[This part of the test output was removed since it exceeds the threshold of 1024 bytes.]
+</system-out>
+	</testcase>
+	<testcase name="short_example_cxx" classname="short_example_cxx" time="0.00297421" status="run">
+		<properties/>
+		<system-out>short_example: Ok (fail=0)
+</system-out>
+	</testcase>
+	<testcase name="short_example_cxx_fail" classname="short_example_cxx_fail" time="0.201807" status="run">
+		<properties/>
+		<system-out>Internal cmake changing into directory: /home/parallels/soft/my/countof_ns/build/Linux_suncc_sunCC
+Change Dir: '/home/parallels/soft/my/countof_ns/build/Linux_suncc_sunCC'
+
+Run Build Command(s): /usr/bin/gmake -f Makefile short_example_cxx_fail
+[  0%] Built target CounofNS
+gmake[3]: Предупреждение: время изменения файла «examples/CMakeFiles/short_example_cxx_fail.dir/depend.make» находится в будущем (0,092)
+[100%] Building CXX object examples/CMakeFiles/short_example_cxx_fail.dir/short_example_cxx.cpp.o
+"/home/parallels/soft/my/countof_ns/examples/short_example.h", line 71: Warning: Unrecognized #pragma message ( "Must error below @{" )  
+.
+"/home/parallels/soft/my/countof_ns/examples/short_example.h", line 73: Warning: Unrecognized #pragma message ( "}@ Must error above &amp; below @{" )  
+.
+"/home/parallels/soft/my/countof_ns/examples/short_example.h", line 75: Warning: Unrecognized #pragma message ( "}@ Must error above &amp; below @{" )  
+.
+"/home/parallels/soft...
+[This part of the test output was removed since it exceeds the threshold of 1024 bytes.]
+</system-out>
+	</testcase>
+	<testcase name="long_example" classname="long_example" time="0.00185273" status="run">
+		<properties/>
+		<system-out>short_example: Ok (fail=0)
+cv_example: Ok
+__SUNPRO_C 0x5150 _COUNTOF_NS_VLA_UNSUPPORTED __STDC_VERSION__ 201112
+</system-out>
+	</testcase>
+	<testcase name="long_example_fail" classname="long_example_fail" time="0.161577" status="run">
+		<properties/>
+		<system-out>Internal cmake changing into directory: /home/parallels/soft/my/countof_ns/build/Linux_suncc_sunCC
+Change Dir: '/home/parallels/soft/my/countof_ns/build/Linux_suncc_sunCC'
+
+Run Build Command(s): /usr/bin/gmake -f Makefile long_example_fail
+[  0%] Built target CounofNS
+[100%] Building C object examples/CMakeFiles/long_example_fail.dir/long_example.c.o
+"/home/parallels/soft/my/countof_ns/examples/short_example.h", line 71: warning: unrecognized #pragma ignored: message (E_UNRECOGNIZED_PRAGMA_IGNORED)
+"/home/parallels/soft/my/countof_ns/examples/short_example.h", line 72: zero or negative subscript
+"/home/parallels/soft/my/countof_ns/examples/short_example.h", line 72: zero or negative subscript
+"/home/parallels/soft/my/countof_ns/examples/short_example.h", line 73: warning: unrecognized #pragma ignored: message (E_UNRECOGNIZED_PRAGMA_IGNORED)
+"/home/parallels/soft/my/countof_ns/examples/short_example.h", line 74: zero or negative subscript
+"/home/parallels/soft/my/countof_ns/examples/short_example.h", line 75: ...
+[This part of the test output was removed since it exceeds the threshold of 1024 bytes.]
+</system-out>
+	</testcase>
+	<testcase name="long_example_vla" classname="long_example_vla" time="0.00195164" status="run">
+		<properties/>
+		<system-out>short_example: Ok (fail=0)
+vla_example: Ok (fail=0)
+cv_example: Ok
+__SUNPRO_C 0x5150 __STDC_VERSION__ 201112
+</system-out>
+	</testcase>
+	<testcase name="long_example_vla_fail" classname="long_example_vla_fail" time="0.168059" status="run">
+		<properties/>
+		<system-out>Internal cmake changing into directory: /home/parallels/soft/my/countof_ns/build/Linux_suncc_sunCC
+Change Dir: '/home/parallels/soft/my/countof_ns/build/Linux_suncc_sunCC'
+
+Run Build Command(s): /usr/bin/gmake -f Makefile long_example_vla_fail
+[  0%] Built target CounofNS
+[  0%] Building C object examples/CMakeFiles/long_example_vla_fail.dir/long_example.c.o
+"/home/parallels/soft/my/countof_ns/examples/short_example.h", line 71: warning: unrecognized #pragma ignored: message (E_UNRECOGNIZED_PRAGMA_IGNORED)
+"/home/parallels/soft/my/countof_ns/examples/short_example.h", line 72: zero or negative subscript
+"/home/parallels/soft/my/countof_ns/examples/short_example.h", line 72: warning: improper pointer subtraction (E_BAD_POINTER_SUBTRACTION)
+"/home/parallels/soft/my/countof_ns/examples/short_example.h", line 73: warning: unrecognized #pragma ignored: message (E_UNRECOGNIZED_PRAGMA_IGNORED)
+"/home/parallels/soft/my/countof_ns/examples/short_example.h", line 74: warning: improper pointer subtraction (E_BAD_POINTER...
+[This part of the test output was removed since it exceeds the threshold of 1024 bytes.]
+</system-out>
+	</testcase>
+	<testcase name="long_example_cxx" classname="long_example_cxx" time="0.00295998" status="run">
+		<properties/>
+		<system-out>short_example: Ok (fail=0)
+cv_example: Ok
+__cplusplus 201402
+</system-out>
+	</testcase>
+	<testcase name="long_example_cxx_fail" classname="long_example_cxx_fail" time="0.32868" status="run">
+		<properties/>
+		<system-out>Internal cmake changing into directory: /home/parallels/soft/my/countof_ns/build/Linux_suncc_sunCC
+Change Dir: '/home/parallels/soft/my/countof_ns/build/Linux_suncc_sunCC'
+
+Run Build Command(s): /usr/bin/gmake -f Makefile long_example_cxx_fail
+[  0%] Built target CounofNS
+[100%] Building CXX object examples/CMakeFiles/long_example_cxx_fail.dir/long_example_cxx.cpp.o
+"/home/parallels/soft/my/countof_ns/examples/short_example.h", line 71: Warning: Unrecognized #pragma message ( "Must error below @{" )  
+.
+"/home/parallels/soft/my/countof_ns/examples/short_example.h", line 73: Warning: Unrecognized #pragma message ( "}@ Must error above &amp; below @{" )  
+.
+"/home/parallels/soft/my/countof_ns/examples/short_example.h", line 75: Warning: Unrecognized #pragma message ( "}@ Must error above &amp; below @{" )  
+.
+"/home/parallels/soft/my/countof_ns/examples/short_example.h", line 76: Error: The operation "* int" is illegal.
+"/home/parallels/soft/my/countof_ns/examples/short_example.h", line 77: Warning: Unrecognized #pragm...
+[This part of the test output was removed since it exceeds the threshold of 1024 bytes.]
+</system-out>
+	</testcase>
+	<testcase name="_check_logs_config" classname="_check_logs_config" time="0.00138375" status="run">
+		<properties>
+			<property name="cmake_labels" value="default"/>
+		</properties>
+		<system-out>CL_TAG='verbose'
+               TAC_WERROR=''
+               CXX_ENABLED='TRUE'
+               CMAKE_C_COMPILER_ID='SunPro'
+               CMAKE_C_COMPILER_VERSION='5.15.0'
+               CMAKE_C_FLAGS=' -errtags -erroff=E_KW_IS_AN_EXTENSION_OF_ANSI,E_NONPORTABLE_BIT_FIELD_TYPE,E_END_OF_LOOP_CODE_NOT_REACHED,E_STATEMENT_NOT_REACHED  -Wall -Wextra -pedantic -DHAVE_CV_TYPEOF=1 -DHAVE___TYPEOF__=1 -DHAVE_VLA=1 -DERROR_ON_NEGATIVE_ARRAY_SIZE=1 -DERROR_ON_STRUCT_BIT_FIELD=1 -DERROR_ON_STRUCT_STATIC_ASSERT=1'
+               CMAKE_CXX_COMPILER_ID='SunPro'
+               CMAKE_CXX_COMPILER_VERSION='5.15.0'
+               CMAKE_CXX_FLAGS=' -errtags -erroff=E_KW_IS_AN_EXTENSION_OF_ANSI,E_NONPORTABLE_BIT_FIELD_TYPE,E_END_OF_LOOP_CODE_NOT_REACHED,E_STATEMENT_NOT_REACHED  -Wall -Wextra -pedantic -DHAVE_CV_TYPEOF=1 -DHAVE___TYPEOF__=1 -DHAVE_VLA=1 -DERROR_ON_NEGATIVE_ARRAY_SIZE=1 -DERROR_ON_STRUCT_BIT_FIELD=1 -DERROR_ON_STRUCT_STATIC_ASSERT=1'
+               
+</system-out>
+	</testcase>
+	<testcase name="post_check_SunPro-cmp" classname="post_check_SunPro-cmp" time="0.203567" status="run">
+		<properties/>
+		<system-out>Ok, skipped: 4 from 120 (SunPro, default)
+    Unexpected failure: 0/28, wanted: 0
+    Unexpected fpe: 0/4, wanted: 0
+    Unexpected divide_by_zero_warning: 0/0, wanted: 0
+    Unexpected warning: 0/3, wanted: 0
+</system-out>
+	</testcase>
+	<testcase name="post_check_SunPro-debug" classname="post_check_SunPro-debug" time="0.139701" status="run">
+		<properties/>
+		<system-out>Ok, skipped: 4 from 62 (SunPro, debug)
+    Unexpected failure: 0/12, wanted: 0
+    Unexpected fpe: 0/0, wanted: 0
+    Unexpected divide_by_zero_warning: 0/0, wanted: 0
+    Unexpected warning: 0/5, wanted: 0
+</system-out>
+	</testcase>
+	<testcase name="post_check_SunPro-default" classname="post_check_SunPro-default" time="0.119701" status="run">
+		<properties/>
+		<system-out>Ok, skipped: 0 from 48 (SunPro, default)
+    Unexpected failure: 0/12, wanted: 0
+    Unexpected fpe: 0/0, wanted: 0
+    Unexpected divide_by_zero_warning: 0/0, wanted: 0
+    Unexpected warning: 0/4, wanted: 0
+</system-out>
+	</testcase>
+	<testcase name="post_check_SunPro-verbose-cmp" classname="post_check_SunPro-verbose-cmp" time="0.213447" status="fail">
+		<failure message="Failed"/>
+		<properties/>
+		<system-out>neg__selftest:
+"/home/parallels/soft/my/countof_ns/tests/unit/neg__selftest.h", line 15: warning: function has no return statement : tu_unit (e_func_has_no_return_stmt)
+neg__selftest                            *** Unexpected warning
+neg__selftest_c11:
+"/home/parallels/soft/my/countof_ns/tests/unit/neg__selftest.h", line 15: warning: function has no return statement : tu_unit (e_func_has_no_return_stmt)
+neg__selftest_c11                        *** Unexpected warning
+neg__selftest_cxx:
+"/home/parallels/soft/my/countof_ns/tests/unit/neg__selftest.h", line 14: warning: the else-branch should return a value.
+"/home/parallels/soft/my/countof_ns/tests/unit/neg__selftest.h", line 14: warning: the else-branch should return a value.
+"/home/parallels/soft/my/countof_ns/tests/unit/neg__selftest.h", line 15: warning: "tu_unit()" is expected to return a value.
+neg__selftest_cxx                        *** Unexpected warning
+Fail, skipped: 1 from 117 (SunPro, verbose)
+    Unexpected failure: 0/28, wanted: 0
+    Unexpected fpe: 0/4, wanted: 0
+    Unexpected divide_by_zero_warning: 0/0, wanted: 0
+    Unexpected warning: 3/12, wanted: 0
+</system-out>
+	</testcase>
+</testsuite>

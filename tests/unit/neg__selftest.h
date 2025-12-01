@@ -12,4 +12,5 @@ size_t TU_UNIT(void) {
         tu_static_assert(0);
     #endif
     TU_FAIL("neg__selftest.h", 0, sizeof(char));
+    return TU_GT_DESIRED_FAIL;
 }
