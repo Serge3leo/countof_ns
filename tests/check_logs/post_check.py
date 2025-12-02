@@ -14,7 +14,8 @@ import re
 import sys
 import tomllib
 
-from junitparser import JUnitXml
+from junitparser import JUnitXml, TestCase
+
 
 def match_any(s: str, *patterns_arrays) -> bool:
     for pa in patterns_arrays:
@@ -22,6 +23,34 @@ def match_any(s: str, *patterns_arrays) -> bool:
             if re.fullmatch(p, s):
                 return True
     return False
+
+# class condTestCase (TestCase):
+#     with `cond_output` attribute
+
+def condTestCase(case: TestCase) -> "condTestCase":
+    case.cond_output = str(case.system_out) + str(case.system_err)
+    return case
+
+test_retry = 0
+use_re_compile = True # False # True
+if use_re_compile:
+    pass
+    # print(f"Use re.compile(), {test_retry=}")
+    # examples/junit-logs/IntelLLVM-verbose.xml
+    # Use re.compile(), test_retry=0
+    # user	0m7,445s
+    # Use re.compile(), test_retry=3
+    # user	0m29,409s
+    # Our time: (29.4-7.4)/3 = 7.3
+else:
+    pass
+    # print(f"Use re.sub()/re.findall(), {test_retry=}")
+    # examples/junit-logs/IntelLLVM-verbose.xml
+    # Use re.sub()/re.findall(), test_retry=0
+    # user	0m7,476s
+    # Use re.sub()/re.findall(), test_retry=3
+    # user	0m29,163s
+    # Our time: (29.2-7.5)/3 = 7.2
 
 class cond:
     def __init__(self, args: "argparse.Namespace", ccfg: map, cond: str):
@@ -34,23 +63,48 @@ class cond:
         self.unexpected = 0
         self.wanted = 0
         self.matched = 0
+        if use_re_compile:
+            if self.pattern:
+                self.cpattern = re.compile(self.pattern, flags=re.IGNORECASE)
+                del self.pattern
+            if not self.ignore:
+                self.cignore = None
+            else:
+                self.cignore = re.compile("(" + "|".join(self.ignore) + ")",
+                                          flags=re.IGNORECASE)
+                del self.ignore
 
-    def censored(self, case: "junitparser.TestCase"):
-        s = str(case.system_out) + str(case.system_err)
-        for ip in self.ignore:
-            s = re.sub(ip, " :-CENSORED-: ", s, flags=re.IGNORECASE)
-        return s
 
-    def match(self, case: "junitparser.TestCase"):
-        return True
+    def match_censorship(self, case: "condTestCase") -> bool:
+        if use_re_compile:
+            if self.cignore:
+                case.cond_output = self.cignore.sub(" :-CENSORED-: ",
+                                                    case.cond_output)
+        else:
+            for ip in self.ignore:
+                case.cond_output = re.sub(ip, " :-CENSORED-: ",
+                                          case.cond_output, flags=re.IGNORECASE)
+        # TODO re.split() ? 
+        if use_re_compile:
+            m = self.cpattern.findall(case.cond_output)
+            case.cond_output = self.cpattern.sub(" :-MATCHED-: ",
+                                                 case.cond_output)
+        else:
+            m = re.findall(self.pattern, case.cond_output, flags=re.IGNORECASE)
+            case.cond_output = re.sub(self.pattern, " :-MATCHED-: ",
+                                      case.cond_output, flags=re.IGNORECASE)
+        return m
 
-    def extra_print(self, case: "junitparser.TestCase", match: list[tuple]):
+    def extra_print(self, case: "condTestCase", match: list[tuple]):
         print(f"{case.name}:")
         for m in match:
             print(m[0])
 
-    def check(self, case: "junitparser.TestCase") -> None:
-        if m := self.match(case):
+    def check(self, case: "condTestCase") -> None:
+        m = self.match_censorship(case)
+        for _ in range(test_retry):
+            _1 = self.match_censorship(case)
+        if m:
             self.matched += 1
             if (match_any(case.name, self.must_not) or
                 not match_any(case.name, self.random, self.stable)):
@@ -70,39 +124,42 @@ class cond:
         return (f"Unexpected {self.cond}: {self.unexpected}/{self.matched},"
                 f" wanted: {self.wanted}")
 
+
 class failure(cond):
     def __init__(self, args: "argparse.Namespace", ccfg: map):
+        self.pattern = None
         super().__init__(args, ccfg, self.__class__.__name__)
 
-    def match(self, case: "junitparser.TestCase"):
+    def match_censorship(self, case: "condTestCase"):
         return case.is_failure
 
-    def extra_print(self, case: "junitparser.TestCase", match: None):
+    def extra_print(self, case: "condTestCase", match: None):
         pass
+
 
 class fpe(cond):
     def __init__(self, args: "argparse.Namespace", ccfg: map):
+        self.pattern = "(.*(Floa|Exceptio).*)"
         super().__init__(args, ccfg, self.__class__.__name__)
 
-    def match(self, case: "junitparser.TestCase"):
-        return re.findall("(.*(Floa|Exceptio).*)",
-                          self.censored(case), flags=re.IGNORECASE)
+
+class segmentation_fault(cond):
+    def __init__(self, args: "argparse.Namespace", ccfg: map):
+        self.pattern = r"(.*(segmentation|(^|\s)fault).*)"
+        super().__init__(args, ccfg, self.__class__.__name__)
+
 
 class divide_by_zero_warning(cond):
     def __init__(self, args: "argparse.Namespace", ccfg: map):
+        self.pattern = "(.*(Divide|Divisi).*)"
         super().__init__(args, ccfg, self.__class__.__name__)
 
-    def match(self, case: "junitparser.TestCase"):
-        return re.findall("(.*(Divide|Divisi).*)",
-                          self.censored(case), flags=re.IGNORECASE)
 
 class warning(cond):
     def __init__(self, args: "argparse.Namespace", ccfg: map):
+        self.pattern = "(.*( warning: ).*)"
         super().__init__(args, ccfg, self.__class__.__name__)
 
-    def match(self, case: "junitparser.TestCase"):
-        return re.findall("(.*( warning: ).*)",
-                          self.censored(case), flags=re.IGNORECASE)
 
 def process_suite(args: "argparse.Namespace",
                   suite: "junitparser.TestSuite") -> bool:
@@ -135,12 +192,13 @@ def process_suite(args: "argparse.Namespace",
         for k, v in ccfgs[cl_tag].items():
             ccfg[k] = ccfg.get(k, []) + v
     skip = ccfg.get('skip', [])
-    total, skipped = 0, 0
     conds = []
-    for c in failure, fpe, divide_by_zero_warning, warning:
+    for c in failure, fpe, segmentation_fault, divide_by_zero_warning, warning:
         conds.append(c(args, ccfg))
+    total, skipped = 0, 0
     for c in suite:
         total += 1
+        c = condTestCase(c)
         if match_any(c.name, skip):
             skipped += 1
             if args.verbose:
