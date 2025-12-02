@@ -30,8 +30,27 @@
 #define __must_be_fix_array(a)  __BUILD_BUG_ON_ZERO_MSG(!__is_fix_array(a), \
                                         "must be fixed array (not VLA)")
 
+/* Avoid uncertain zero-by-zero divide and warnings */
+#define __pr_array_size_unsafe(a)  (0 == sizeof(*(a)) ? 0 \
+            : sizeof(a)/( sizeof(*(a)) ? sizeof(*(a)) : (size_t)-1 ))
+
+/*
+ * Check `a` - is not variably modified type array with
+ * `_pr_array_size_unsafe(a)` elements
+ */
+#define __must_be_fix_array(a)  \
+            (_Generic(&(a), typeof(*(a))(*)[_pr_array_size_unsafe(a)]: 0))
+
 #define FIX_ARRAY_SIZE(arr) (__pr_array_size_unsafe(arr) + \
                              (size_t)__must_be_fix_array(arr))
 
+/*
+ * Check `a` - is not variably modified type array with
+ * `_pr_array_size_unsafe(a)` elements
+ */
+#define __must_be_fix_array(a, s)  (_Generic(&(a), typeof(*(a))(*)[s]: 0))
+
+#define FIX_ARRAY_SIZE(arr) (__pr_array_size_unsafe(arr) + \
+            (size_t)__must_be_fix_array((arr), __pr_array_size_unsafe(arr)))
 
 #endif  // PROPOSAL_LINUX_ARRAY_SIZE_H_6798
