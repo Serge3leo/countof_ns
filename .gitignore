@@ -40,8 +40,11 @@
 # debug information files
 *.dwo
 
-# cmake users presets files
-CMakeUserPresets.json
-
 # vim files
 *.swp
+
+# Local cmake users presets files
+CMakeUserPresets.json
+
+# Local bat
+st.bat

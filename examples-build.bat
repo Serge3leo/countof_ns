@@ -13,6 +13,8 @@ if not "%1"=="" (
     )
     set platform=vs%VisualStudioVersion%-nmake
     set generator="NMake Makefiles"
+    set post_check=..\..\tests\check_logs\post_check.py
+    set jlt=Testing\Temporary\LastTest-junit.xml
 ) else (
     set platform=vs%VisualStudioVersion%
 )
@@ -21,7 +23,15 @@ cd build\%platform%
 if not "%1"=="" (
     cmake -G %generator% ..\..
     nmake
-    ctest --output-junit Testing\Temporary\LastTest-junit.xml
+    ctest --output-junit "%jlt%"
+    python "%post_check%" --selftest
+    if not errorlevel 1 (
+	python "%post_check%" "%jlt%"
+    ) else (
+	echo ""
+	echo "No python, venv or modules, skip %post_check% %jlt%"
+	echo "See tests\check_log\venv.bat"
+    )
 ) else (
     cmake ..\..
     start .

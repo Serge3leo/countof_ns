@@ -148,7 +148,8 @@ default_cmpl() {
         fi
         "$PYTHON" "$POST_CHECK" "$JLT" $vpc
     else
-        echo "No $PYTHON, skip $POST_CHECK $JLT" 1>&2
+        echo "No $PYTHON, venv or modules , skip $POST_CHECK $JLT" 1>&2
+        echo "See tests/check_log/venv.sh"
     fi
     exit $rc
 }
