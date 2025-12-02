@@ -1,17 +1,5 @@
-# vim:set sw=4 ts=8 et fileencoding=utf8:
-# SPDX-License-Identifier: BSD-2-Clause
-# SPDX-FileCopyrightText: 2025 Сергей Леонтьев (leo@sai.msu.ru)
-
-# MSVC 19.44
+# pat=^[^#"']*(skip|(ignore|must_not|stable|random)_(failure|fpe|segmentation_fault|divide_by_zero_warning|warning))|\[[a-z]{4,}\]|^[^#"']*\]|# (Internal|countof_ns|Comparisons)
 #
-# HAVE_CV_TYPEOF
-# HAVE___TYPEOF__
-# ERROR_ON_NEGATIVE_ARRAY_SIZE
-# ERROR_ON_STRUCT_BIT_FIELD
-# ERROR_ON_STRUCT_STATIC_ASSERT
-# But using ERROR_ON_STRUCT_BIT_FIELD and ERROR_ON_STRUCT_STATIC_ASSERT in
-# macros trigger Level 1 warning C4116: unnamed type definition in parentheses.
-
 [default]
 skip = []
 ignore_fpe = []
@@ -25,7 +13,6 @@ stable_failure = [
     "falsechk_.*",  # Internal
   # countof_ns()
   # Comparisons
-    "(JZMG_ARRAY_LEN|ms_countof)-neg(|_cv)_ptr",
     ]
 random_failure = []
 must_not_fpe = [

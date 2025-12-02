@@ -183,4 +183,27 @@ foreach (params IN ITEMS ${cmp_list})
     endforeach ()
 endforeach ()
 
+# TODO: remove?
+if (NOT CMAKE_GENERATOR MATCHES "Visual Studio")
+    # falsechk, похоже, требует post_check.py
+    foreach (fc IN ITEMS falsechk_fpe falsechk_segv falsechk_rfpe_fix
+                         falsechk_rfpe_vla)
+        if (("${fc}" MATCHES "falsechk_rfpe_fix"
+             AND NOT HAVE_ZERO_LENGTH_ARRAYS) OR
+            ("${fc}" MATCHES "_vla" AND NOT HAVE_VLA) OR
+            ("${fc}" MATCHES "falsechk_rfpe_fix" AND
+             CMAKE_C_COMPILER_ID MATCHES "NVHPC"))
+            # NVC++-F-0000-Internal compiler error. size of unbounded array
+            # type     447
+            continue ()
+        endif ()
+        add_executable(${fc} ${fc}.h tu_stub.c tu_stub.h)
+        target_compile_options(${fc} PRIVATE "-DTU_UNIT_INC=\"${fc}.h\""
+                                             "-DTU_COUNTOF_INC=\"stdio.h\"")
+        add_test(NAME ${fc} COMMAND ${fc})
+        set_tests_properties(${fc} PROPERTIES WILL_FAIL TRUE
+                                              LABELS "falsechk")
+endforeach ()
+endif ()
+
 enable_testing()

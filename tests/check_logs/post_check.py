@@ -98,7 +98,7 @@ class cond:
     def extra_print(self, case: "condTestCase", match: list[tuple]):
         print(f"{case.name}:")
         for m in match:
-            print(m[0])
+            print(m[0] if isinstance(m, tuple) else m)
 
     def check(self, case: "condTestCase") -> None:
         m = self.match_censorship(case)
@@ -113,6 +113,7 @@ class cond:
                 print(f"{case.name:40} *** Unexpected {self.cond}")
         else:
             if (not match_any(case.name, self.must_not) and
+                not match_any(case.name, self.random) and
                 match_any(case.name, self.stable)):
                 self.wanted += 1
                 print(f"{case.name:40} ... Don't required {self.cond}")
@@ -142,11 +143,24 @@ class fpe(cond):
         self.pattern = "(.*(Floa|Exceptio).*)"
         super().__init__(args, ccfg, self.__class__.__name__)
 
+    def match_censorship(self, case: "condTestCase"):
+        m = []
+        for r in case.result:
+            if r.message == 'NUMERICAL':
+                m.append(str(r))
+        return m + super().match_censorship(case)
 
 class segmentation_fault(cond):
     def __init__(self, args: "argparse.Namespace", ccfg: map):
         self.pattern = r"(.*(segmentation|(^|\s)fault).*)"
         super().__init__(args, ccfg, self.__class__.__name__)
+
+    def match_censorship(self, case: "condTestCase"):
+        m = []
+        for r in case.result:
+            if r.message == 'SEGFAULT':
+                m.append(str(r))
+        return m + super().match_censorship(case)
 
 
 class divide_by_zero_warning(cond):

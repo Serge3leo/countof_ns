@@ -23,7 +23,7 @@ cd build\%platform%
 if not "%1"=="" (
     cmake -G %generator% ..\..
     nmake
-    ctest --output-junit "%jlt%"
+    ctest --output-junit "%jlt%" -E post_check_
     python "%post_check%" --selftest
     if not errorlevel 1 (
 	python "%post_check%" "%jlt%"

@@ -21,16 +21,14 @@
 skip = []
 ignore_fpe = []
 ignore_segmentation_fault = []
-ignore_warning = [
-    "warning: must error.*-w#pragma-messages"
-    ]
-ignore_divide_by_zero_warning = [
-    "-Wno-division-by-zero"
-    ]
+ignore_warning = []
+ignore_divide_by_zero_warning = []
 must_not_failure = [
-    "stdc_countof-.*"
-]
+    "stdc_countof-.*",  # Internal, mandatory
+    ]
 stable_failure = [
+    "falsechk_.*",  # Internal
+
   # countof_ns()
     #"pos_cv_array(|_c11)",  # __typeof__() === ttypeof_unqual()
     "pos_vla(|_(cv|00|0n))",  # VLA without _COUNTOF_NS_WANT_С11_VLA
@@ -47,10 +45,13 @@ stable_failure = [
     ]
 random_failure = []
 must_not_fpe = [
-    "(stdc_countof|std_size)-.*",
-    "(pos|neg)_.*",
+    "(stdc_countof|std_size)-.*",  # Internal, mandatory
+    "(pos|neg)_.*",  # Internal, mandatory
     ]
 stable_fpe = [
+    "falsechk_fpe.*",  # Internal
+
+  # Comparisons
     "(JZMG_ARRAY_LEN|LNX_ARRAY_SIZE|ALX_COUNTOF|ms_countof)-pos_vla_00",
     "(JZMG|LNX|ALX|ms)_.*-pos_vla_n0",
     "(JZMG|LNX|ALX|ms)_.*-pos_vla_alone_n0",
@@ -61,45 +62,52 @@ stable_fpe = [
     "(JZMG|LNX|ALX|ms)_.*-pos_vla_zla_n0",
     ]
 random_fpe = [
-    "post_check_.*-.*",  # Disable recursion
+    "post_check_.*-.*",  # Internal, disable recursion
+    "falsechk_rfpe.*",  # Internal
 
+  # Comparisons
     "ms_countof-neg_vla_zla_ptr_0_fail",
     "ms_countof-neg_zla_vla_ptr_0_fail",
     "ms_countof-neg_zla_ptr_0_fail",
-]
-must_not_segmentation_fault = [
-    "(stdc_countof|std_size)-.*",
-    "(pos|neg)_.*",
     ]
-stable_segmentation_fault = []
+must_not_segmentation_fault = [
+    "(stdc_countof|std_size)-.*",  # Internal, mandatory
+    "(pos|neg)_.*",  # Internal, mandatory
+    ]
+stable_segmentation_fault = [
+    "falsechk_segv.*",  # Internal
+    ]
 random_segmentation_fault = [
-    "post_check_.*-.*",  # Disable recursion
+    "post_check_.*-.*",  # Internal, disable recursion
     ]
 must_not_divide_by_zero_warning = [
-    "(stdc_countof|std_size)-.*",
-    "(pos|neg)_.*",
-]
+    "(stdc_countof|std_size)-.*",  # Internal, mandatory
+    "(pos|neg)_.*",  # Internal, mandatory
+    ]
 stable_divide_by_zero_warning = [
+  # Comparisons
     "(JZMG|LNX|ALX|ms)_.*-pos_(|alone_|struct_)zla_(|_zla)[n0]0",
     "(JZMG|LNX|ALX|ms)_.*-pos_(alone|struct)_n0",
     #".*-pos_(struct|vla|zla)(|_zla)_[n0]0",  # divide_by_zero
     #".*-neg_zla_ptr",
     ]
 random_divide_by_zero_warning = [
-    "post_check_.*-.*",  # Disable recursion
+    "post_check_.*-.*",  # Internal, disable recursion
 
+  # Comparisons
     "(JZMG|LNX|ALX|ms)_.*-pos_.*_.*_[n0]0",
     "(JZMG|LNX|ALX|ms)_.*-neg_zla_ptr",
     #".*-pos_(|alone_|struct_)zla_(|_zla)[n0]0",
     ]
 must_not_warning = [
-    "(stdc_countof|std_size)-.*",
-    "(pos|neg)_.*",
+    "(stdc_countof|std_size)-.*",  # Internal, mandatory
+    "(pos|neg)_.*",  # Internal, mandatory
     ]
-stable__warning = []
+stable_warning = []
 random_warning = [
-    "post_check_.*-.*",  # Disable recursion
+    "post_check_.*-.*",  # Internal, disable recursion
 
+  # Comparisons
     "(JZMG_ARRAY_LEN|LNX_ARRAY_SIZE|ALX_COUNTOF|ms_countof)-neg.*_ptr",
     "(JZMG|LNX|ALX|ms)_.*-(pos|neg)_.*",  # TODO divide_by_zero_warning is warning, disable by cmp
     ]

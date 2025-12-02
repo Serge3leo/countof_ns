@@ -16,31 +16,78 @@
 # But not HAVE_VLA (broken), no tests with _COUNTOF_NS_WANT_С11_VLA
 
 [default]
-skip = [ "post_check_.*-.*" ]
+skip = []
+ignore_fpe = []
+ignore_segmentation_fault = []
+ignore_warning = []
+ignore_divide_by_zero_warning = []
+must_not_failure = [
+    "stdc_countof-.*",  # Internal, mandatory
+    ]
 stable_failure = [
-    # countof_ns()
+    "falsechk_.*",  # Internal
+
+  # countof_ns()
     "pos_cv_array(|_c11)",  # __typeof__() === ttypeof_unqual()
     #"pos_vla(|_(cv|00|0n))",  # VLA without _COUNTOF_NS_WANT_С11_VLA
     "pos_(struct|vla|zla)_n0(|_c11)",  # Zero by zero uncertainty (cases 0/0 != 0)
     #"neg(|_cv|_vla)_ptr_c11(|_0_fail)",  # Does not conform to c11 semantics
 
-    # Comparisons
+  # Comparisons
     "(std_size|ms_countof)-pos.*_zla_0[0n]_cxx",
     ".*-pos_(struct|vla|zla)(|_zla)_[n0]0",  # divide_by_zero
     "(JZMG_ARRAY_LEN|ms_countof)-neg(|_cv|_vla|_zla)_ptr(|_0_fail)",
     "JZMG_ARRAY_LEN-pos_zla_n0_cxx",
     ]
-must_not_fpe = [ "std_size-.*" ]
+random_failure = []
+must_not_fpe = [
+    "(stdc_countof|std_size)-.*",  # Internal, mandatory
+    "(pos|neg)_.*",  # Internal, mandatory
+    ]
 stable_fpe = [
+    "falsechk_fpe.*",  # Internal
+
+  # Comparisons
     "(JZMG_ARRAY_LEN|ms_countof)-pos_vla_[n0]0",  # divide_by_zero
     ]
-must_not_divide_by_zero_warning = [ "std_size-.*" ]
+random_fpe = [
+    "post_check_.*-.*",  # Internal, disable recursion
+    "falsechk_rfpe.*",  # Internal
+    ]
+must_not_segmentation_fault = [
+    "(stdc_countof|std_size)-.*",  # Internal, mandatory
+    "(pos|neg)_.*",  # Internal, mandatory
+    ]
+stable_segmentation_fault = [
+    "falsechk_segv.*",  # Internal
+    ]
+random_segmentation_fault = [
+    "post_check_.*-.*",  # Internal, disable recursion
+    ]
+must_not_divide_by_zero_warning = [
+    "(stdc_countof|std_size)-.*",  # Internal, mandatory
+    "(pos|neg)_.*",  # Internal, mandatory
+    ]
 stable_divide_by_zero_warning = [
+  # Comparisons
     ".*-pos_(struct|vla|zla)(|_zla)_[n0]0",  # divide_by_zero
     ".*-neg_zla_ptr",
     ]
+random_divide_by_zero_warning = [
+    "post_check_.*-.*",  # Internal, disable recursion
 
+  # Comparisons
+    "(JZMG_ARRAY_LEN|ms_countof)-neg_zla_ptr",
+    ]
+must_not_warning = [
+    "(stdc_countof|std_size)-.*",  # Internal, mandatory
+    "(pos|neg)_.*",  # Internal, mandatory
+    ]
+stable_warning = []
 random_warning = [
+    "post_check_.*-.*",  # Internal, disable recursion
+
+  # Comparisons
     "neg_other_c11",  # Does not conform to C11 semantics
     "neg(|_cv|_vla)_ptr_c11",  # Does not conform to C11 semantics
     "long_example_vla_fail",
@@ -50,7 +97,6 @@ random_warning = [
 [debug]
 
 [verbose]
-must_not_divide_by_zero_warning = [
-    "ms_countof-neg_zla_ptr",
-    "JZMG_ARRAY_LEN-neg_zla_ptr",
+random_fpe = [
+    "(JZMG_ARRAY_LEN|ms_countof)-neg_zla_ptr_0_fail",
     ]

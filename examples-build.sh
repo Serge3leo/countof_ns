@@ -140,6 +140,7 @@ default_cmpl() {
     fi
     gawk -f "$PC_DIR"/check_test_log.gawk Testing/Temporary/LastTest.log
     if "$PYTHON" "$POST_CHECK" --selftest ; then
+        echo "Check `readlink -f $JLT`"
         if "$verbose" ; then
             vpc="--verbose"
             echo "$PYTHON $POST_CHECK $JLT" $vpc 1>&2

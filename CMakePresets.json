@@ -21,6 +21,7 @@
       "inherits": "default",
       "cacheVariables": {
 	"CL_TAG": "debug",
+	"CMAKE_BUILD_TYPE": "Debug",
         "TAC_ENABLE_WARNINGS": "ON",
         "TAC_POSITIVE_WERROR": "ON"
       }
@@ -39,6 +40,7 @@
       "inherits": "cmp",
       "cacheVariables": {
 	"CL_TAG": "verbose",
+	"CMAKE_BUILD_TYPE": "Debug",
         "TAC_ENABLE_WARNINGS": "ON"
       }
     }
