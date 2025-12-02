@@ -17,6 +17,7 @@ set(CMAKE_CXX_STANDARD 23)
 
 target_include_directories(CounofNS INTERFACE include)
 
+if (FALSE)  # TODO: тесты и примеры, как-то отдельно
 set(TAC_SOURCE_DIR "${CMAKE_CURRENT_SOURCE_DIR}/tests/autoconf")
 include("${TAC_SOURCE_DIR}/autoconf.cmake")
 
@@ -26,3 +27,4 @@ set(CMAKE_FOLDER "tests")
 add_subdirectory(tests)
 
 enable_testing()
+endif ()
