@@ -47,12 +47,15 @@ jobs:
         c_compiler: [gcc, clang, cl]
         include:
           - os: windows-latest
+            platform: "win32"
             c_compiler: cl
             cpp_compiler: cl
           - os: ubuntu-latest
+            platform: "linux"
             c_compiler: gcc
             cpp_compiler: g++
           - os: ubuntu-latest
+            platform: "linux"
             c_compiler: clang
             cpp_compiler: clang++
         exclude:
@@ -88,7 +91,7 @@ jobs:
       - name: Unix examples-build.sh
         if: ${{ matrix.platform != 'win32' }}
         run: |
-          ./examples-build.sh
+          ./examples-build.sh -c ${{ matrix.c_compiler }}
 
       - name: Windows examples-build.bat
         if: ${{ matrix.platform == 'win32' }}
