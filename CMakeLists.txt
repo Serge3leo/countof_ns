@@ -17,7 +17,13 @@ set(CMAKE_CXX_STANDARD 23)
 
 target_include_directories(CounofNS INTERFACE include)
 
-if (FALSE)  # TODO: тесты и примеры, как-то отдельно
+if (TRUE)  # TODO: тесты и примеры, как-то отдельно
+    message("CL_TAG = ${CL_TAG}")
+    message("COMPARISONS = ${COMPARISONS}")
+    message("TAC_ENABLE_WARNINGS = ${TAC_ENABLE_WARNINGS}")
+    message("TAC_POSITIVE_WERROR = ${TAC_POSITIVE_WERROR}")
+    message("CMAKE_BUILD_TYPE = ${CMAKE_BUILD_TYPE}")
+else ()
 set(TAC_SOURCE_DIR "${CMAKE_CURRENT_SOURCE_DIR}/tests/autoconf")
 include("${TAC_SOURCE_DIR}/autoconf.cmake")
 
