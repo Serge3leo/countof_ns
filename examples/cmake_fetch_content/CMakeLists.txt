@@ -1,0 +1,54 @@
+# vim:set sw=4 ts=8 et fileencoding=utf8:
+# SPDX-License-Identifier: BSD-2-Clause
+# SPDX-FileCopyrightText: 2025 Сергей Леонтьев (leo@sai.msu.ru)
+
+cmake_minimum_required (VERSION 3.25)
+project(example_fetch_content_countof_ns
+    VERSION 0.1.0
+    DESCRIPTION "Example use countof_ns with cmake FetchContent"
+    LANGUAGES C)
+
+set(CMAKE_C_STANDARD_REQUIRED 99)  # With C extension `__typeof__()` et al.
+set(CMAKE_C_STANDARD 23)
+
+include(FetchContent)
+FetchContent_Declare(
+    CountofNS
+    GIT_REPOSITORY https://github.com/Serge3leo/countof_ns.git
+    GIT_TAG  fde66bd3743c92da5ac7947766aa8806a016be8a # TODO
+)
+FetchContent_MakeAvailable(CountofNS)
+
+foreach(tgt IN ITEMS shortest shortest_must_fail)
+    add_executable(${tgt} shortest.c)
+    target_link_libraries(${tgt} PRIVATE CountofNS::CountofNS)
+    if (NOT tgt MATCHES "_must_fail")
+        add_test(NAME ${tgt} COMMAND ${tgt})
+    else ()
+        target_compile_definitions(${tgt} PRIVATE EXAMPLE_FAIL)
+            # Remove from build, because `-DEXAMPLE_FAIL` cause compilation
+            # error.
+        set_target_properties("${tgt}" PROPERTIES EXCLUDE_FROM_ALL TRUE)
+            # We are trying build it during the tests.
+        add_test("${tgt}" "${CMAKE_CTEST_COMMAND}"
+                     --build-and-test "${CMAKE_SOURCE_DIR}"
+                                      "${CMAKE_BINARY_DIR}"
+                     --build-generator "${CMAKE_GENERATOR}"
+                     --build-makeprogram "${CMAKE_MAKE_PROGRAM}"
+                     --build-nocmake
+                     --build-noclean
+                     --build-target "${tgt}")
+            # We shouldn't be able to do this.
+        set_tests_properties(${tgt} PROPERTIES WILL_FAIL TRUE)
+    endif ()
+endforeach ()
+
+enable_testing()
+
+if (NOT ST_TAG MATCHES "default|debug")
+    message("It is better to use the `--preset default`"
+            "or `--preset debug` flags")
+endif ()
+if (DEFINED CL_TAG)
+    message("May be FetchContent source broken?")
+endif ()
