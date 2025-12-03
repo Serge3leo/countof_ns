@@ -91,13 +91,13 @@ jobs:
           key: oneapi-${{ matrix.oneapi }}-apt
 
       - name: Non-cache install oneAPI
-        if: >
-          ${{ matrix.c_compiler == 'icx' &&
-              steps.cache-install.outputs.cache-hit != "true" }}
+        if: ${{ matrix.c_compiler == 'icx' }}
         run: |
-          bash .github/workflows/oneapi_setup_apt_repo_linux.sh
-          sudo apt install --no-install-recommends \
-               intel-oneapi-compiler-dpcpp-cpp-${{ matrix.oneapi }}
+          if [ "${{ steps.cache-install.outputs.cache-hit }}" != "true" ]; then
+            bash .github/workflows/oneapi_setup_apt_repo_linux.sh
+            sudo apt install --no-install-recommends \
+                 intel-oneapi-compiler-dpcpp-cpp-${{ matrix.oneapi }}
+          fi
 
       - name: Setup Intel oneAPI environment
         if: ${{ matrix.c_compiler == 'icx' }}
@@ -154,8 +154,8 @@ jobs:
           shortest-build.bat
 
       - name: Exclude unused files from cache
-        if: >
-          ${{ matrix.c_compiler == 'icx' &&
-              steps.cache-install.outputs.cache-hit }}" != "true" }}
+        if: ${{ matrix.c_compiler == 'icx' }}
         run: |
-          bash .github/workflows/oneapi_cache_exclude_linux.sh
+          if [ "${{ steps.cache-install.outputs.cache-hit }}" != "true" ]; then
+            bash .github/workflows/oneapi_cache_exclude_linux.sh
+          fi
