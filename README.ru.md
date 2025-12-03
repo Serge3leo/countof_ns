@@ -41,6 +41,26 @@ IntelLLVM (Intel oneAPI 2025.3).
 
 ## Установка
 
+Реализация макроса `countof_ns()` состоит из одного, не имеющего зависимостей,
+файла [`include/countof_ns.h`](include/countof_ns.h).  Этот файл можно просто
+скопировать в необходимое место на путях поиска заголовочных файлов.
+
+Как альтернативный вариант, можно в вашем cmake проекте использовать
+`FetchContent`:
+
+```
+include(FetchContent)
+FetchContent_Declare(
+    CountofNS
+    GIT_REPOSITORY https://github.com/Serge3leo/countof_ns.git
+    GIT_TAG  fde66bd3743c92da5ac7947766aa8806a016be8a # v0.1pre-examples
+)
+FetchContent_MakeAvailable(CountofNS)
+```
+
+Пример проекта смотрите:
+[`examples/cmake_fetch_content/CMakeLists.txt`](examples/cmake_fetch_content/CMakeLists.txt).
+
 This module depends upon a knowledge of [Markdown]().
 
 ```

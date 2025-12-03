@@ -80,13 +80,21 @@ jobs:
         id: strings
         shell: bash
         run: |
-          echo "build-output-dir=${{ github.workspace }}/build" >> "$GITHUB_OUTPUT"
+          echo "build-output-dir=${{ github.workspace }}/build" \
+              >> "$GITHUB_OUTPUT"
 
       - name: Install python module
+        working-directory: ${{ github.workspace }}/tests/check_logs
         run: |
           python -c "import sys; print(sys.version); print(sys.executable)"
-          python -m pip install junitparser
-          python ${{ github.workspace }}/tests/check_logs/post_check.py --selftest
+          python -m pip install --upgrade pip
+          python -m pip install junitparser yamllint
+          python post_check.py --selftest
+
+      - name: Lint
+        run: |
+          python -m yamllint --list-file .
+          python -m yamllint .
 
       - name: Unix examples-build.sh
         if: ${{ matrix.platform != 'win32' }}
@@ -98,3 +106,16 @@ jobs:
         shell: cmd
         run: |
           examples-build.bat
+
+      - name: Unix FetchContent example
+        if: ${{ matrix.platform != 'win32' }}
+        working-directory: ${{ github.workspace }}/examples/cmake_fetch_content
+        run: |
+          ./shortest-build.sh -c ${{ matrix.c_compiler }}
+
+      - name: Windows examples-build.bat
+        working-directory: ${{ github.workspace }}/examples/cmake_fetch_content
+        if: ${{ matrix.platform == 'win32' }}
+        shell: cmd
+        run: |
+          shortest-build.bat
