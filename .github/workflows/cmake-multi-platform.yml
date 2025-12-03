@@ -56,5 +56,6 @@ jobs:
 
     - name: Install python module
       run: |
+        python -c "import sys; print(sys.version); print(sys.executable)"
         python -m pip install junitparser
         python ${{ github.workspace }}/tests/check_logs/post_check.py --selftest
