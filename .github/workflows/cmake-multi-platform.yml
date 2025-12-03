@@ -44,9 +44,9 @@ jobs:
       # customize the build_type list.
 
       matrix:
-        build_type: [Release]
         c_compiler: [gcc, clang, cl, icx]
         os: [ubuntu-latest, windows-latest]
+        build_type: [Release]
         include:
           - c_compiler: cl
             cpp_compiler: cl
@@ -92,8 +92,8 @@ jobs:
 
       - name: Non-cache install oneAPI
         if: >
-          ${{ matrix.c_compiler == 'icx' }} &&
-          steps.cache-install.outputs.cache-hit != 'true'
+          (${{ matrix.c_compiler == 'icx' }}) &&
+          (steps.cache-install.outputs.cache-hit != 'true')
         timeout-minutes: 5
         run: |
           bash .github/workflows/oneapi_setup_apt_repo_linux.sh
