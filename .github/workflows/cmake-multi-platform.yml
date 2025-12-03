@@ -27,42 +27,51 @@ jobs:
 
       fail-fast: false
 
-      # Set up a matrix to run the following 3 configurations:
+      # Set up a matrix to run the following 4 configurations:
       #
-      # 1. <Windows, Release, latest MSVC compiler toolchain on the default
-      # runner image, default generator>
+      # 1. <Latest MSVC compiler toolchain on the default runner image,
+      # Windows, Release, default generator>
       #
-      # 2. <Linux, Release, latest GCC compiler toolchain on the default runner
-      # image, default generator>
+      # 2. <Latest GCC compiler toolchain on the default runner image, Linux,
+      # Release, default generator>
       #
-      # 3. <Linux, Release, latest Clang compiler toolchain on the default
-      # runner image, default generator>
+      # 3. <Latest Clang compiler toolchain on the default runner image, Linux,
+      # Release, default generator>
+      #
+      # 4. <oneAPI 2025.1, Linux, Release, default generator>
       #
       # To add more build types (Release, Debug, RelWithDebInfo, etc.)
       # customize the build_type list.
 
       matrix:
+        c_compiler: [gcc, clang, cl, icx]
         os: [ubuntu-latest, windows-latest]
         build_type: [Release]
-        c_compiler: [gcc, clang, cl]
         include:
-          - os: windows-latest
-            platform: "win32"
-            c_compiler: cl
+          - c_compiler: cl
             cpp_compiler: cl
-          - os: ubuntu-latest
-            platform: "linux"
-            c_compiler: gcc
+            os: windows-latest
+            platform: "win32"
+          - c_compiler: gcc
             cpp_compiler: g++
-          - os: ubuntu-latest
+            os: ubuntu-latest
             platform: "linux"
-            c_compiler: clang
+          - c_compiler: clang
             cpp_compiler: clang++
+            os: ubuntu-latest
+            platform: "linux"
+          - c_compiler: icx
+            cpp_compiler: icpx
+            oneapi: 2025.1
+            os: ubuntu-latest
+            platform: "linux"
         exclude:
           - os: windows-latest
             c_compiler: gcc
           - os: windows-latest
             c_compiler: clang
+          - os: windows-latest
+            c_compiler: icx
           - os: ubuntu-latest
             c_compiler: cl
 
@@ -71,6 +80,30 @@ jobs:
       - uses: actions/setup-python@v6
         with:
           python-version: '3.13'
+
+      - name: Cache install oneAPI
+        if: ${{ matrix.c_compiler == 'icx' }}
+        id: cache-install
+        uses: actions/cache@v4
+        with:
+          path: |
+            /opt/intel/oneapi
+          key: oneapi-${{ matrix.oneapi }}-apt
+
+      - name: Non-cache install oneAPI
+        if: >
+          ${{ matrix.c_compiler == 'icx' &&
+              steps.cache-install.outputs.cache-hit != "true" }}
+        run: |
+          bash .github/workflows/oneapi_setup_apt_repo_linux.sh
+          sudo apt install --no-install-recommends \
+               intel-oneapi-compiler-dpcpp-cpp-${{ matrix.oneapi }}
+
+      - name: Setup Intel oneAPI environment
+        if: ${{ matrix.c_compiler == 'icx' }}
+        run: |
+          source /opt/intel/oneapi/setvars.sh
+          printenv >> $GITHUB_ENV
 
       - name: Set reusable strings
         # Turn repeated input strings (such as the build output directory) into
@@ -113,9 +146,16 @@ jobs:
         run: |
           ./shortest-build.sh -c ${{ matrix.c_compiler }}
 
-      - name: Windows examples-build.bat
+      - name: Windows FetchContent example
         working-directory: ${{ github.workspace }}/examples/cmake_fetch_content
         if: ${{ matrix.platform == 'win32' }}
         shell: cmd
         run: |
           shortest-build.bat
+
+      - name: Exclude unused files from cache
+        if: >
+          ${{ matrix.c_compiler == 'icx' &&
+              steps.cache-install.outputs.cache-hit }}" != "true" }}
+        run: |
+          bash .github/workflows/oneapi_cache_exclude_linux.sh
