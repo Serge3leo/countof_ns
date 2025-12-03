@@ -17,20 +17,25 @@ set(CMAKE_CXX_STANDARD 23)
 
 target_include_directories(CounofNS INTERFACE include)
 
-if (TRUE)  # TODO: тесты и примеры, как-то отдельно
+if (NOT DEFINED CL_TAG)
+    # We were connected via FetchContent
+    # TODO:
+    # https://stackoverflow.com/a/79261858/8585880
+    # https://habr.com/ru/articles/683204/
+    # et all
     message("CL_TAG = ${CL_TAG}")
     message("COMPARISONS = ${COMPARISONS}")
     message("TAC_ENABLE_WARNINGS = ${TAC_ENABLE_WARNINGS}")
     message("TAC_POSITIVE_WERROR = ${TAC_POSITIVE_WERROR}")
     message("CMAKE_BUILD_TYPE = ${CMAKE_BUILD_TYPE}")
 else ()
-set(TAC_SOURCE_DIR "${CMAKE_CURRENT_SOURCE_DIR}/tests/autoconf")
-include("${TAC_SOURCE_DIR}/autoconf.cmake")
+    set(TAC_SOURCE_DIR "${CMAKE_CURRENT_SOURCE_DIR}/tests/autoconf")
+    include("${TAC_SOURCE_DIR}/autoconf.cmake")
 
-set_property(GLOBAL PROPERTY USE_FOLDERS ON)  # Warning: use ALL_BUILD/RUN_TESTS
-add_subdirectory(examples)
-set(CMAKE_FOLDER "tests")
-add_subdirectory(tests)
+    set_property(GLOBAL PROPERTY USE_FOLDERS ON)  # Warning: use ALL_BUILD/RUN_TESTS
+    add_subdirectory(examples)
+    set(CMAKE_FOLDER "tests")
+    add_subdirectory(tests)
 
-enable_testing()
+    enable_testing()
 endif ()
