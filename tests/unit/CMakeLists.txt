@@ -30,7 +30,7 @@ function (process_test tgt lbl dflt pos src hdr inc)
     endif ()
     add_executable("${tgt}" "${src}" "${hdr}")
     target_compile_options("${tgt}" PRIVATE "${inc}")
-    target_link_libraries("${tgt}" PRIVATE CounofNS::CounofNS)
+    target_link_libraries("${tgt}" PRIVATE CountofNS::CountofNS)
     if (pos)
         target_compile_options("${tgt}" PRIVATE "${TAC_WERROR}")
         if (NOT "${dflt}" OR

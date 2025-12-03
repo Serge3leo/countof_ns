@@ -7,15 +7,15 @@ project(countof_ns
     VERSION 0.1.0
     DESCRIPTION "C2y countof() platform independent implementation C23/C++11"
     LANGUAGES C CXX)
-add_library(CounofNS INTERFACE include/countof_ns.h)
-add_library(CounofNS::CounofNS ALIAS CounofNS)
+add_library(CountofNS INTERFACE include/countof_ns.h)
+add_library(CountofNS::CountofNS ALIAS CountofNS)
 
 set(CMAKE_C_STANDARD_REQUIRED 99)  # With C extension `__typeof__()` et al.
 set(CMAKE_C_STANDARD 23)
 set(CMAKE_CXX_STANDARD_REQUIRED 11)
 set(CMAKE_CXX_STANDARD 23)
 
-target_include_directories(CounofNS INTERFACE include)
+target_include_directories(CountofNS INTERFACE include)
 
 if (NOT DEFINED CL_TAG)
     # We were connected via FetchContent
