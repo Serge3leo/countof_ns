@@ -1,3 +1,5 @@
+[![CMake on multiple platforms](https://github.com/Serge3leo/countof_ns/actions/workflows/cmake-multi-platform.yml/badge.svg)](https://github.com/Serge3leo/countof_ns/actions/workflows/cmake-multi-platform.yml)
+
 # C23/C++11 переносимая реализация `countof()`
 
 `countof_ns()` это переносимая реализация макроса `countof()` черновика
