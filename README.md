@@ -1,3 +1,5 @@
+[![CMake on multiple platforms](https://github.com/Serge3leo/countof_ns/actions/workflows/cmake-multi-platform.yml/badge.svg)](https://github.com/Serge3leo/countof_ns/actions/workflows/cmake-multi-platform.yml)
+
 # C2y `countof()` platform independent implementation with C23/C++11
 
 `countof_ns()` is a portable implementation of the macro `countof()` draft C2y by means of the C23/C++11 standards or using extensions
