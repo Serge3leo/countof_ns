@@ -37,7 +37,7 @@ if "%1"=="nmake" (
     ctest --output-junit "%jlt%" -E post_check_
 ) else (
     cmake -B . -DCMAKE_CXX_COMPILER=cl -DCMAKE_C_COMPILER=cl ^
-          -DCMAKE_BUILD_TYPE=%build_type% -S ..\.. --preset default %*   
+          -DCMAKE_BUILD_TYPE=%build_type% -S ..\.. --preset default %*
     cmake --build . --config %build_type%
     ctest --output-junit "%jlt%" --build-config %build_type%
 )

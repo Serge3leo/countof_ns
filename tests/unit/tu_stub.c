@@ -6,6 +6,6 @@
 
 int main() {
     size_t negative = TU_UNIT();
-    TU_FAIL("main", 0, negative);   
+    TU_FAIL("main", 0, negative);
     return TU_GT_DESIRED_FAIL;
 }

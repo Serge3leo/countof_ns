@@ -25,7 +25,7 @@ jobs:
       # matrix combinations. Consider changing this to true when your workflow
       # is stable.
 
-      fail-fast: false 
+      fail-fast: false
 
       # Set up a matrix to run the following 3 configurations:
       #
