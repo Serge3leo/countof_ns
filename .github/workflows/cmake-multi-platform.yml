@@ -1,27 +1,46 @@
-# This starter workflow is for a CMake project running on multiple platforms. There is a different starter workflow if you just want a single platform.
-# See: https://github.com/actions/starter-workflows/blob/main/ci/cmake-single-platform.yml
+---
+# vim:set sw=2 ts=8 et fileencoding=utf8:
+# SPDX-License-Identifier: BSD-2-Clause
+# SPDX-FileCopyrightText: 2025 Сергей Леонтьев (leo@sai.msu.ru)
+#
+# This starter workflow is for a CMake project running on multiple platforms.
+# There is a different starter workflow if you just want a single platform.
+# See:
+# https://github.com/actions/starter-workflows/blob/main/ci/cmake-single-platform.yml
+
 name: CMake on multiple platforms
 
-on:
+on:  # yamllint disable-line rule:truthy
   push:
-    branches: [ "main" ]
+    branches: ["main"]
   pull_request:
-    branches: [ "main" ]
+    branches: ["main"]
 
 jobs:
   build:
     runs-on: ${{ matrix.os }}
 
     strategy:
-      # Set fail-fast to false to ensure that feedback is delivered for all matrix combinations. Consider changing this to true when your workflow is stable.
+      # Set fail-fast to false to ensure that feedback is delivered for all
+      # matrix combinations. Consider changing this to true when your workflow
+      # is stable.
+
       fail-fast: false
 
       # Set up a matrix to run the following 3 configurations:
-      # 1. <Windows, Release, latest MSVC compiler toolchain on the default runner image, default generator>
-      # 2. <Linux, Release, latest GCC compiler toolchain on the default runner image, default generator>
-      # 3. <Linux, Release, latest Clang compiler toolchain on the default runner image, default generator>
       #
-      # To add more build types (Release, Debug, RelWithDebInfo, etc.) customize the build_type list.
+      # 1. <Windows, Release, latest MSVC compiler toolchain on the default
+      # runner image, default generator>
+      #
+      # 2. <Linux, Release, latest GCC compiler toolchain on the default runner
+      # image, default generator>
+      #
+      # 3. <Linux, Release, latest Clang compiler toolchain on the default
+      # runner image, default generator>
+      #
+      # To add more build types (Release, Debug, RelWithDebInfo, etc.)
+      # customize the build_type list.
+
       matrix:
         os: [ubuntu-latest, windows-latest]
         build_type: [Release]
@@ -45,17 +64,23 @@ jobs:
             c_compiler: cl
 
     steps:
-    - uses: actions/checkout@v4
+      - uses: actions/checkout@v4
+      - uses: actions/setup-python@v6
+        with:
+          python-version: '3.13'
 
-    - name: Set reusable strings
-      # Turn repeated input strings (such as the build output directory) into step outputs. These step outputs can be used throughout the workflow file.
-      id: strings
-      shell: bash
-      run: |
-        echo "build-output-dir=${{ github.workspace }}/build" >> "$GITHUB_OUTPUT"
+      - name: Set reusable strings
+        # Turn repeated input strings (such as the build output directory) into
+        # step outputs. These step outputs can be used throughout the workflow
+        # file.
 
-    - name: Install python module
-      run: |
-        python -c "import sys; print(sys.version); print(sys.executable)"
-        python -m pip install junitparser
-        python ${{ github.workspace }}/tests/check_logs/post_check.py --selftest
+        id: strings
+        shell: bash
+        run: |
+          echo "build-output-dir=${{ github.workspace }}/build" >> "$GITHUB_OUTPUT"
+
+      - name: Install python module
+        run: |
+          python -c "import sys; print(sys.version); print(sys.executable)"
+          python -m pip install junitparser
+          python ${{ github.workspace }}/tests/check_logs/post_check.py --selftest
