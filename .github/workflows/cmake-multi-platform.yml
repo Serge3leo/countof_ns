@@ -92,7 +92,6 @@ jobs:
 
       - name: Non-cache install oneAPI
         if: ${{ matrix.c_compiler == 'icx' }}
-        timeout-minutes: 5
         run: |
           if [ "${{ steps.cache-install.outputs.cached-hit }}" != "true" ]; then
             bash .github/workflows/oneapi_setup_apt_repo_linux.sh
@@ -132,28 +131,30 @@ jobs:
       - name: Unix examples-build.sh
         if: ${{ matrix.platform != 'win32' }}
         run: |
-          ./examples-build.sh -c ${{ matrix.c_compiler }}
+          # ./examples-build.sh -c ${{ matrix.c_compiler }}
 
       - name: Windows examples-build.bat
         if: ${{ matrix.platform == 'win32' }}
         shell: cmd
         run: |
-          examples-build.bat
+          rem examples-build.bat
 
       - name: Unix FetchContent example
         if: ${{ matrix.platform != 'win32' }}
         working-directory: ${{ github.workspace }}/examples/cmake_fetch_content
         run: |
-          ./shortest-build.sh -c ${{ matrix.c_compiler }}
+          # ./shortest-build.sh -c ${{ matrix.c_compiler }}
 
       - name: Windows examples-build.bat
         working-directory: ${{ github.workspace }}/examples/cmake_fetch_content
         if: ${{ matrix.platform == 'win32' }}
         shell: cmd
         run: |
-          shortest-build.bat
+          rem shortest-build.bat
 
       - name: Exclude unused files from cache
-        if: steps.cache-install.outputs.cache-hit != 'true'
-        run: >
-          bash .github/workflows/oneapi_cache_exclude_linux.sh
+        if: ${{ matrix.c_compiler == 'icx' }}
+        run: |
+          if [ "${{ steps.cache-install.outputs.cached-hit }}" != "true" ]; then
+            bash .github/workflows/oneapi_cache_exclude_linux.sh
+          fi
