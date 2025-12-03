@@ -130,8 +130,7 @@ default_cmpl() {
             rc=$?
         }
     else
-        echo "$ctest_args" | \
-          xargs ctest --output-junit "$JLT" || {
+        echo "$ctest_args" | xargs ctest --output-junit "$JLT" || {
             rc=$?
         }
     fi
@@ -148,6 +147,7 @@ default_cmpl() {
             vpc=""
         fi
         "$PYTHON" "$POST_CHECK" "$JLT" $vpc
+        rc=$?
     else
         echo "No $PYTHON, venv or modules , skip $POST_CHECK $JLT" 1>&2
         echo "See tests/check_log/venv.sh"
