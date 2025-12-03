@@ -25,6 +25,26 @@ Group(?)), SunPro (Oracle Developer Studio).
 
 ## Install
 
+Implementing the macro `countofi_ns()` consists of a single, dependency-free
+file [`include/countof_ns.h`](include/countof_ns.h).  You can simply copy this
+file to the desired location on the header search paths.
+
+Alternatively, you can use `FetchContent` in your cmake project:
+
+```
+include(FetchContent)
+FetchContent_Declare(
+    CountofNS
+    GIT_REPOSITORY https://github.com/Serge3leo/countof_ns.git
+    GIT_TAG  fde66bd3743c92da5ac7947766aa8806a016be8a # v0.1pre-examples
+)
+FetchContent_MakeAvailable(CountofNS)
+```
+
+See the example:
+[`examples/cmake_fetch_content/CMakeLists.txt`](examples/cmake_fetch_content/CMakeLists.txt).
+
+
 This module depends upon a knowledge of [Markdown]().
 
 ```
