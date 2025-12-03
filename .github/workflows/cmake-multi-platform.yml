@@ -91,9 +91,7 @@ jobs:
           key: oneapi-${{ matrix.oneapi }}-apt
 
       - name: Non-cache install oneAPI
-        if: >
-          ${{ (matrix.c_compiler == 'icx') &&
-              (steps.cache-install.outputs.cache-hit != 'true') }}
+        if: ${{ (matrix.c_compiler == 'icx') && (steps.cache-install.outputs.cache-hit != 'true') }}  # yamllint disable-line rule:line-length
         timeout-minutes: 5
         run: |
           bash .github/workflows/oneapi_setup_apt_repo_linux.sh
