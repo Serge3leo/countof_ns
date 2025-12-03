@@ -130,7 +130,7 @@ default_cmpl() {
             rc=$?
         }
     else
-        echo "$ctest_args" | xargs ctest --output-junit "$JLT" || {
+        echo "$ctest_args" | xargs ctest --output-junit "$JLT" || {   
             rc=$?
         }
     fi
