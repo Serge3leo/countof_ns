@@ -97,4 +97,4 @@ jobs:
         if: ${{ matrix.platform == 'win32' }}
         shell: cmd
         run: |
-          examples-build.bat nmake
+          examples-build.bat
