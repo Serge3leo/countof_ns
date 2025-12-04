@@ -46,11 +46,3 @@ foreach(tgt IN ITEMS shortest shortest_must_fail)
 endforeach ()
 
 enable_testing()
-
-if (NOT ST_TAG MATCHES "default|debug")
-    message("It is better to use the `--preset default`"
-            "or `--preset debug` flags")
-endif ()
-if (DEFINED CL_TAG)
-    message("May be FetchContent source broken?")
-endif ()
