@@ -88,7 +88,7 @@ set(tac_checks        have_zero_length_arrays have_alone_flexible_array
                       have_empty_initializer have_empty_structure
                       have_hiden_builtin_types_compatible_p
                       have_typeof have___typeof__ have___typeof_unqual__
-                      have_vla)
+                      have_vla have_vla0 have_vla_zla)
 
 set(tac_error_checks  error_on_generic error_on_negative_array_size
                       # error_on_pointer_subtraction  # deprecated, !constexpr
