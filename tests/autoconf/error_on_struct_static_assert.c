@@ -3,7 +3,7 @@
 // SPDX-FileCopyrightText: 2025 Сергей Леонтьев (leo@sai.msu.ru)
 
 #if __STDC_VERSION__ < 201112L
-    #warning "Seems before C11, __STDC_VERSION__ < 201112L"
+    #pragma message("Seems before C11, __STDC_VERSION__ < 201112L")
 #endif
 
 // C11 6.7.10 Static assertions
