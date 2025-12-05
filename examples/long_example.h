@@ -188,12 +188,12 @@ static void zla_example(void) {
 static void vla_example() {
 #if defined(HAVE_VLA) && !_COUNTOF_NS_VLA_UNSUPPORTED
     size_t fail = 0;
-    const size_t ba = 42;
-    const size_t fa = 56;
-    const size_t tt = 23;
-    const size_t xx = 12;
-    const size_t xy = 3;
-    const size_t xz = 2;
+    size_t ba = 42;
+    size_t fa = 56;
+    size_t tt = 23;
+    size_t xx = 12;
+    size_t xy = 3;
+    size_t xz = 2;
     int a1[ba];
     int a2[fa][tt];
     int (*p1)[tt] = &a2[0];
@@ -212,6 +212,7 @@ static void vla_example() {
     assert(xy == countof_ns(*(int (*)[xy])p3));
     assert(xz == countof_ns(*(int(*)[xz][xz])&p3));
 
+    (void)p1; (void)p3;
     #ifdef EXAMPLE_FAIL
                             #pragma message ("Must error below @{")
         example_assert(ba == countof_ns(a1));
@@ -229,8 +230,8 @@ static void vla_example() {
     #endif
 
     #ifdef HAVE_ZERO_LENGTH_ARRAYS
-        const size_t n = 0;
-        const size_t f = 5;
+        size_t n = 0;
+        size_t f = 5;
         int vz1[n][n];
         int vz2[countof_ns(vz1)][f];
         int vz3[countof_ns(vz2[0])][n];

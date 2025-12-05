@@ -22,7 +22,8 @@ endif ()
 if (NOT DEFINED CMAKE_CXX_STANDARD)
     set(CMAKE_CXX_STANDARD 23)
 endif ()
-if (CMAKE_C_STANDARD_REQUIRED LESS 99 OR CMAKE_C_STANDARD LESS 99 OR
+if (CMAKE_C_STANDARD_REQUIRED MATCHES "[78].*|9[0-8]" OR
+    CMAKE_C_STANDARD MATCHES "[78].*|9[0-8]" OR
     CMAKE_CXX_STANDARD_REQUIRED LESS 11 OR CMAKE_CXX_STANDARD LESS 11)
     message("Warning: countof_ns() recommended use for C11/C++11 or later"
             "(strictly required C99 or later)")
@@ -30,32 +31,25 @@ endif ()
 
 target_include_directories(CountofNS INTERFACE include)
 
-if (PROJECT_IS_TOP_LEVEL)
-    set(COUNTOF_NS_SHORT_EXAMPLE, "Build test for short_example", ON)
-    set(COUNTOF_NS_EXAMPLES, "Build test for other detailed examples", OFF)
-    set(COUNTOF_NS_TESTS, "Build tests", OFF)
-    set(COUNTOF_NS_COMPARISONS, "Build comparisons tests", OFF)
+if (NOT DEFINED CL_TAG)
+    # We were connected via FetchContent
+    # TODO:
+    # https://stackoverflow.com/a/79261858/8585880
+    # https://habr.com/ru/articles/683204/
+    # et all
+    message("CL_TAG = ${CL_TAG}")
+    message("COMPARISONS = ${COMPARISONS}")
+    message("TAC_ENABLE_WARNINGS = ${TAC_ENABLE_WARNINGS}")
+    message("TAC_POSITIVE_WERROR = ${TAC_POSITIVE_WERROR}")
+    message("CMAKE_BUILD_TYPE = ${CMAKE_BUILD_TYPE}")
+else ()
+    set(TAC_SOURCE_DIR "${CMAKE_CURRENT_SOURCE_DIR}/tests/autoconf")
+    include("${TAC_SOURCE_DIR}/autoconf.cmake")
 
-    if (COUNTOF_NS_COMPARISONS AND NOT COUNTOF_NS_TESTS)
-        set(COUNTOF_NS_TESTS TRUE)
-        message("Warning: enable COUNTOF_NS_TESTS for COUNTOF_NS_COMPARISONS")
-    endif ()
-    if (COUNTOF_NS_TESTS AND NOT COUNTOF_NS_EXAMPLES)
-        set(COUNTOF_NS_EXAMPLES TRUE)
-        message("Warning: enable COUNTOF_NS_EXAMPLES for COUNTOF_NS_TESTS")
-    endif ()
-    if (COUNTOF_NS_EXAMPLES)
-        set(TAC_SOURCE_DIR "${CMAKE_CURRENT_SOURCE_DIR}/tests/autoconf")
-        include("${TAC_SOURCE_DIR}/autoconf.cmake")
-    endif ()
-    set_property(GLOBAL PROPERTY USE_FOLDERS ON)
-        # Warning: use ALL_BUILD or RUN_TESTS
-    if (COUNTOF_NS_SHORT_EXAMPLE OR COUNTOF_NS_EXAMPLES)
-        add_subdirectory(examples)
-    endif ()
-    if (COUNTOF_NS_TESTS)
-        set(CMAKE_FOLDER "tests")
-        add_subdirectory(tests)
-    endif ()
+    set_property(GLOBAL PROPERTY USE_FOLDERS ON)  # Warning: use ALL_BUILD/RUN_TESTS
+    add_subdirectory(examples)
+    set(CMAKE_FOLDER "tests")
+    add_subdirectory(tests)
+
     enable_testing()
 endif ()
