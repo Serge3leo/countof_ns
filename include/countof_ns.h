@@ -107,11 +107,28 @@
 
 #if !__cplusplus
     #if __STDC_VERSION__ >= 202311L
-        #define _countof_ns_typeof(t)  typeof(t)
         #define _countof_ns_assert  static_assert
+        #define _countof_ns_typeof(t)  typeof(t)
     #elif !_COUNTOF_NS_WANT_STDC
-        #define _countof_ns_typeof(t)  __typeof__(t)
         #define _countof_ns_assert  _Static_assert
+        #if !_COUNTOF_NS_BROKEN_TYPEOF_WORKAROUND
+                // Simplest C23 way
+                // But partial failure for old Intel (icc) and NVHPC(pgcc)
+            #define _countof_ns_typeof(t)  __typeof__(t)
+        #else
+                // In case the pre C23 language extension is like this:
+                // `__typeof__(x) === typeof_unqual(x)` (old Intel(icc) and
+                // NVHPC(pgcc)), we dummy add "all" qualifiers.
+                //
+                // But full failure for SunPro (suncc)
+                // And MSVC, warning C4114: same type qualifier used more than
+                // once
+                //
+                // In this case, it would be better to use __TYPEOF_UNQUAL__,
+                // but there is no function with this name for Intel(icc),
+                // NVHPC(pgcc) and SunPro(suncc)
+            #define _countof_ns_typeof(t)  const volatile __typeof__(t)
+        #endif
     #else
         #error "With _COUNTOF_NS_WANT_STDC required C23 typeof(t)"
     #endif
@@ -151,41 +168,16 @@
             //     size_t u = ...;
             //     T0 c[u];  // Constraints OK - "is array", at compile time,
             //               // for any `u`
-        #if !_COUNTOF_NS_BROKEN_TYPEOF_WORKAROUND
-            #define _countof_ns_must_array(a)  (0*sizeof( \
-                    (_countof_ns_typeof(a) **)&(a) - \
-                    (_countof_ns_typeof(*(a))(**)[_countof_ns_unsafe(a)])&(a)))
-        #else
-            #define _countof_ns_must_array(a)  (0*sizeof( \
-                        (const volatile _countof_ns_typeof(a) **)&(a) - \
-                        (const volatile _countof_ns_typeof(*(a))(**) \
-                            [_countof_ns_unsafe(a)])&(a)))
-        #endif
+        #define _countof_ns_must_array(a)  (0*sizeof( \
+                (_countof_ns_typeof(a) **)&(a) - \
+                (_countof_ns_typeof(*(a))(**)[_countof_ns_unsafe(a)])&(a)))
     #else
         #define _COUNTOF_NS_VLA_UNSUPPORTED  (1)
             // Constraints `a` is fixed array and have `s` elements (not have
             // variably modified type, i.e. not VLA, not contains VLA etc).
-        #if !_COUNTOF_NS_BROKEN_TYPEOF_WORKAROUND
-            // Simplest C23 way
-            // But partial failure for old Intel (icc) and NVHPC(pgcc)
-            #define _countof_ns_must_array(a)  (_Generic(&(a), \
-                        _countof_ns_typeof(*(a))(*)[_countof_ns_unsafe(a)]: 0))
-        #else
-            // In case the pre C23 language extension is like this:
-            // `__typeof__(x) === typeof_unqual(x)` (old Intel(icc) and
-            // NVHPC(pgcc)), we dummy add "all" qualifiers.
-            //
-            // But full failure for SunPro (suncc)
-            // And MSVC, warning C4114: same type qualifier used more than once
-            //
-            // In this case, it would be better to use __TYPEOF_UNQUAL__, but
-            // there is no function with this name for Intel(icc), NVHPC(pgcc)
-            // and SunPro(suncc)
-            #define _countof_ns_must_array(a)  (_Generic( \
-                        (const volatile _countof_ns_typeof(a) *)&(a), \
-                        const volatile _countof_ns_typeof(*(a))(*) \
-                            [_countof_ns_unsafe(a)]: 0))
-        #endif
+        #define _countof_ns_must_array(a)  (_Generic( \
+                    (_countof_ns_typeof(a) *)&(a), \
+                    _countof_ns_typeof(*(a))(*)[_countof_ns_unsafe(a)]: 0))
     #endif
     #define countof_ns(a)  (_countof_ns_unsafe(a) + _countof_ns_must_array(a))
 #else
