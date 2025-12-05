@@ -22,7 +22,8 @@ endif ()
 if (NOT DEFINED CMAKE_CXX_STANDARD)
     set(CMAKE_CXX_STANDARD 23)
 endif ()
-if (CMAKE_C_STANDARD_REQUIRED LESS 99 OR CMAKE_C_STANDARD LESS 99 OR
+if (CMAKE_C_STANDARD_REQUIRED MATCHES "[78].*|9[0-8]" OR
+    CMAKE_C_STANDARD MATCHES "[78].*|9[0-8]" OR
     CMAKE_CXX_STANDARD_REQUIRED LESS 11 OR CMAKE_CXX_STANDARD LESS 11)
     message("Warning: countof_ns() recommended use for C11/C++11 or later"
             "(strictly required C99 or later)")

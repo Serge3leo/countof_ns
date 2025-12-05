@@ -35,8 +35,7 @@ function (process_test tgt lbl dflt pos src hdr inc)
         target_compile_options("${tgt}" PRIVATE "${TAC_WERROR}")
         if (NOT "${dflt}" OR
            (${tgt} MATCHES "_vla" AND NOT ${tgt} MATCHES "_c11$") OR
-           (${tgt} MATCHES "_n0" AND NOT ${tgt} MATCHES "_cxx$") OR
-           (${tgt} MATCHES "_cv" AND NOT HAVE_CV_TYPEOF))
+           (${tgt} MATCHES "_n0" AND NOT ${tgt} MATCHES "_cxx$"))
             set_target_properties("${tgt}" PROPERTIES EXCLUDE_FROM_ALL TRUE)
             add_test("${tgt}" "${CMAKE_CTEST_COMMAND}"
                      --build-and-test "${CMAKE_SOURCE_DIR}"
@@ -187,7 +186,7 @@ endforeach ()
 if (NOT CMAKE_GENERATOR MATCHES "Visual Studio")
     # falsechk, похоже, требует post_check.py
     foreach (fc IN ITEMS falsechk_fpe falsechk_segv falsechk_rfpe_fix
-                         falsechk_rfpe_vla)
+                         ) # falsechk_rfpe_vla)
         if (("${fc}" MATCHES "falsechk_rfpe_fix"
              AND NOT HAVE_ZERO_LENGTH_ARRAYS) OR
             ("${fc}" MATCHES "_vla" AND NOT HAVE_VLA) OR

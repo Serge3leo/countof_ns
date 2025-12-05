@@ -5,21 +5,26 @@
 // Compilers with C11 semantics:
 //  - clang
 //  - GCC
-//  - Pelles C 13.0
+//  - icx (IntelLLVM)
 //  - nvcc
+//  - Pelles C
 //
 // Compilers with C99 semantics:
-//  - Sun C, Oracle Studio
 //  - pgcc11
+//  - suncc (Sun C, Oracle Studio)
 //
 // Only warnings, no errors at any cases pointers incompatibles:
+//  - icc (old Intel)
 //  - MSVC (Visual Studio)
-//  - pgcc18
 //  - pgcc (aka nvc) 25.9-0
+//  - pgcc18
 //
 // Have options to enable C11 semantics:
+//  - cl /we4047
+//  - icc -diag-error=1121
 //  - pgcc18 -A
-//  - pgcc --diag_error=nonstandard_ptr_minus_ptr,incompatible_operands
+//  - pgcc --diag_error=nonstandard_ptr_minus_ptr
+//  - suncc -errwarn=E_BAD_POINTER_SUBTRACTION
 
 // Formally, the result is not an integer constant expression anyway. There may
 // be unwanted spam warnings from `-pedantic`, `-Wgnu-folding-constant` or

@@ -62,7 +62,7 @@ if (TAC_ENABLE_WARNINGS)
                                 " -Wno-zero-length-array"
                                 " -ferror-limit=9999")
     elseif(CMAKE_C_COMPILER_ID MATCHES "SunPro")
-        string(APPEND cmn_flags " -Wall -Wextra -pedantic")
+        string(APPEND cmn_flags " -Wall -Wextra -pedantic -errtags")
         string(APPEND CMAKE_C_FLAGS " -errtags"
                                     " -erroff=E_KW_IS_AN_EXTENSION_OF_ANSI"
                                             ",E_NONPORTABLE_BIT_FIELD_TYPE"
@@ -82,20 +82,23 @@ string(APPEND CMAKE_CXX_FLAGS " ${cmn_flags}")
 endif() # TODO Pelles XXX Remove or?
 
 set(tac_checks        have_zero_length_arrays have_alone_flexible_array
+                      have_broken___typeof__ have_broken_vla
+                      have_builtin_types_compatible_p
                       have_countof  # have_countof_zla have_countof_vla
-                      have_cv_typeof have_empty_initializer
-                      have_empty_structure have_typeof have___typeof__
+                      have_empty_initializer have_empty_structure
+                      have_hiden_builtin_types_compatible_p
+                      have_typeof have___typeof__ have___typeof_unqual__
                       have_vla)
 
-set(tac_error_checks  error_on_negative_array_size
+set(tac_error_checks  error_on_generic error_on_negative_array_size
                       # error_on_pointer_subtraction  # deprecated, !constexpr
                       error_on_sizeof_pointer_subtraction
                       error_on_struct_bit_field error_on_struct_static_assert)
 
 function(tac_register var)
     set(${var} TRUE PARENT_SCOPE)
-    set(CMAKE_C_FLAGS "${CMAKE_C_FLAGS} -D${var}=1" PARENT_SCOPE)
-    set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -D${var}=1" PARENT_SCOPE)
+    set(CMAKE_C_FLAGS "${CMAKE_C_FLAGS} -D${var}" PARENT_SCOPE)
+    set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -D${var}" PARENT_SCOPE)
     # TODO list(APPEND COMPILE_DEFINITIONS ${CCHK})
     # TODO add_compile_definitions(${CCHK})
 endfunction()
@@ -157,4 +160,8 @@ tac_report(rep)
 message("${rep}")
 if (NOT HAVE_TYPEOF AND NOT HAVE___TYPEOF__)
     message(FATAL_ERROR "Don't have `typeof()` or `__typeof__()`")
+endif ()
+if (HAVE_BROKEN___TYPEOF__)
+    message("TODO: ADD -D_COUNTOF_NS_BROKEN_TYPEOF_WORKAROUND")
+    string(APPEND CMAKE_C_FLAGS " -D_COUNTOF_NS_BROKEN_TYPEOF_WORKAROUND")  # TODO XXX
 endif ()
