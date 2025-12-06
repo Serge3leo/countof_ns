@@ -169,7 +169,7 @@
                         (_countof_ns_typeof(a) **)&(a), \
                         _countof_ns_typeof(*(a))(**)[_countof_ns_unsafe(a)] \
                     ), "Must be array"); }))
-    #elif _COUNTOF_NS_WANT_C11_VLA && !__STDC_NO_VLA__
+    #elif _COUNTOF_NS_WANT_VLA_C11 && !__STDC_NO_VLA__
             // Constraints `a` is array and have `_countof_ns_unsafe(a)`
             // elements (for VLA, number elements is unconstrained).
             //

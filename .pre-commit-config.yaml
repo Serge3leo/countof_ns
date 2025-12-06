@@ -6,8 +6,8 @@ repos:
       - id: check-toml
       - id: check-yaml
       - id: end-of-file-fixer
-#      - id: trailing-whitespace
-#        args: [ "--markdown-linebreak-ext=md" ]
+      - id: trailing-whitespace
+        args: [ "--markdown-linebreak-ext=md" ]
 
 # TODO remove or needed?
 #   - repo: https://github.com/koalaman/shellcheck-precommit

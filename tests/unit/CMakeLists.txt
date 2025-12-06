@@ -109,7 +109,7 @@ function (process_hdr params hdr pos werror)
     if (langs MATCHES "CLANG" AND "${dflt}" AND HAVE_VLA)
         process_test("${base}_c11" "${tu_countof_func}" "${dflt}" "${pos}"
                                    tu_stub.c "${hdr}" "${inc}")
-        target_compile_options("${base}_c11" PRIVATE -D_COUNTOF_NS_WANT_C11_VLA)
+        target_compile_options("${base}_c11" PRIVATE -D_COUNTOF_NS_WANT_VLA_C11)
     endif ()
     if (langs MATCHES "CXX" AND CXX_ENABLED AND NOT "${base}" MATCHES "_vla")
         process_test("${base}_cxx" "${tu_countof_func}" "${dflt}" "${pos}"

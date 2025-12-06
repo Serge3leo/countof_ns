@@ -2,30 +2,55 @@
 # SPDX-License-Identifier: BSD-2-Clause
 # SPDX-FileCopyrightText: 2025 Сергей Леонтьев (leo@sai.msu.ru)
 
-foreach(t IN ITEMS short_example short_example_cxx  # TODO function?
-                   long_example long_example_vla long_example_cxx)
-    if((NOT ${t} MATCHES "_vla$" OR HAVE_VLA)
-       AND (NOT ${t} MATCHES "_cxx$" OR CXX_ENABLED))
-        list(APPEND tgts "${t}" "${t}_fail")
-    endif()
-endforeach()
-foreach(t IN ITEMS ${tgts})
-    string(REGEX REPLACE "_fail$" "" s "${t}")
-    string(REGEX REPLACE "_vla$" "" s "${s}")
-    string(REGEX REPLACE "_cxx$" "" h "${s}")
-    if("${t}" MATCHES "_cxx")
-        add_executable("${t}" "${s}.cpp" "${h}.h")
-    else()
-        add_executable("${t}" "${s}.c" "${h}.h")
-    endif()
-    if("${t}" MATCHES "_vla")
-        target_compile_definitions("${t}" PRIVATE ENABLE_VLA_EXAMPLE)
-    endif()
-    if("${t}" MATCHES "_fail")
-        target_compile_definitions("${t}" PRIVATE EXAMPLE_FAIL)
-        set_target_properties("${t}" PROPERTIES EXCLUDE_FROM_ALL TRUE)
-    else()
-        target_compile_options("${t}" PRIVATE ${TAC_WERROR})
-    endif()
-    target_link_libraries("${t}" PRIVATE CountofNS::CountofNS)
-endforeach()
+function (example src sfx opt fail_rex)
+    get_filename_component(tgt ${src} NAME_WLE)
+    string(APPEND tgt ${sfx})
+    foreach (t IN ITEMS ${tgt} ${tgt}_must_fail)
+        add_executable(${t} ${src} short_example.h)
+        target_link_libraries(${t} PRIVATE CountofNS::CountofNS)
+        target_compile_options(${t} PRIVATE ${${opt}})
+    endforeach ()
+    add_test(NAME ${tgt} COMMAND ${tgt})
+    set_tests_properties(${tgt} PROPERTIES
+                         FAIL_REGULAR_EXPRESSION "${fail_rex}")
+    target_compile_definitions(${tgt}_must_fail PRIVATE EXAMPLE_FAIL)
+        # Remove from build, because `-DEXAMPLE_FAIL` cause compilation
+        # error.
+    set_target_properties(${tgt}_must_fail PROPERTIES EXCLUDE_FROM_ALL TRUE)
+        # We are trying build it during the tests.
+    add_test(${tgt}_must_fail "${CMAKE_CTEST_COMMAND}"
+                 --build-and-test "${CMAKE_SOURCE_DIR}"
+                                  "${CMAKE_BINARY_DIR}"
+                 --build-generator "${CMAKE_GENERATOR}"
+                 --build-makeprogram "${CMAKE_MAKE_PROGRAM}"
+                 --build-nocmake
+                 --build-noclean
+                 --build-target ${tgt}_must_fail)
+        # We shouldn't be able to do this.
+    set_tests_properties(${tgt}_must_fail PROPERTIES WILL_FAIL TRUE)
+    set_tests_properties(${tgt} ${tgt}_must_fail PROPERTIES
+                         LABELS "short_example;examples;default")
+endfunction ()
+
+example(short_example.c "" "" "")
+example(short_example_cxx.cpp "" "" "")  # TODO remove? stl problem?
+
+if(COUNTOF_NS_EXAMPLES)
+    include(countof_ns_builtin_options.cmake)
+
+    example(long_example.c "" "" "")
+    if (HAVE_VLA AND NOT HAVE_BROKEN_VLA)
+        if (ERROR_ON_SIZEOF_POINTER_SUBTRACTION)
+            set(opt_c11 "-DENABLE_VLA_C11_EXAMPLE")
+            example(long_example.c "_c11" opt_c11 "_COUNTOF_NS_VLA_UNSUPPORTED")
+        endif ()
+        set(opt_bltn "-DENABLE_VLA_BUILTIN_EXAMPLE"
+                     ${countof_ns_builtin_options_${CMAKE_C_COMPILER_ID}})
+        example(long_example.c "_bltn" opt_bltn "_COUNTOF_NS_VLA_UNSUPPORTED")
+    endif ()
+    if (CXX_ENABLED)
+        example(long_example_cxx.cpp "" "" "")
+    endif ()
+endif ()
+
+enable_testing()
