@@ -6,6 +6,7 @@ cmake_minimum_required (VERSION 3.25)
 project(countof_ns
     VERSION 0.1.0
     DESCRIPTION "C2y countof() platform independent implementation C23/C++11"
+    HOMEPAGE_URL https://github.com/Serge3leo/countof_ns.git
     LANGUAGES C CXX)
 add_library(CountofNS INTERFACE include/countof_ns.h)
 add_library(CountofNS::CountofNS ALIAS CountofNS)
