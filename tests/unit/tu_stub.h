@@ -19,13 +19,20 @@
 
 #include TU_COUNTOF_INC
 
-#if _COUNTOF_NS_VLA_UNSUPPORTED || !defined(countof_ns)
-    #if _COUNTOF_NS_WANT_VLA_C11 && !__cplusplus
+#ifndef countof_ns
+    #define TU_C11_VLA  ("")
+#elif _COUNTOF_NS_VLA_UNSUPPORTED
+    #if (_COUNTOF_NS_WANT_VLA_BUILTIN || _COUNTOF_NS_WANT_VLA_C11) && \
+        !__cplusplus
         #error "Wrong autoconf of VLA"
     #endif
-    #define TU_C11_VLA  ("")
+    #define TU_C11_VLA  (" _COUNTOF_NS_VLA_UNSUPPORTED")
+#elif _COUNTOF_NS_WANT_VLA_C11
+    #define TU_C11_VLA  (" _COUNTOF_NS_WANT_VLA_C11")
+#elif _COUNTOF_NS_WANT_VLA_BUILTIN
+    #define TU_C11_VLA  (" _COUNTOF_NS_WANT_VLA_BUILTIN")
 #else
-    #define TU_C11_VLA  (" with C11&VLA")
+    #error "Wrong autoconf of countof_ns"
 #endif
 #ifdef __cplusplus
     #define TU_LANG  ("C++")

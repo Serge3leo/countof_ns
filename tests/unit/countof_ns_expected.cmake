@@ -1,0 +1,69 @@
+# vim:set sw=4 ts=8 et fileencoding=utf8:
+# SPDX-License-Identifier: BSD-2-Clause
+# SPDX-FileCopyrightText: 2025 Сергей Леонтьев (leo@sai.msu.ru)
+
+function (countof_ns_expected expected pos_pos neg_pos)
+    set(pos_base "")
+    foreach (b IN ITEMS ${pos_pos})
+        if (b MATCHES "vla")
+            set(ints ${b}.build_fail ${b}.c11 ${b}.bltn)
+        elseif (HAVE_VLA)
+            set(ints ${b} ${b}.c11 ${b}.bltn ${b}_cxx)
+        else ()
+            set(ints ${b} ${b}_cxx)
+        endif ()
+        foreach (i IN ITEMS ${ints})
+            if (i MATCHES "_vla.*_n0" AND NOT i MATCHES "[.]build_fail")
+                list(APPEND pos_base ${i}.run_fail)
+            elseif (i MATCHES "_n0" AND NOT i MATCHES "_cxx" AND
+                    NOT i MATCHES "[.]build_fail")
+                list(APPEND pos_base ${i}.build_fail)
+            else ()
+                list(APPEND pos_base ${i})
+            endif ()
+        endforeach ()
+    endforeach ()
+
+    set(neg_base "")
+    foreach (b IN ITEMS ${neg_pos})
+        if (HAVE_VLA)
+            set(ints ${b}.build_fail ${b}.c11.build_fail ${b}.bltn.build_fail)
+        else ()
+            set(ints ${b}.build_fail ${b}_cxx.build_fail)
+        endif ()
+        if (ERROR_ON_SIZEOF_POINTER_SUBTRACTION)
+            list(APPEND neg_base ${ints})
+        else ()
+            foreach (i IN ITEMS ${ints})
+                if (i MATCHES "[.]c11" AND
+                    NOT i MATCHES "__selftest|_other")
+                    list(APPEND neg_base ${b}.c11.build_unexpected
+                                         ${b}.c11.run_fail)
+                else ()
+                    list(APPEND neg_base ${i})
+                endif ()
+            endforeach ()
+        endif ()
+    endforeach ()
+
+    if (CMAKE_C_COMPILER_ID STREQUAL NVHPC OR
+        CMAKE_C_COMPILER_ID STREQUAL Intel)
+            # TODO I don't understand. Why doesn't `_Generic()` reject a VLA
+            # array?  Is this a peculiarity of the C language extensions only
+            # for NVHPC (pgcc) and the old Intel (icc)? Or is it the result of
+            # optimizations?
+        string(REGEX REPLACE "pos_vla_struct_00[.]build_fail"
+                             "pos_vla_struct_00"
+                             pos_base "${pos_base}")
+        string(REGEX REPLACE "pos_vla_zla_00.build_fail"
+                             "pos_vla_zla_00"
+                             pos_base "${pos_base}")
+        string(REGEX REPLACE "pos_vla_struct_n0[.]build_fail"
+                             "pos_vla_struct_n0.run_fail"
+                             pos_base "${pos_base}")
+        string(REGEX REPLACE "pos_vla_zla_n0.build_fail"
+                             "pos_vla_zla_n0.run_fail"
+                             pos_base "${pos_base}")
+    endif ()
+    set(${expected} "${pos_base};${neg_base}" PARENT_SCOPE)
+endfunction ()
