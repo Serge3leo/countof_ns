@@ -85,10 +85,12 @@ set(tac_checks        have_zero_length_arrays have_alone_flexible_array
                       have_broken___typeof__ have_broken_vla
                       have_builtin_types_compatible_p
                       have_countof  # have_countof_zla have_countof_vla
+                      have_countof_cxx
                       have_empty_initializer have_empty_structure
                       have_hiden_builtin_types_compatible_p
                       have_typeof have___typeof__ have___typeof_unqual__
-                      have_vla have_vla0 have_vla_zla)
+                      have_vla have_vla0 have_vla_cxx have_vla0_cxx
+                      have_vla_zla)
 
 set(tac_error_checks  error_on_generic error_on_negative_array_size
                       # error_on_pointer_subtraction  # deprecated, !constexpr
@@ -114,7 +116,11 @@ function(tac_report rep)
 endfunction()
 
 foreach(cchk IN ITEMS ${tac_checks} ${tac_error_checks})
-    set(src "${TAC_SOURCE_DIR}/${cchk}.c")
+    if (cchk MATCHES "_cxx$")
+        set(src "${TAC_SOURCE_DIR}/${cchk}.cpp")
+    else ()
+        set(src "${TAC_SOURCE_DIR}/${cchk}.c")
+    endif ()
     set(cchks ${cchk})
     if("${cchk}" MATCHES "^error_")
         list(PREPEND cchks "have_${cchk}")
