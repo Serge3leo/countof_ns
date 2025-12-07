@@ -5,7 +5,7 @@
 function (example src sfx opt fail_rex)
     get_filename_component(tgt ${src} NAME_WLE)
     string(APPEND tgt ${sfx})
-    foreach (t IN ITEMS ${tgt} ${tgt}_must_fail)
+    foreach (t IN ITEMS ${tgt} ${tgt}.build_fail)
         add_executable(${t} ${src} short_example.h)
         target_link_libraries(${t} PRIVATE CountofNS::CountofNS)
         target_compile_options(${t} PRIVATE ${${opt}})
@@ -13,34 +13,59 @@ function (example src sfx opt fail_rex)
     add_test(NAME ${tgt} COMMAND ${tgt})
     set_tests_properties(${tgt} PROPERTIES
                          FAIL_REGULAR_EXPRESSION "${fail_rex}")
-    target_compile_definitions(${tgt}_must_fail PRIVATE EXAMPLE_FAIL)
+    target_compile_definitions(${tgt}.build_fail PRIVATE EXAMPLE_FAIL)
         # Remove from build, because `-DEXAMPLE_FAIL` cause compilation
         # error.
-    set_target_properties(${tgt}_must_fail PROPERTIES EXCLUDE_FROM_ALL TRUE)
+    set_target_properties(${tgt}.build_fail PROPERTIES EXCLUDE_FROM_ALL TRUE)
         # We are trying build it during the tests.
-    add_test(${tgt}_must_fail "${CMAKE_CTEST_COMMAND}"
-                 --build-and-test "${CMAKE_SOURCE_DIR}"
-                                  "${CMAKE_BINARY_DIR}"
-                 --build-generator "${CMAKE_GENERATOR}"
-                 --build-makeprogram "${CMAKE_MAKE_PROGRAM}"
-                 --build-nocmake
-                 --build-noclean
-                 --build-target ${tgt}_must_fail)
+    add_test(NAME ${tgt}.build_fail
+             COMMAND ${CMAKE_COMMAND}
+                --build .
+                --target ${tgt}.build_fail
+                --config "${CMAKE_BUILD_TYPE}"
+             WORKING_DIRECTORY ${CMAKE_BINARY_DIR})
         # We shouldn't be able to do this.
-    set_tests_properties(${tgt}_must_fail PROPERTIES WILL_FAIL TRUE)
-    set_tests_properties(${tgt} ${tgt}_must_fail PROPERTIES
-                         LABELS "short_example;examples;default")
+    set_tests_properties(${tgt}.build_fail PROPERTIES
+                         # TODO Need inverse FIXTURES_SETUP ${tgt}.build_fail
+                         WILL_FAIL TRUE)
+        # If ${tgt}.build_fail - fail, i.e. unexpected success build, try run
+        # it (for debug, etc)
+    # TODO add_test(NAME ${tgt}.run_fail COMMAND ${tgt}.build_fail)
+    # TODO set_tests_properties(${tgt}.run_fail PROPERTIES
+    # TODO                      FIXTURES_REQUIRED ${tgt}.build_fail
+    # TODO                      WILL_FAIL TRUE
+    # TODO                      LABELS "short_example;examples;default")
+    add_test(${tgt}.run_fail "${CMAKE_CTEST_COMMAND}"
+             --build-and-test "${CMAKE_SOURCE_DIR}"
+                              "${CMAKE_BINARY_DIR}"
+             --build-generator "${CMAKE_GENERATOR}"
+             --build-makeprogram "${CMAKE_MAKE_PROGRAM}"
+             --build-nocmake
+             --build-noclean
+             --build-target ${tgt}.build_fail
+             --test-command ${tgt}.build_fail)
+    set_tests_properties(${tgt}.run_fail PROPERTIES
+                         DEPEND ${tgt}.build_fail
+                         # TODO Need inverse FIXTURES_REQUIRE ${tgt}.build_fail
+                         WILL_FAIL TRUE)
+    set_tests_properties(${tgt} ${tgt}.build_fail ${tgt}.run_fail PROPERTIES
+                         LABELS "${tgt};examples;default")
+
 endfunction ()
 
-example(short_example.c "" "" "")
-example(short_example_cxx.cpp "" "" "")  # TODO remove? stl problem?
+if (COUNTOF_NS_SHORT_EXAMPLE)
+    example(short_example.c "" "" "")
+    example(short_example_cxx.cpp "" "" "")  # TODO remove? stl problem?
+endif ()
 
-if(COUNTOF_NS_EXAMPLES)
+if (COUNTOF_NS_EXAMPLES)
     include(countof_ns_builtin_options.cmake)
 
     example(long_example.c "" "" "")
     if (HAVE_VLA AND NOT HAVE_BROKEN_VLA)
         if (ERROR_ON_SIZEOF_POINTER_SUBTRACTION)
+                # If the compiler complies with the C11 constraints for
+                # pointer subtraction
             set(opt_c11 "-DENABLE_VLA_C11_EXAMPLE")
             example(long_example.c "_c11" opt_c11 "_COUNTOF_NS_VLA_UNSUPPORTED")
         endif ()

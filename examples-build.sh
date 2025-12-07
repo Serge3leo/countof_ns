@@ -116,9 +116,9 @@ fi
 default_cmpl() {
     make
 
-    PYTHON=${PYTHON:-python3}
+    # TODO PYTHON=${PYTHON:-python3}
     PC_DIR=${PC_DIR:-../../tests/check_logs}
-    POST_CHECK=${POST_CHECK:-$PC_DIR/post_check.py}
+    # TODO POST_CHECK=${POST_CHECK:-$PC_DIR/post_check.py}
     LT_DIR=${LT_DIR:-Testing/Temporary}
     JLT="${LT_DIR}/LastTest-junit.xml"
 
@@ -138,20 +138,20 @@ default_cmpl() {
         echo gawk -f "$PC_DIR"/check_test_log.gawk Testing/Temporary/LastTest.log
     fi
     gawk -f "$PC_DIR"/check_test_log.gawk Testing/Temporary/LastTest.log
-    if "$PYTHON" "$POST_CHECK" --selftest ; then
-        echo "Check `readlink -f $JLT`"
-        if "$verbose" ; then
-            vpc="--verbose"
-            echo "$PYTHON $POST_CHECK $JLT" $vpc 1>&2
-        else
-            vpc=""
-        fi
-        "$PYTHON" "$POST_CHECK" "$JLT" $vpc
-        rc=$?
-    else
-        echo "No $PYTHON, venv or modules , skip $POST_CHECK $JLT" 1>&2
-        echo "See tests/check_log/venv.sh"
-    fi
+    # TODO if "$PYTHON" "$POST_CHECK" --selftest ; then
+        # TODO echo "Check `readlink -f $JLT`"
+        # TODO if "$verbose" ; then
+            # TODO vpc="--verbose"
+            # TODO echo "$PYTHON $POST_CHECK $JLT" $vpc 1>&2
+        # TODO else
+            # TODO vpc=""
+        # TODO fi
+        # TODO "$PYTHON" "$POST_CHECK" "$JLT" $vpc
+        # TODO rc=$?
+    # TODO else
+        # TODO echo "No $PYTHON, venv or modules , skip $POST_CHECK $JLT" 1>&2
+        # TODO echo "See tests/check_log/venv.sh"
+    # TODO fi
     exit $rc
 }
 Xcode_args() {

@@ -2,10 +2,6 @@
 # SPDX-License-Identifier: BSD-2-Clause
 # SPDX-FileCopyrightText: 2025 Сергей Леонтьев (leo@sai.msu.ru)
 
-set(CACHE COMPARISONS TYPE BOOL HELP "Add comparisons tests" VALUE FALSE)
-
-set(TU_SKIP_CODE 42)
-
 # Positive and check tests must compile and successful execute (for VLA used
 # runtime asserts). They should return Ok, a small number, and debugging
 # information (Warning: TODO: If there is a build error, it's still about
@@ -23,6 +19,176 @@ set(pos_pass_regexp "Ok [0-9] TU_[A-Z_]*ASSERT_AND_RETURN")
 
 file(GLOB neg_hdr RELATIVE "${CMAKE_CURRENT_SOURCE_DIR}" "neg_*.h")
 set(neg_not_terrifying_regexp "Fail 0 desired=")
+
+set(pos_base "")
+foreach (h IN ITEMS ${pos_hdr})  # TODO ${check_hdr} ${pos_hdr})
+    get_filename_component(b ${h} NAME_WLE)
+    if (("${b}" MATCHES "_vla" AND NOT HAVE_VLA) OR
+        ("${b}" MATCHES "_zla" AND NOT HAVE_ZERO_LENGTH_ARRAYS) OR
+        ("${b}" MATCHES "_struct" AND NOT HAVE_EMPTY_STRUCTURE) OR
+        ("${b}" MATCHES "_alone" AND NOT HAVE_ALONE_FLEXIBLE_ARRAY))
+        continue ()
+    endif ()
+    if (b MATCHES "vla")
+        set(ints ${b}.build_fail ${b}.c11 ${b}.bltn)
+    elseif (HAVE_VLA)
+        set(ints ${b} ${b}.c11 ${b}.bltn ${b}_cxx)
+    else ()
+        set(ints ${b} ${b}_cxx)
+    endif ()
+    foreach (i IN ITEMS ${ints})
+        if (i MATCHES "_vla.*_n0" AND NOT i MATCHES "[.]build_fail")
+            list(APPEND pos_base ${i}.run_fail)
+        elseif (i MATCHES "_n0" AND NOT i MATCHES "_cxx" AND
+            NOT i MATCHES "[.]build_fail")
+            list(APPEND pos_base ${i}.build_fail)
+        else ()
+            list(APPEND pos_base ${i})
+        endif ()
+    endforeach ()
+endforeach ()
+
+message("pos_base:")
+foreach (b IN ITEMS ${pos_base})
+    message("'${b}'")
+endforeach ()
+
+set(neg_base "")
+foreach (h IN ITEMS ${neg_hdr})
+    get_filename_component(b ${h} NAME_WLE)
+    if (("${b}" MATCHES "_vla" AND NOT HAVE_VLA) OR
+        ("${b}" MATCHES "_zla" AND NOT HAVE_ZERO_LENGTH_ARRAYS) OR
+        ("${b}" MATCHES "_struct" AND NOT HAVE_EMPTY_STRUCTURE) OR
+        ("${b}" MATCHES "_alone" AND NOT HAVE_ALONE_FLEXIBLE_ARRAY))
+        continue ()
+    endif ()
+    if (HAVE_VLA)
+        set(ints ${b}.build_fail ${b}.c11.build_fail ${b}.bltn.build_fail)
+    else ()
+        set(ints ${b}.build_fail ${b}_cxx.build_fail)
+    endif ()
+    if (ERROR_ON_SIZEOF_POINTER_SUBTRACTION)
+        list(APPEND neg_base ${ints})
+    else ()
+        foreach (i IN ITEMS ${ints})
+            if (i MATCHES "[.]c11" AND
+                NOT i MATCHES "__selftest|_other")
+                list(APPEND neg_base ${b}.c11.build_unexpected ${b}.c11.run_fail)
+            else ()
+                list(APPEND neg_base ${i})
+            endif ()
+        endforeach ()
+    endif ()
+endforeach ()
+
+if (CMAKE_C_COMPILER_ID STREQUAL NVHPC OR CMAKE_C_COMPILER_ID STREQUAL Intel)
+        # TODO I don't understand. Why doesn't `_Generic()` reject a VLA
+        # array?  Is this a peculiarity of the C language extensions only for
+        # NVHPC (pgcc) and the old Intel (icc)? Or is it the result of
+        # optimizations?
+        # TODO XXX pos_vla_struct_zla_00???
+    string(REGEX REPLACE "pos_vla_struct_00[.]build_fail"
+                         "pos_vla_struct_00"
+                         pos_base "${pos_base}")
+    string(REGEX REPLACE "pos_vla_zla_00.build_fail"
+                         "pos_vla_zla_00"
+                         pos_base "${pos_base}")
+    string(REGEX REPLACE "pos_vla_struct_n0[.]build_fail"
+                         "pos_vla_struct_n0.run_fail"
+                         pos_base "${pos_base}")
+    string(REGEX REPLACE "pos_vla_zla_n0.build_fail"
+                         "pos_vla_zla_n0.run_fail"
+                         pos_base "${pos_base}")
+endif ()
+
+message("neg_base:")
+foreach (b IN ITEMS ${neg_base})
+    message("'${b}'")
+endforeach ()
+
+#########
+
+include(${CMAKE_SOURCE_DIR}/examples/countof_ns_builtin_options.cmake)
+
+foreach (tgt IN ITEMS ${pos_base} ${neg_base})
+    list(APPEND lbl "default")
+    get_filename_component(base ${tgt} NAME_WE)
+    if (base MATCHES "_cxx")
+        string(REGEX REPLACE "_cxx" "" base ${base})
+        set(src tu_stub_cxx.cpp)
+    else ()
+        set(src tu_stub.c)
+    endif ()
+    list(APPEND src tu_stub.h ${base}.h) # countof_ns.h)
+    set(hdr ${base}.h)
+    add_executable(${tgt} ${src} ${hdr})
+    target_link_libraries(${tgt} PRIVATE CountofNS::CountofNS)
+    if (tgt MATCHES "neg_vla_ptr")
+        message("tgt=${tgt}")
+    endif ()
+    if (tgt MATCHES "[.]c11")
+        message("tgt=${tgt}")
+        target_compile_definitions(${tgt} PRIVATE ${inc}
+                "_COUNTOF_NS_WANT_VLA_C11")
+        # _COUNTOF_NS_VLA_UNSUPPORTED
+    elseif (tgt MATCHES "[.]bltn")
+        target_compile_definitions(${tgt} PRIVATE ${inc}
+                "_COUNTOF_NS_WANT_VLA_BUILTIN")
+        target_compile_options(${tgt} PRIVATE
+                ${countof_ns_builtin_options_${CMAKE_C_COMPILER_ID}})
+        # _COUNTOF_NS_VLA_UNSUPPORTED
+    endif ()
+    set(inc "-DTU_UNIT_INC=\"${hdr}\"")
+    target_compile_options(${tgt} PRIVATE ${inc})
+    # if (pos)
+    #     target_compile_options("${tgt}" PRIVATE "${TAC_WERROR}")
+    # endif ()
+    if (tgt MATCHES "[.]build_.*")
+        set_target_properties("${tgt}" PROPERTIES EXCLUDE_FROM_ALL TRUE)
+        add_test(NAME "${tgt}"
+                 COMMAND ${CMAKE_COMMAND}
+                    --build .
+                    --target "${tgt}"
+                    #--config $<CONFIGURATION>
+                    --config "${CMAKE_BUILD_TYPE}"
+                 WORKING_DIRECTORY ${CMAKE_BINARY_DIR})
+        if (tgt MATCHES "[.][^.]*_fail")
+            set_tests_properties("${tgt}" PROPERTIES WILL_FAIL TRUE)
+        endif ()
+    elseif (NOT tgt MATCHES "[.][^.]*_fail")
+        add_test(NAME "${tgt}" COMMAND "${tgt}")
+    else ()
+        set_target_properties("${tgt}" PROPERTIES EXCLUDE_FROM_ALL TRUE)
+        add_test("${tgt}" "${CMAKE_CTEST_COMMAND}"
+                 --build-and-test "${CMAKE_SOURCE_DIR}"
+                                  "${CMAKE_BINARY_DIR}"
+                 --build-generator "${CMAKE_GENERATOR}"
+                 --build-makeprogram "${CMAKE_MAKE_PROGRAM}"
+                 #--build-config $<CONFIGURATION>
+                 --build-config "${CMAKE_BUILD_TYPE}"
+                 --build-nocmake
+                 --build-noclean
+                 --build-target "${tgt}"
+                 --test-command "${CMAKE_CURRENT_BINARY_DIR}/${tgt}")
+        set_tests_properties("${tgt}" PROPERTIES WILL_FAIL TRUE)
+    endif ()
+    set_tests_properties("${tgt}" PROPERTIES LABELS "${lbl}")
+endforeach ()
+
+#########
+
+enable_testing()
+
+return ()
+
+
+
+return ()
+
+
+set(CACHE COMPARISONS TYPE BOOL HELP "Add comparisons tests" VALUE FALSE)
+
+set(TU_SKIP_CODE 42)
 
 function (process_test tgt lbl dflt pos src hdr inc)
     if ("${dflt}")
