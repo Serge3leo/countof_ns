@@ -2,17 +2,6 @@
 # SPDX-License-Identifier: BSD-2-Clause
 # SPDX-FileCopyrightText: 2025 Сергей Леонтьев (leo@sai.msu.ru)
 
-# ./examples-build.sh -c . -- "-DCOUNTOF_NS_EXAMPLES=ON" "-DCOUNTOF_NS_TESTS=ON"
-# suncc - 60
-# pgcc - 104
-# icx - 121
-# gcc-11 - 104
-# clang-14 - 104
-# gcc-mp-15 - 121
-# calng-mp-21 - 121
-# icc - 104
-# MSVC - 26
-
 include(${CMAKE_SOURCE_DIR}/examples/countof_ns_builtin_options.cmake)
 
 function (process_params params)
@@ -25,7 +14,7 @@ function (process_params params)
     if (dflt)
         list(APPEND lbl "default")
     else ()
-        set(CMAKE_FOLDER tests/${tu_countof_func})
+        set(CMAKE_FOLDER "${CMAKE_FOLDER}/${tu_countof_func}")
     endif ()
     foreach (etgt IN ITEMS ${${expected}})
         get_filename_component(base ${etgt} NAME_WE)
@@ -77,6 +66,8 @@ function (process_params params)
             endif ()
         elseif (NOT etgt MATCHES "[.][^.]*_fail")
             add_test(NAME ${tgt} COMMAND ${tgt})
+            set_tests_properties(${tgt} PROPERTIES
+                                 PASS_REGULAR_EXPRESSION "${tu_pos_pass_regexp}")
         else ()
             set_target_properties(${tgt} PROPERTIES EXCLUDE_FROM_ALL TRUE)
             add_test(${tgt} "${CMAKE_CTEST_COMMAND}"
@@ -93,6 +84,7 @@ function (process_params params)
         endif ()
         set_tests_properties(${tgt} PROPERTIES
                              FAIL_REGULAR_EXPRESSION "${vla_fail_regex}"
+                             FAIL_REGULAR_EXPRESSION "${tu_fail_regexp}"
                              LABELS "${lbl}")
     endforeach ()
 endfunction ()
@@ -100,19 +92,17 @@ endfunction ()
 include(unit_cases.cmake)
 
 set(tu_params_list "")
-include (countof_ns_expected.cmake)
+if (COUNTOF_NS_TESTS)
+    include (countof_ns_expected.cmake)
+endif ()
 if (COUNTOF_NS_COMPARISONS)
-    file(GLOB cmp_cmakes "comparisons/*_expected.cmake")
+    file(GLOB cmp_cmakes "comparisons/${COUNTOF_NS_CMP_GLOB}*_expected.cmake")
     foreach (cmk IN ITEMS ${cmp_cmakes})
-        # TODO message("cmk=${cmk}")
         include (${cmk})
-        # TODO message("tu_params_list=${tu_params_list}")
     endforeach ()
 endif ()
 
 foreach (prm IN ITEMS ${tu_params_list})
-    # TODO message("prm=${prm}")
-    # TODO message("prm=${${prm}}")
     process_params("${${prm}}")
 endforeach ()
 

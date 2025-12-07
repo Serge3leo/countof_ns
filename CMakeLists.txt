@@ -40,6 +40,10 @@ option(COUNTOF_NS_SHORT_EXAMPLE "Build test for short_example" ON)
 option(COUNTOF_NS_EXAMPLES "Build test for other detailed examples" OFF)
 option(COUNTOF_NS_TESTS "Build tests" OFF)
 option(COUNTOF_NS_COMPARISONS "Build comparisons tests" OFF)
+set(CACHE COUNTOF_NS_CMP_GLOB
+    TYPE STRING
+    HELP "GLOB pattern of comparisons tests"
+    VALUE "*")  # TODO not set default? Workaround: add "*" in tests/unit.
 
 if (COUNTOF_NS_EXAMPLES OR COUNTOF_NS_TESTS OR COUNTOF_NS_COMPARISONS)
     set(TAC_SOURCE_DIR "${CMAKE_CURRENT_SOURCE_DIR}/tests/autoconf")

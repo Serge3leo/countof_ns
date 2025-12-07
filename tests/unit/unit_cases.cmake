@@ -16,6 +16,8 @@ set(tu_pos_pass_regexp "Ok [0-9] TU_[A-Z_]*ASSERT_AND_RETURN")  # TODO remove?
 
 file(GLOB tu_neg_hdr RELATIVE "${CMAKE_CURRENT_SOURCE_DIR}" "neg_*.h")
 set(tu_neg_not_terrifying_regexp "Fail 0 desired=")  # TODO remove?
+                              #  "Ok 0.
+set(tu_fail_regexp "(Ok .[0-9]|Ok[^ ]|Ok [^0-9]|[Ff][Aa][Ii][Ll])")
 
 function(tu_filter_have possible cases)
     set(p "")
