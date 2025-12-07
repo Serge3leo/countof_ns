@@ -2,7 +2,7 @@
 # SPDX-License-Identifier: BSD-2-Clause
 # SPDX-FileCopyrightText: 2025 Сергей Леонтьев (leo@sai.msu.ru)
 
-function (countof_ns_expected expected pos_pos neg_pos)
+function (tu_countof_ns_expected expected pos_pos neg_pos)
     set(pos_base "")
     foreach (b IN ITEMS ${pos_pos})
         if (b MATCHES "vla")
@@ -67,3 +67,8 @@ function (countof_ns_expected expected pos_pos neg_pos)
     endif ()
     set(${expected} "${pos_base};${neg_base}" PARENT_SCOPE)
 endfunction ()
+
+tu_countof_ns_expected(tu_countof_ns_available "${tu_pos_pos}" "${tu_neg_pos}")
+set(tu_countof_ns_params TRUE "countof_ns" "countof_ns.h"
+                         tu_countof_ns_available)
+list(APPEND tu_params_list tu_countof_ns_params)

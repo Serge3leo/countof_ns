@@ -6,7 +6,8 @@
 set -e
 
 cc_cmp_arg=
-ctest_args='-L default'
+# TODO remove? ctest_args='-L default'
+ctest_args=
 cxx_cmp_arg=
 platform_arg=
 rm_arg=false

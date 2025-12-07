@@ -7,17 +7,17 @@
 # information (Warning: TODO: If there is a build error, it's still about
 # "Required regular expression not found...").
 
-file(GLOB check_hdr RELATIVE "${CMAKE_CURRENT_SOURCE_DIR}" "check_*.h")
-file(GLOB pos_hdr RELATIVE "${CMAKE_CURRENT_SOURCE_DIR}" "pos_*.h")
-set(pos_pass_regexp "Ok [0-9] TU_[A-Z_]*ASSERT_AND_RETURN")
+file(GLOB tu_check_hdr RELATIVE "${CMAKE_CURRENT_SOURCE_DIR}" "check_*.h")
+file(GLOB tu_pos_hdr RELATIVE "${CMAKE_CURRENT_SOURCE_DIR}" "pos_*.h")
+set(tu_pos_pass_regexp "Ok [0-9] TU_[A-Z_]*ASSERT_AND_RETURN")  # TODO remove?
 
 # Negative tests must don't compile. But, for comparison purposes, we are
 # trying to find out what a wrongly compiled test does.
 
-file(GLOB neg_hdr RELATIVE "${CMAKE_CURRENT_SOURCE_DIR}" "neg_*.h")
-set(neg_not_terrifying_regexp "Fail 0 desired=")
+file(GLOB tu_neg_hdr RELATIVE "${CMAKE_CURRENT_SOURCE_DIR}" "neg_*.h")
+set(tu_neg_not_terrifying_regexp "Fail 0 desired=")  # TODO remove?
 
-function(filter_have possible cases)
+function(tu_filter_have possible cases)
     set(p "")
     foreach (cc IN ITEMS ${cases})
         get_filename_component(c ${cc} NAME_WLE)
@@ -32,5 +32,5 @@ function(filter_have possible cases)
     set("${possible}" "${p}" PARENT_SCOPE)
 endfunction ()
 
-filter_have(pos_pos "${pos_hdr}")  # TODO "${check_hdr};${pos_hdr}")
-filter_have(neg_pos "${neg_hdr}")
+tu_filter_have(tu_pos_pos "${tu_pos_hdr}")  # TODO "${tu_check_hdr};${tu_pos_hdr}")
+tu_filter_have(tu_neg_pos "${tu_neg_hdr}")
