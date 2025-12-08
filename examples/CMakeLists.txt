@@ -2,6 +2,13 @@
 # SPDX-License-Identifier: BSD-2-Clause
 # SPDX-FileCopyrightText: 2025 Сергей Леонтьев (leo@sai.msu.ru)
 
+if (MSVC)
+    if (MSVC_VERSION GREATER_EQUAL 1914)
+        # https://gitlab.kitware.com/cmake/cmake/-/issues/18837
+        string(APPEND CMAKE_CXX_FLAGS " /Zc:__cplusplus")
+    endif ()
+endif ()
+
 function (example src sfx opt fail_rex)
     get_filename_component(tgt ${src} NAME_WLE)
     string(APPEND tgt ${sfx})

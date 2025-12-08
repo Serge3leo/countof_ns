@@ -143,20 +143,20 @@ jobs:
       - name: Unix long_example
         if: ${{ matrix.platform != 'win32' }}
         run: |
-          ./examples-build.sh -c ${{ matrix.c_compiler }} \
+          ./examples-build.sh -c ${{ matrix.c_compiler }} -- \
               "-DCOUNTOF_NS_SHORT_EXAMPLE=OFF" "-DCOUNTOF_NS_EXAMPLES=ON"
 
       - name: Unix tests
         if: ${{ matrix.platform != 'win32' }}
         run: |
-          ./examples-build.sh -c ${{ matrix.c_compiler }} \
+          ./examples-build.sh -c ${{ matrix.c_compiler }} -- \
               "-DCOUNTOF_NS_SHORT_EXAMPLE=OFF" "-DCOUNTOF_NS_EXAMPLES=OFF" \
               "-DCOUNTOF_NS_TESTS=ON"
 
       - name: Unix comparisons
         if: ${{ matrix.platform != 'win32' }}
         run: |
-          ./examples-build.sh -c ${{ matrix.c_compiler }} \
+          ./examples-build.sh -c ${{ matrix.c_compiler }} -- \
               "-DCOUNTOF_NS_SHORT_EXAMPLE=OFF" "-DCOUNTOF_NS_EXAMPLES=OFF" \
               "-DCOUNTOF_NS_TESTS=OFF" "-DCOUNTOF_NS_COMPARISONS=ON"
 
@@ -177,24 +177,24 @@ jobs:
         if: ${{ matrix.platform == 'win32' }}
         shell: cmd
         run: |
-          examples-build.bat ^
+          examples-build.bat -- ^
               "-DCOUNTOF_NS_SHORT_EXAMPLE=OFF" "-DCOUNTOF_NS_EXAMPLES=ON"
 
       - name: Windows tests
         if: ${{ matrix.platform == 'win32' }}
         shell: cmd
         run: |
-          examples-build.bat ^
-              "-DCOUNTOF_NS_SHORT_EXAMPLE=OFF" "-DCOUNTOF_NS_EXAMPLES=ON" ^
-              "-DCOUNTOF_NS_TESTS=OFF" "-DCOUNTOF_NS_COMPARISONS=ON"
+          examples-build.bat -- ^
+              "-DCOUNTOF_NS_SHORT_EXAMPLE=OFF" "-DCOUNTOF_NS_EXAMPLES=OFF" ^
+              "-DCOUNTOF_NS_TESTS=ON"
 
       - name: Windows comparisons
         if: ${{ matrix.platform == 'win32' }}
         shell: cmd
         run: |
-          examples-build.bat ^
-              "-DCOUNTOF_NS_SHORT_EXAMPLE=OFF" "-DCOUNTOF_NS_EXAMPLES=ON" ^
-              "-DCOUNTOF_NS_TESTS=ON"
+          examples-build.bat -- ^
+              "-DCOUNTOF_NS_SHORT_EXAMPLE=OFF" "-DCOUNTOF_NS_EXAMPLES=OFF" ^
+              "-DCOUNTOF_NS_TESTS=OFF" "-DCOUNTOF_NS_COMPARISONS=ON"
 
       - name: Exclude unused files from cache
         if: ${{ matrix.c_compiler == 'icx' }}
