@@ -24,27 +24,13 @@ if "%1"=="nmake" (
 md build\%platform%
 cd build\%platform%
 set build_type=Release
-set jlt=Testing\Temporary\LastTest-junit.xml
-set post_check=..\..\tests\check_logs\post_check.py
-python "%post_check%" --selftest
-if not errorlevel 1 (
-    set pc=1
-) else (
-    set pc=0
-    echo .
-    echo "No python, venv or modules, skip %post_check% %jlt%"
-    echo "See tests\check_log\venv.bat"
-)
 if %generator%=="NMake Makefiles" (
     cmake --preset default -G %generator% ..\.. %2 %3 %4 %5 %6 %7 %8 %9
     cmake --build .
-    ctest --output-junit "%jlt%" -E post_check_
+    ctest
 ) else (
     cmake -B . -DCMAKE_CXX_COMPILER=cl -DCMAKE_C_COMPILER=cl ^
           -DCMAKE_BUILD_TYPE=%build_type% -S ..\.. --preset default %2 %3 %4 %5 %6 %7 %8 %9
     cmake --build . --config %build_type%
-    ctest --output-junit "%jlt%" --build-config %build_type%
-)
-if "%pc%"=="1" (
-    python "%post_check%" "%jlt%"
+    ctest --build-config %build_type%
 )
