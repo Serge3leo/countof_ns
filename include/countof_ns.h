@@ -62,31 +62,37 @@
 //     К примеру, его возможно использовать для гарантированных настроек старых
 //     добрых компиляторов:
 //
-//     $ icc -diag-error=1121
-//         -D'__builtin_types_compatible_p(ta,tb)=(0==0*sizeof((ta)0-(tb)0))'
+//     $ icc -diag-error=1121 \
+//         -D'_countof_ns_ptr_compatible_type(p,t)=(0==0*sizeof((p)-(t)(p)))' \
 //         -D_COUNTOF_NS_WANT_VLA_BUILTIN ...
 //
-//     $ pgcc --diag_error=nonstandard_ptr_minus_ptr
-//         -D'__builtin_types_compatible_p(ta,tb)=(0==0*sizeof((ta)0-(tb)0))'
+//     $ pgcc --diag_error=nonstandard_ptr_minus_ptr \
+//         -D'_countof_ns_ptr_compatible_type(p,t)=(0==0*sizeof((p)-(t)(p)))' \
 //         -D_COUNTOF_NS_WANT_VLA_BUILTIN ...
 //
-//     $ suncc -errwarn=E_BAD_POINTER_SUBTRACTION
-//         -D'__builtin_types_compatible_p(ta,tb)=(0==0*sizeof((ta)0-(tb)0))'
+//     $ suncc -errwarn=E_BAD_POINTER_SUBTRACTION \
+//         -D'_countof_ns_ptr_compatible_type(p,t)=(0==0*sizeof((p)-(t)(p)))' \
 //         -D_COUNTOF_NS_WANT_VLA_BUILTIN ...
+//
+//     Маловероятно, что кому-нибудь потребуется `_COUNTOF_NS_WANT_VLA_BUILTIN`
+//     для MSVC, но это тоже возможно:
+//
+//     > cl /std:clatest /wd4116 /we4047 ^
+//          /FI_countof_ns_ptr_compatible_type_msvc.h ^
+//          /D_COUNTOF_NS_WANT_VLA_BUILTIN ...
 //
 // `_COUNTOF_NS_BROKEN_TYPEOF_WORKAROUND` - у некоторых компиляторов (старый
-//     Intel(icc) и NVHPC(pgcc)) функция `__TYPEOF__()` работает как C23
-//     `typeof_unqual()`, что приводит к отказам компиляции в некоторых случаях
-//     (массивы с квалификаторами и не определены `_COUNTOF_NS_WANT_VLA_C11`
-//     или `_COUNTOF_NS_WANT_VLA_BUILTIN`).  Негативным следствием определения
-//     этого флага являются ложные предупреждения MSVC(cl) и др., а так же
-//     ошибки компиляции SunPro(suncc).
+//     Intel(icc) и NVHPC(pgcc)) функция `__typeof__()` работает как C23
+//     `typeof_unqual()`, что приводит к отказам компиляции в случае
+//     квалификаторов.  Негативным следствием определения этого флага являются
+//     ложные предупреждения MSVC(cl) и др., а так же ошибки компиляции
+//     SunPro(suncc).
 //
 // `_COUNTOF_NS_WANT_STDC` - не использовать расширения: `__typeof__()` и
 //     другие;
 //
 //
-// Сравнение опций:
+// Сравнение опций поддержки VLA:
 //     - Если приоритет - минимизация ошибок компиляции на различных
 //       компиляторах, то при наличии VLA следует предпочесть
 //       `_COUNTOF_NS_WANT_VLA_C11`;
@@ -132,25 +138,40 @@
     #else
         #error "With _COUNTOF_NS_WANT_STDC required C23 typeof(t)"
     #endif
+
         // Avoid uncertain zero-by-zero divide and warnings
-    #define _countof_ns_unsafe(a)  (!sizeof(*(a)) ? 0 \
+    #define _countof_ns_unsafe(a)  (0 == sizeof(*(a)) ? 0 \
                 : sizeof(a)/( sizeof(*(a)) ? sizeof(*(a)) : (size_t)-1 ))
+
     #if _COUNTOF_NS_WANT_VLA_BUILTIN && !__STDC_NO_VLA__ && \
         !_COUNTOF_NS_WANT_STDC
-            // Constraints `a` is array and have `s` elements (for VLA,
-            // number elements is unconstrained).
+        #if !defined(_countof_ns_ptr_compatible_type) && defined(__has_builtin)
+            #if __has_builtin(__builtin_types_compatible_p)
+                #define _countof_ns_ptr_compatible_type(p, type) \
+                            __builtin_types_compatible_p( \
+                                _countof_ns_typeof(p), type)
+            #endif
+        #endif
+        #if !defined(_countof_ns_ptr_compatible_type)
+            #error "Not __builtin_types_compatible_p() or" \
+                   " _countof_ns_ptr_compatible_type() for" \
+                   "_COUNTOF_NS_WANT_VLA_BUILTIN"
+        #endif
+
+            // Constraints `a` is array and have `_countof_ns_unsafe(a)`
+            // elements (for VLA, number elements is unconstrained).
             //
             // Constraints identically C11 constraints of pointer
             // subtraction.  See below.
         #define _countof_ns_must_array(a)  \
-                    (0*sizeof(struct { int _countof_ns; _countof_ns_assert( \
-                        __builtin_types_compatible_p( \
-                            _countof_ns_typeof(a) *, \
-                            _countof_ns_typeof(*(a))(*)[_countof_ns_unsafe(a)] \
-                        ), "Must be array"); }))
-    #elif _COUNTOF_NS_WANT_C11_VLA && !__STDC_NO_VLA__
-            // Constraints `a` is array and have `s` elements (for VLA, number
-            // elements is unconstrained).
+                (0*sizeof(struct { int _countof_ns; _countof_ns_assert( \
+                    _countof_ns_ptr_compatible_type( \
+                        (_countof_ns_typeof(a) **)&(a), \
+                        _countof_ns_typeof(*(a))(**)[_countof_ns_unsafe(a)] \
+                    ), "Must be array"); }))
+    #elif _COUNTOF_NS_WANT_VLA_C11 && !__STDC_NO_VLA__
+            // Constraints `a` is array and have `_countof_ns_unsafe(a)`
+            // elements (for VLA, number elements is unconstrained).
             //
             // Warning: only in the case C extensions of arrays that contain or
             // may contain zero-size elements (multidimensional ZLAs, etc.),
@@ -173,12 +194,14 @@
                 (_countof_ns_typeof(*(a))(**)[_countof_ns_unsafe(a)])&(a)))
     #else
         #define _COUNTOF_NS_VLA_UNSUPPORTED  (1)
-            // Constraints `a` is fixed array and have `s` elements (not have
-            // variably modified type, i.e. not VLA, not contains VLA etc).
+            // Constraints `a` is fixed array and have `_countof_ns_unsafe(a)`
+            // elements (don't have variably modified type, i.e. not VLA, not
+            // contains VLA etc).
         #define _countof_ns_must_array(a)  (_Generic( \
                     (_countof_ns_typeof(a) *)&(a), \
                     _countof_ns_typeof(*(a))(*)[_countof_ns_unsafe(a)]: 0))
     #endif
+
     #define countof_ns(a)  (_countof_ns_unsafe(a) + _countof_ns_must_array(a))
 #else
     #define _COUNTOF_NS_VLA_UNSUPPORTED  (1)

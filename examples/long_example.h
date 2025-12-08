@@ -14,7 +14,9 @@
 // EXAMPLE_FAIL - Include examples for compilation errors with erroneous
 //                parameters;
 //
-// EXAMPLE_VLA_ENABLE - Variable-length arrays (VLA) examples;
+// EXAMPLE_VLA_C11_ENABLE - Variable-length arrays (VLA) examples;
+//
+// EXAMPLE_VLA_BUILTIN_ENABLE - Variable-length arrays (VLA) examples;
 //
 // HAVE_ZERO_LENGTH_ARRAYS - The compiler supports the C/C++ extension for
 //                           zero-length arrays (clang, gcc, intel, nvidia...);
@@ -47,7 +49,7 @@
 //            This is workaround, some `pgicc` have broken implementation of
 //            VLA (clang, gcc, intel, nvidia, Pelles C, PGI, SunPRO...);
 
-#ifdef ENABLE_VLA_EXAMPLE
+#if ENABLE_VLA_C11_EXAMPLE || ENABLE_VLA_BUILTIN_EXAMPLE
         // By default, `countof_ns()` causes compilation errors if the argument
         // is a VLA array. This is often the most expected behavior, see the
         // README for details.
@@ -57,10 +59,14 @@
                          "(as some `pgcc`)")
     #endif
     #ifdef countof_ns
-        #pragma message ("_COUNTOF_NS_WANT_C11_VLA don't not affected. " \
+        #pragma message ("_COUNTOF_NS_WANT_VLA_C11 don't not affected. " \
                          "Probably the above was #include \"countof_ns.h\"")
     #endif
-    #define _COUNTOF_NS_WANT_C11_VLA  (1)
+    #if ENABLE_VLA_C11_EXAMPLE
+        #define _COUNTOF_NS_WANT_VLA_C11  (1)
+    #else
+        #define _COUNTOF_NS_WANT_VLA_BUILTIN  (1)
+    #endif
 #endif
 
 #include "countof_ns.h"

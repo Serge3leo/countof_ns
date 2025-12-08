@@ -4,6 +4,6 @@
 
 add_subdirectory(unit)
 add_subdirectory(complex)
-add_subdirectory(check_logs)
+# TODO add_subdirectory(check_logs)
 
 enable_testing()

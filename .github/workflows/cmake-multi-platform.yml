@@ -129,16 +129,10 @@ jobs:
           python -m yamllint --list-file .
           python -m yamllint .
 
-      - name: Unix examples-build.sh
+      - name: Unix short_example
         if: ${{ matrix.platform != 'win32' }}
         run: |
           ./examples-build.sh -c ${{ matrix.c_compiler }}
-
-      - name: Windows examples-build.bat
-        if: ${{ matrix.platform == 'win32' }}
-        shell: cmd
-        run: |
-          examples-build.bat
 
       - name: Unix FetchContent example
         if: ${{ matrix.platform != 'win32' }}
@@ -146,12 +140,61 @@ jobs:
         run: |
           ./shortest-build.sh -c ${{ matrix.c_compiler }}
 
+      - name: Unix long_example
+        if: ${{ matrix.platform != 'win32' }}
+        run: |
+          ./examples-build.sh -c ${{ matrix.c_compiler }} -- \
+              "-DCOUNTOF_NS_SHORT_EXAMPLE=OFF" "-DCOUNTOF_NS_EXAMPLES=ON"
+
+      - name: Unix tests
+        if: ${{ matrix.platform != 'win32' }}
+        run: |
+          ./examples-build.sh -c ${{ matrix.c_compiler }} -- \
+              "-DCOUNTOF_NS_SHORT_EXAMPLE=OFF" "-DCOUNTOF_NS_EXAMPLES=OFF" \
+              "-DCOUNTOF_NS_TESTS=ON"
+
+      - name: Unix comparisons
+        if: ${{ matrix.platform != 'win32' }}
+        run: |
+          ./examples-build.sh -c ${{ matrix.c_compiler }} -- \
+              "-DCOUNTOF_NS_SHORT_EXAMPLE=OFF" "-DCOUNTOF_NS_EXAMPLES=OFF" \
+              "-DCOUNTOF_NS_TESTS=OFF" "-DCOUNTOF_NS_COMPARISONS=ON"
+
+      - name: Windows short_example
+        if: ${{ matrix.platform == 'win32' }}
+        shell: cmd
+        run: |
+          examples-build.bat
+
       - name: Windows FetchContent example
         working-directory: ${{ github.workspace }}/examples/cmake_fetch_content
         if: ${{ matrix.platform == 'win32' }}
         shell: cmd
         run: |
           shortest-build.bat
+
+      - name: Windows long_example
+        if: ${{ matrix.platform == 'win32' }}
+        shell: cmd
+        run: |
+          examples-build.bat -- ^
+              "-DCOUNTOF_NS_SHORT_EXAMPLE=OFF" "-DCOUNTOF_NS_EXAMPLES=ON"
+
+      - name: Windows tests
+        if: ${{ matrix.platform == 'win32' }}
+        shell: cmd
+        run: |
+          examples-build.bat -- ^
+              "-DCOUNTOF_NS_SHORT_EXAMPLE=OFF" "-DCOUNTOF_NS_EXAMPLES=OFF" ^
+              "-DCOUNTOF_NS_TESTS=ON"
+
+      - name: Windows comparisons
+        if: ${{ matrix.platform == 'win32' }}
+        shell: cmd
+        run: |
+          examples-build.bat -- ^
+              "-DCOUNTOF_NS_SHORT_EXAMPLE=OFF" "-DCOUNTOF_NS_EXAMPLES=OFF" ^
+              "-DCOUNTOF_NS_TESTS=OFF" "-DCOUNTOF_NS_COMPARISONS=ON"
 
       - name: Exclude unused files from cache
         if: ${{ matrix.c_compiler == 'icx' }}

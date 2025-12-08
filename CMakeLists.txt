@@ -6,6 +6,7 @@ cmake_minimum_required (VERSION 3.25)
 project(countof_ns
     VERSION 0.1.0
     DESCRIPTION "C2y countof() platform independent implementation C23/C++11"
+    HOMEPAGE_URL https://github.com/Serge3leo/countof_ns.git
     LANGUAGES C CXX)
 add_library(CountofNS INTERFACE include/countof_ns.h)
 add_library(CountofNS::CountofNS ALIAS CountofNS)
@@ -31,25 +32,30 @@ endif ()
 
 target_include_directories(CountofNS INTERFACE include)
 
-if (NOT DEFINED CL_TAG)
-    # We were connected via FetchContent
-    # TODO:
-    # https://stackoverflow.com/a/79261858/8585880
-    # https://habr.com/ru/articles/683204/
-    # et all
-    message("CL_TAG = ${CL_TAG}")
-    message("COMPARISONS = ${COMPARISONS}")
-    message("TAC_ENABLE_WARNINGS = ${TAC_ENABLE_WARNINGS}")
-    message("TAC_POSITIVE_WERROR = ${TAC_POSITIVE_WERROR}")
-    message("CMAKE_BUILD_TYPE = ${CMAKE_BUILD_TYPE}")
-else ()
+if (NOT PROJECT_IS_TOP_LEVEL)
+    return ()
+endif ()
+
+option(COUNTOF_NS_SHORT_EXAMPLE "Build test for short_example" ON)
+option(COUNTOF_NS_EXAMPLES "Build test for other detailed examples" OFF)
+option(COUNTOF_NS_TESTS "Build tests" OFF)
+option(COUNTOF_NS_COMPARISONS "Build comparisons tests" OFF)
+set(CACHE COUNTOF_NS_CMP_GLOB
+    TYPE STRING
+    HELP "GLOB pattern of comparisons tests"
+    VALUE "*")  # TODO not set default? Workaround: add "*" in tests/unit.
+
+if (COUNTOF_NS_EXAMPLES OR COUNTOF_NS_TESTS OR COUNTOF_NS_COMPARISONS)
     set(TAC_SOURCE_DIR "${CMAKE_CURRENT_SOURCE_DIR}/tests/autoconf")
     include("${TAC_SOURCE_DIR}/autoconf.cmake")
-
-    set_property(GLOBAL PROPERTY USE_FOLDERS ON)  # Warning: use ALL_BUILD/RUN_TESTS
+endif ()
+set_property(GLOBAL PROPERTY USE_FOLDERS ON)
+if (COUNTOF_NS_SHORT_EXAMPLE OR COUNTOF_NS_EXAMPLES)
     add_subdirectory(examples)
+endif ()
+if (COUNTOF_NS_TESTS OR COUNTOF_NS_COMPARISONS)
     set(CMAKE_FOLDER "tests")
     add_subdirectory(tests)
-
-    enable_testing()
 endif ()
+
+enable_testing()

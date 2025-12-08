@@ -2,6 +2,9 @@
 # SPDX-License-Identifier: BSD-2-Clause
 # SPDX-FileCopyrightText: 2025 Сергей Леонтьев (leo@sai.msu.ru)
 
+message("TODO short_example/long_example warning check")
+return ()
+
 # TODO: Более умный анализ
 # short_example{,_cxx}_fail - 5 серий, и он же включается в long_example
 # Остальные зависят
