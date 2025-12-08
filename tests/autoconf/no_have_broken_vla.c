@@ -2,6 +2,8 @@
 // SPDX-License-Identifier: BSD-2-Clause
 // SPDX-FileCopyrightText: 2025 Сергей Леонтьев (leo@sai.msu.ru)
 
+#define HAVE_VLA_CHECKS (1)
+
 #include "have_vla.h"
 
 TAC_CHECK_FUNC(vla_foo) {

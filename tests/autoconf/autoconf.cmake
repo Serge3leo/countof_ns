@@ -46,7 +46,7 @@ if (TAC_ENABLE_WARNINGS)
     if (MSVC)
         string(APPEND cmn_flags " /W4 /wd4127 ")
     elseif(CMAKE_C_COMPILER_ID STREQUAL "GNU")
-        string(APPEND cmn_flags " -Wall -Wextra")
+        string(APPEND cmn_flags " -Wall -Wextra -Wno-vla")
     elseif(CMAKE_C_COMPILER_ID MATCHES "Clang$" OR
            CMAKE_C_COMPILER_ID MATCHES "IntelLLVM")
         string(APPEND cmn_flags " -Wall -Wextra -pedantic"
@@ -59,6 +59,7 @@ if (TAC_ENABLE_WARNINGS)
                                 " -Wno-gnu-empty-initializer"
                                 " -Wno-gnu-empty-struct"
                                 " -Wno-gnu-flexible-array-union-member"
+                                " -Wno-vla-cxx-extension"
                                 " -Wno-zero-length-array"
                                 " -ferror-limit=9999")
     elseif(CMAKE_C_COMPILER_ID MATCHES "SunPro")
@@ -82,7 +83,8 @@ string(APPEND CMAKE_CXX_FLAGS " ${cmn_flags}")
 endif() # TODO Pelles XXX Remove or?
 
 set(tac_checks        have_zero_length_arrays have_alone_flexible_array
-                      have_broken___typeof__ have_broken_vla
+                      have_broken___typeof__ no_have_broken_vla no_have_broken_vla0
+                      no_have_broken_vla_cxx no_have_broken_vla0_cxx
                       have_builtin_types_compatible_p
                       have_countof  # have_countof_zla have_countof_vla
                       have_countof_cxx
@@ -110,6 +112,12 @@ function(tac_report rep)
         string(TOUPPER "${chk}" CHK)
         if(${${CHK}})
             string(APPEND out "${CHK}\n")
+        endif()
+        string(REGEX REPLACE "^NO_" "" NO_NO_CHK "${CHK}")
+        if(${${NO_NO_CHK}})
+            if(NOT CHK STREQUAL NO_NO_CHK)
+                string(APPEND out "${NO_NO_CHK}\n")
+            endif()
         endif()
     endforeach()
     set("${rep}" "${out}" PARENT_SCOPE)
@@ -154,14 +162,17 @@ foreach(cchk IN ITEMS ${tac_checks} ${tac_error_checks})
             tac_register(${CCHK})
         endif()
     else()
-        if("${run_${cchk}}" EQUAL 0)
+        if ("${run_${cchk}}" EQUAL 0 AND NOT cchk MATCHES "^no_")
             tac_register(${CCHK})
-        endif()
-    endif()
-endforeach()
+        elseif (NOT "${run_${cchk}}" EQUAL 0 AND cchk MATCHES "^no_")
+            string(REGEX REPLACE "^NO_" "" NO_NO_CCHK "${CCHK}")
+            tac_register(${NO_NO_CCHK})
+        endif ()
+    endif ()
+endforeach ()
 
 message("CMAKE_C_COMPILER_ID=${CMAKE_C_COMPILER_ID} "
-     "CMAKE_C_COMPILER_FRONTEND_VARIANT=${CMAKE_C_COMPILER_FRONTEND_VARIANT}")
+        "CMAKE_C_COMPILER_FRONTEND_VARIANT=${CMAKE_C_COMPILER_FRONTEND_VARIANT}")
 tac_report(rep)
 message("${rep}")
 if (NOT HAVE_TYPEOF AND NOT HAVE___TYPEOF__)
