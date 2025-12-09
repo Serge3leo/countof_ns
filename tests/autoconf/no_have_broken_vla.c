@@ -4,8 +4,12 @@
 
 #include "tac_defs.h"
 
-#include "have_vla.h"
-
+#define HAVE_VLA_CHECKS (1)
+#if HAVE_VLA
+    #include "have_vla.h"
+#endif
 TAC_CHECK_FUNC(vla_foo) {
-    have_vla();
+    #if HAVE_VLA
+        have_vla();
+    #endif
 }

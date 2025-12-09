@@ -4,8 +4,12 @@
 
 #include "tac_defs.h"
 
-#include "have_vla.h"
-
-TAC_CHECK_FUNC(vla_foo) {
-    have_vla();
+#define HAVE_VLA0_2DIM (1)
+#if HAVE_VLA0
+    #include "have_vla0.h"
+#endif
+TAC_CHECK_FUNC(vla0_foo) {
+    #if HAVE_VLA0
+        have_vla0();
+    #endif
 }

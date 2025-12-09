@@ -82,6 +82,12 @@ if (COUNTOF_NS_EXAMPLES)
     endif ()
     if (CXX_ENABLED)
         example(long_example_cxx.cpp "" "" "")
+        if (HAVE_IS_SAME_CXX AND HAVE_VLA_CXX AND NOT HAVE_BROKEN_VLA_CXX)
+            set(opt_cxx_bltn "-DENABLE_VLA_BUILTIN_EXAMPLE"
+                        ${countof_ns_builtin_options_${CMAKE_C_COMPILER_ID}})
+            example(long_example_cxx.cpp "_bltn" opt_cxx_bltn
+                                         "_COUNTOF_NS_VLA_UNSUPPORTED")
+        endif ()
     endif ()
 endif ()
 

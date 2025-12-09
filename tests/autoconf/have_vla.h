@@ -5,9 +5,10 @@
 // Check VLA with or without clang/gcc/intel(?)/nvidia/... extension for
 // zero-length
 
-#include <stdlib.h>
+#ifndef HAVE_VLA_H_5813
+#define HAVE_VLA_H_5813
 
-#include "tac_defs.h"
+#include <stdlib.h>
 
 #ifdef HAVE_ZLA
     #define VLA_MIN  (0)
@@ -22,7 +23,7 @@ volatile size_t vla_1d = VLA_1D;
 volatile size_t vla_2d = VLA_2D;
 volatile size_t vla_3d = VLA_3D;
 
-TAC_CHECK_FUNC(vla_foo) {
+static void have_vla(void) {
     int fsa[2];
     const size_t obviously = sizeof(fsa);
     assert(2*sizeof(int) == obviously);
@@ -31,28 +32,34 @@ TAC_CHECK_FUNC(vla_foo) {
     int vla[vla_1d];
     const size_t unobvious = sizeof(vla);
     assert(VLA_1D*sizeof(int) == unobvious);
-    assert(0 == (&vla - (int(*)[3])&vla));
-    assert(0 == (&vla - (int(*)[4])&vla));
-    int (*pvla)[vla_1d] = &vla;
-    tac_static_assert(sizeof(&pvla - (int(**)[VLA_MIN])&pvla),
-                      "Check VLA ptr[VLA_MIN]");
-    tac_static_assert(sizeof((int(**)[VLA_MIN])&pvla - &pvla),
-                      "Check VLA ptr[VLA_MIN] 1");
-    tac_static_assert(sizeof(&pvla - (int(**)[9])&pvla),
-                      "Check VLA ptr[9]");
+
+    (void)fsa; (void)vla;
+#if HAVE_VLA_CHECKS
+    #if !__cplusplus
+        assert(0 == (&vla - (int(*)[3])&vla));
+        assert(0 == (&vla - (int(*)[4])&vla));
+        int (*pvla)[vla_1d] = &vla;
+        tac_static_assert(sizeof(&pvla - (int(**)[VLA_MIN])&pvla),
+                          "Check VLA ptr[VLA_MIN]");
+        tac_static_assert(sizeof((int(**)[VLA_MIN])&pvla - &pvla),
+                          "Check VLA ptr[VLA_MIN] 1");
+        tac_static_assert(sizeof(&pvla - (int(**)[9])&pvla),
+                          "Check VLA ptr[9]");
+    #endif
     int vlm[vla_min];
     const size_t unobvious_m = sizeof(vlm);
     assert(VLA_MIN*sizeof(int) == unobvious_m);
+    #if !__cplusplus
     int (*pvlm)[vla_min] = &vlm;
-    tac_static_assert(sizeof(&pvlm - (int(**)[VLA_MIN])&pvlm),
-                      "Check VLA ptr[VLA_MIN]");
-    tac_static_assert(sizeof((int(**)[VLA_MIN])&pvlm - &pvlm),
-                      "Check VLA ptr[VLA_MIN] 1");
-    tac_static_assert(sizeof(&pvlm - (int(**)[VLA_1D])&pvlm),
-                      "Check VLA ptr[VLA_1D]");
-    tac_static_assert(sizeof(&pvlm - (int(**)[8])&pvlm),
-                      "Check VLA ptr[8]");
-
+        tac_static_assert(sizeof(&pvlm - (int(**)[VLA_MIN])&pvlm),
+                          "Check VLA ptr[VLA_MIN]");
+        tac_static_assert(sizeof((int(**)[VLA_MIN])&pvlm - &pvlm),
+                          "Check VLA ptr[VLA_MIN] 1");
+        tac_static_assert(sizeof(&pvlm - (int(**)[VLA_1D])&pvlm),
+                          "Check VLA ptr[VLA_1D]");
+        tac_static_assert(sizeof(&pvlm - (int(**)[8])&pvlm),
+                          "Check VLA ptr[8]");
+    #endif
     size_t sum1 = 0;
     int o1[vla_min];
     int o2[vla_1d];
@@ -147,7 +154,11 @@ TAC_CHECK_FUNC(vla_foo) {
     if ((vla_min ? 157 : 92)*sizeof(int) == sum1 &&
         (vla_min ? 717 : 1010)*sizeof(int) == sum2) {
         printf("VLA seems good\n");
-        exit(EXIT_FAILURE);  // VLA seems good
+        return;  // VLA seems good
     }
     printf("VLA seems broken\n");  // TODO
+    exit(EXIT_FAILURE);
+#endif
 }
+
+#endif  // HAVE_VLA_H_5813

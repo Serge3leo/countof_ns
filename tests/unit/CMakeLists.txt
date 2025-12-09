@@ -68,6 +68,10 @@ function (process_params params)
             add_test(NAME ${tgt} COMMAND ${tgt})
             set_tests_properties(${tgt} PROPERTIES
                                  PASS_REGULAR_EXPRESSION "${tu_pos_pass_regexp}")
+            if (etgt MATCHES "[.]run_0_unexpected")
+                set_tests_properties(${tgt} PROPERTIES
+                        PASS_REGULAR_EXPRESSION "${tu_neg_not_terrifying_regexp}")
+            endif ()
         else ()
             set_target_properties(${tgt} PROPERTIES EXCLUDE_FROM_ALL TRUE)
             add_test(${tgt} "${CMAKE_CTEST_COMMAND}"

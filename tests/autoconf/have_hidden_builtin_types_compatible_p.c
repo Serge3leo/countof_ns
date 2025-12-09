@@ -10,6 +10,6 @@
     #endif
 #endif
 
-TAC_CHECK_FUNC(cntf_foo) {
+TAC_CHECK_FUNC(hvtc_foo) {
     tac_static_assert(__builtin_types_compatible_p(int, int), "1");
 }

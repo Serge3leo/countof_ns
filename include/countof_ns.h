@@ -111,6 +111,10 @@
 
 #include <stddef.h>
 
+    // Avoid uncertain zero-by-zero divide and warnings
+#define _countof_ns_unsafe(a)  (0 == sizeof(*(a)) ? 0 \
+            : sizeof(a)/( sizeof(*(a)) ? sizeof(*(a)) : (size_t)-1 ))
+
 #if !__cplusplus
     #if __STDC_VERSION__ >= 202311L
         #define _countof_ns_assert  static_assert
@@ -138,10 +142,6 @@
     #else
         #error "With _COUNTOF_NS_WANT_STDC required C23 typeof(t)"
     #endif
-
-        // Avoid uncertain zero-by-zero divide and warnings
-    #define _countof_ns_unsafe(a)  (0 == sizeof(*(a)) ? 0 \
-                : sizeof(a)/( sizeof(*(a)) ? sizeof(*(a)) : (size_t)-1 ))
 
     #if _COUNTOF_NS_WANT_VLA_BUILTIN && !__STDC_NO_VLA__ && \
         !_COUNTOF_NS_WANT_STDC
@@ -203,7 +203,20 @@
     #endif
 
     #define countof_ns(a)  (_countof_ns_unsafe(a) + _countof_ns_must_array(a))
+#elif _COUNTOF_NS_WANT_VLA_BUILTIN
+        // TODO XXX Intel 2021 - HAVE_HIDDEN_IS_SAME_CXX, but SunPro - not
+
+        // C++ with VLA or ZLA extension
+    template<bool cnd>
+    constexpr size_t _countof_ns_0_if_assert() noexcept {
+        static_assert(cnd, "Must be array");
+        return 0;
+    }
+    #define _countof_ns_must_array(a)  (_countof_ns_0_if_assert< \
+                                        !__is_same(decltype(&*(a)), decltype(a))>())
+    #define countof_ns(a)  (_countof_ns_unsafe(a) + _countof_ns_must_array(a))
 #else
+        // C++ with ZLA extension
     #define _COUNTOF_NS_VLA_UNSUPPORTED  (1)
     template<size_t A, size_t E, class T, size_t N>
     constexpr static size_t _countof_ns_aux(const T (&)[N]) noexcept {

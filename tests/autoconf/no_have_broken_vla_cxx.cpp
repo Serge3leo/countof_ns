@@ -6,8 +6,12 @@
 
 #include "tac_defs.h"
 
-#include "have_vla.h"
-
-TAC_CHECK_FUNC(vla_foo) {
-    have_vla();
+#define HAVE_VLA_CHECKS (1)
+#if HAVE_VLA_CXX
+    #include "have_vla.h"
+#endif
+TAC_CHECK_FUNC(vlac_foo) {
+    #if HAVE_VLA_CXX
+        have_vla();
+    #endif
 }
