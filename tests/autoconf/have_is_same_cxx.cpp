@@ -4,12 +4,14 @@
 
 #include "tac_defs.h"
 
-#define HAVE_VLA0_2DIM (1)
-#if HAVE_VLA0_CXX
-    #include "have_vla0.h"
-#endif
-TAC_CHECK_FUNC(vla0c_foo) {
-    #if HAVE_VLA0_CXX
-        have_vla0();
+#ifdef __has_builtin
+    #if __has_builtin(__is_same)
+        #define is_is_same  __is_same
     #endif
+#endif
+
+TAC_CHECK_FUNC(is_foo) {
+    int a;
+    static_assert(is_is_same(decltype(a), int));
+    (void)a;
 }

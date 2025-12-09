@@ -10,8 +10,6 @@
 
 #include <stdlib.h>
 
-#include "tac_defs.h"
-
 #ifdef HAVE_ZLA
     #define VLA_MIN  (0)
 #else

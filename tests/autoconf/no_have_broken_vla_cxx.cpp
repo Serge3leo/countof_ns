@@ -4,10 +4,14 @@
 
 // Check non zero-length VLA extension
 
+#include "tac_defs.h"
+
 #define HAVE_VLA_CHECKS (1)
-
-#include "have_vla.h"
-
-TAC_CHECK_FUNC(vla_foo) {
-    have_vla();
+#if HAVE_VLA_CXX
+    #include "have_vla.h"
+#endif
+TAC_CHECK_FUNC(vlac_foo) {
+    #if HAVE_VLA_CXX
+        have_vla();
+    #endif
 }

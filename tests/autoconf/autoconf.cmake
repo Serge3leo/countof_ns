@@ -83,15 +83,20 @@ string(APPEND CMAKE_CXX_FLAGS " ${cmn_flags}")
 endif() # TODO Pelles XXX Remove or?
 
 set(tac_checks        have_zero_length_arrays have_alone_flexible_array
-                      have_broken___typeof__ no_have_broken_vla no_have_broken_vla0
-                      no_have_broken_vla_cxx no_have_broken_vla0_cxx
                       have_builtin_types_compatible_p
+                      have_hidden_builtin_types_compatible_p
                       have_countof  # have_countof_zla have_countof_vla
                       have_countof_cxx
                       have_empty_initializer have_empty_structure
-                      have_hiden_builtin_types_compatible_p
+                      have_is_array_cxx
+                      have_hidden_is_array_cxx
+                      have_is_same_cxx have_is_same_as_cxx
+                      have_hidden_is_same_cxx have_hidden_is_same_as_cxx
                       have_typeof have___typeof__ have___typeof_unqual__
+                      have_broken___typeof__
                       have_vla have_vla0 have_vla_cxx have_vla0_cxx
+                      no_have_broken_vla no_have_broken_vla0
+                      no_have_broken_vla_cxx no_have_broken_vla0_cxx
                       have_vla_zla)
 
 set(tac_error_checks  error_on_generic error_on_negative_array_size
@@ -171,8 +176,9 @@ foreach(cchk IN ITEMS ${tac_checks} ${tac_error_checks})
     endif ()
 endforeach ()
 
-message("CMAKE_C_COMPILER_ID=${CMAKE_C_COMPILER_ID} "
-        "CMAKE_C_COMPILER_FRONTEND_VARIANT=${CMAKE_C_COMPILER_FRONTEND_VARIANT}")
+message("CMAKE_C_COMPILER_ID=${CMAKE_C_COMPILER_ID}"
+        " CMAKE_C_COMPILER_VERSION=${CMAKE_C_COMPILER_VERSION}"
+        " CMAKE_C_COMPILER_FRONTEND_VARIANT=${CMAKE_C_COMPILER_FRONTEND_VARIANT}")
 tac_report(rep)
 message("${rep}")
 if (NOT HAVE_TYPEOF AND NOT HAVE___TYPEOF__)

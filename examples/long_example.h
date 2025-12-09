@@ -14,9 +14,9 @@
 // EXAMPLE_FAIL - Include examples for compilation errors with erroneous
 //                parameters;
 //
-// EXAMPLE_VLA_C11_ENABLE - Variable-length arrays (VLA) examples;
+// EXAMPLE_VLA_C11_ENABLE - Variable-length arrays (VLA) C examples;
 //
-// EXAMPLE_VLA_BUILTIN_ENABLE - Variable-length arrays (VLA) examples;
+// EXAMPLE_VLA_BUILTIN_ENABLE - Variable-length arrays (VLA) C/C++ examples;
 //
 // HAVE_ZERO_LENGTH_ARRAYS - The compiler supports the C/C++ extension for
 //                           zero-length arrays (clang, gcc, intel, nvidia...);
@@ -29,13 +29,6 @@
 // HAVE_COUNTOF - The compiler supports the C2y `countof()` (clang 21,
 //                IntelLLVM 2025.3);
 //
-// HAVE_CV_TYPEOF - The common C extension "__typeof__()" preserves all
-//                  qualifiers, equivalent to `typeof()` C23 (clang, gcc,
-//                  modern intel, MSVC, nvidia, Pelles C, SunPRO...). But,
-//                  unfortunately, rarely, but still a meeting there are
-//                  implementations equivalent to `typeof_unqual() (old Intel
-//                  and PGI);
-//
 // HAVE_EMPTY_INITIALIZER - The compiler supports the C/C++ extension for empty
 //                          initializer;
 //
@@ -45,21 +38,25 @@
 //                        language. C++ treats empty structures as if they had
 //                        a single member of type char;
 //
-// HAVE_VLA - The compiler supports the C/C++ optional variable-length arrays.
-//            This is workaround, some `pgicc` have broken implementation of
-//            VLA (clang, gcc, intel, nvidia, Pelles C, PGI, SunPRO...);
+// HAVE_VLA - The C compiler supports optional variable-length arrays
+//            (clang, gcc, intel, nvidia, Pelles C, PGI, SunPRO...).  This is
+//            workaround of __STDC_NO_VLA__, some compilers have broken
+//            implementation of VLA (pgcc 25.9.0);
+//
+// HAVE_VLA_CXX - The compiler supports the C++ extension variable-length
+//            arrays (clang, gcc, intel, nvidia, PGI...);
 
 #if ENABLE_VLA_C11_EXAMPLE || ENABLE_VLA_BUILTIN_EXAMPLE
         // By default, `countof_ns()` causes compilation errors if the argument
         // is a VLA array. This is often the most expected behavior, see the
         // README for details.
 
-    #ifndef HAVE_VLA
+    #if !defined(HAVE_VLA) && !defined(HAVE_VLA_CXX)
         #pragma message ("VLA support don't detected, may be broken " \
                          "(as some `pgcc`)")
     #endif
     #ifdef countof_ns
-        #pragma message ("_COUNTOF_NS_WANT_VLA_C11 don't not affected. " \
+        #pragma message ("_COUNTOF_NS_WANT_VLA_* don't not affected. " \
                          "Probably the above was #include \"countof_ns.h\"")
     #endif
     #if ENABLE_VLA_C11_EXAMPLE
@@ -92,18 +89,26 @@ static void zla_example(void) {
     example_assert(5 == countof_ns(z4[0]));
     example_assert(0 == countof_ns(z5[0]));
     example_assert(5 == countof_ns(z5[0][0]));
-    #ifdef __cplusplus
-        example_assert(5 == countof_ns(z3));
-        example_assert(5 == countof_ns(z5));
-    #elif defined(__NVCOMPILER)
+    #if __cplusplus
+        #if _COUNTOF_NS_VLA_UNSUPPORTED  // TODO: C++ VLA enabled version
+            example_assert(5 == countof_ns(z3));
+            example_assert(5 == countof_ns(z5));
+        #else
+            example_assert(0 == countof_ns(z3));
+            example_assert(0 == countof_ns(z5));
+        #endif
+    #elif EXAMPLE_FAIL && defined(__NVCOMPILER)
         #warning "TODO for pgcc (aka nvc) 25.9 & HAVE_ZERO_LENGTH_ARRAYS"
-    #elif defined(EXAMPLE_FAIL)
+    #elif EXAMPLE_FAIL
                             #pragma message ("Must error below @{")
         fail += countof_ns(z3);  // compile error, if complete object type not
-                                 // T[0], to avoid zero-to-zero indeterminate
+                                 // T[0], to avoid zero-by-zero indeterminate
                             #pragma message ("}@ Must error above & below @{")
         fail += countof_ns(z5);
-                            #pragma message ("}@ Must error above & below @{")
+                            #pragma message ("}@ Must error above")
+    #endif
+    #if defined(EXAMPLE_FAIL)
+                            #pragma message ("Must error below @{")
         fail += countof_ns((int *)z1);
                             #pragma message ("}@ Must error above & below @{")
         fail += countof_ns(&z1[0]);
@@ -120,7 +125,11 @@ static void zla_example(void) {
 
         example_assert(0 == countof_ns(f1));
         #ifdef __cplusplus
-            example_assert(5 == countof_ns(f2));
+            #if _COUNTOF_NS_VLA_UNSUPPORTED // TODO: C++ VLA enabled version
+                example_assert(5 == countof_ns(f2));
+            #else
+                example_assert(0 == countof_ns(f2));
+            #endif
         #elif defined(EXAMPLE_FAIL)
                             #pragma message ("Must error below @{")
             fail += countof_ns(f2);
@@ -136,7 +145,11 @@ static void zla_example(void) {
 
         example_assert(0 == countof_ns(u1));
         #ifdef __cplusplus
-            example_assert(5 == countof_ns(u2));
+            #if _COUNTOF_NS_VLA_UNSUPPORTED // TODO: C++ VLA enabled version
+                example_assert(5 == countof_ns(u2));
+            #else
+                example_assert(0 == countof_ns(u2));
+            #endif
         #elif defined(EXAMPLE_FAIL)
                             #pragma message ("Must error below @{")
             fail += countof_ns(u2);
@@ -162,7 +175,11 @@ static void zla_example(void) {
             example_assert(0 == countof_ns(e1));
             example_assert(0 == countof_ns(e2));
             #ifdef __cplusplus
-                example_assert(5 == countof_ns(e3));
+                #if _COUNTOF_NS_VLA_UNSUPPORTED // TODO: C++ VLA enabled version
+                    example_assert(5 == countof_ns(e3));
+                #else
+                    example_assert(0 == countof_ns(e3));
+                #endif
             #elif defined(EXAMPLE_FAIL)
                                 #pragma message ("Must error below @{")
                 fail += countof_ns(e3);
@@ -192,7 +209,7 @@ static void zla_example(void) {
 }
 
 static void vla_example() {
-#if defined(HAVE_VLA) && !_COUNTOF_NS_VLA_UNSUPPORTED
+#if (HAVE_VLA || HAVE_VLA_CXX) && !_COUNTOF_NS_VLA_UNSUPPORTED
     size_t fail = 0;
     size_t ba = 42;
     size_t fa = 56;
@@ -202,7 +219,6 @@ static void vla_example() {
     size_t xz = 2;
     int a1[ba];
     int a2[fa][tt];
-    int (*p1)[tt] = &a2[0];
     int *p2 = a1;
     int **p3 = &p2;
 
@@ -213,12 +229,16 @@ static void vla_example() {
     int c[countof_ns(a2[0])];
     assert(tt == countof_ns(c));
 
-    assert(tt == countof_ns(*p1));
     assert(xx == countof_ns(*(int (*)[xx])&p2));
     assert(xy == countof_ns(*(int (*)[xy])p3));
     assert(xz == countof_ns(*(int(*)[xz][xz])&p3));
 
-    (void)p1; (void)p3;
+    #if !__cplusplus
+        int (*p1)[tt] = &a2[0];
+        assert(tt == countof_ns(*p1));
+        (void)p1;
+    #endif
+    (void)p3;
     #ifdef EXAMPLE_FAIL
                             #pragma message ("Must error below @{")
         example_assert(ba == countof_ns(a1));
@@ -255,7 +275,7 @@ static void vla_example() {
 #if !(__APPLE__ && defined(__clang__) && __clang_major__ <= 15)
         assert(0 == countof_ns(vz3));  // But all VLA T[x] have compatible
                                        // complete types. We can't avoid
-                                       // zero-to-zero indeterminate for VLA.
+                                       // zero-by-zero indeterminate for VLA.
 #endif
         #endif
         assert(0 == countof_ns(vz1[0]));
@@ -268,7 +288,6 @@ static void vla_example() {
 }
 
 static void cv_example() {
-#ifdef HAVE_CV_TYPEOF
     const int a1[1] = { 0 };
     volatile int a2[2][countof_ns(a1)];
     const volatile int a3[3][countof_ns(a2)][countof_ns(a2[0])] = {{{ 0 }}};
@@ -281,7 +300,7 @@ static void cv_example() {
     example_assert(1 == countof_ns(a3[0][0]));
 
     printf("%s: Ok\n", __func__);
-#endif
+    (void)a1;
 }
 
 #ifdef __has_include
@@ -309,7 +328,7 @@ static void countof_example() {
         static_assert(countof(z2) == countof_ns(z2));
         static_assert(countof(z3) == 5);  // But countof_ns() - compile error
 
-        #if defined(HAVE_VLA) && !_COUNTOF_NS_VLA_UNSUPPORTED
+        #if (HAVE_VLA || HAVE_VLA_CXX) && !_COUNTOF_NS_VLA_UNSUPPORTED
             const size_t n = 0;
             const size_t f = 5;
             int vz1[n][n];
@@ -319,10 +338,10 @@ static void countof_example() {
             assert(countof(vz1) == countof_ns(vz1));
             assert(countof(vz2) == countof_ns(vz2));
             assert(countof(vz3) == 5);
-            assert(0 == countof_ns(vz3));  // zero-to-zero indeterminate for VLA
+            assert(0 == countof_ns(vz3));  // zero-by-zero indeterminate for VLA
         #endif
     #endif
-    #if defined(HAVE_VLA) && !_COUNTOF_NS_VLA_UNSUPPORTED
+    #if (HAVE_VLA|| HAVE_VLA_CXX) && !_COUNTOF_NS_VLA_UNSUPPORTED
         const size_t d = 2;
         int v[d];
 
@@ -358,7 +377,8 @@ static void std_size_example() {
         constexpr auto std_size_2 = std::size<int, 2>;
 
         static_assert(typeid(std_size_1) != typeid(std_size_2));
-        #ifndef __NVCOMPILER  // TODO
+        #if _COUNTOF_NS_VLA_UNSUPPORTED && !__NVCOMPILER
+                // TODO: C++ VLA enabled version
             constexpr auto countof_ns_1 = _countof_ns_aux<sizeof(int),
                                                           sizeof(int[1]),
                                                           int, 1>;
@@ -371,7 +391,11 @@ static void std_size_example() {
         int z2[0][5];
         int z3[0][0]; (void)z3;
 
-        static_assert(std::size(z1) == countof_ns(z1));
+        #if _COUNTOF_NS_VLA_UNSUPPORTED // TODO: C++ VLA enabled version
+            static_assert(std::size(z1) == countof_ns(z1));
+        #else
+            static_assert(0 == countof_ns(z1));
+        #endif
         static_assert(std::size(z2[0]) == countof_ns(z2[0]));
 
         #if defined(EXAMPLE_FAIL)
