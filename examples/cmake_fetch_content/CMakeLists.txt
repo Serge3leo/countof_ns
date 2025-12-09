@@ -21,10 +21,10 @@ FetchContent_Declare(
 )
 FetchContent_MakeAvailable(CountofNS)
 
-foreach(tgt IN ITEMS shortest shortest_must_fail)
+foreach(tgt IN ITEMS shortest shortest.build_fail)
     add_executable(${tgt} shortest.c)
     target_link_libraries(${tgt} PRIVATE CountofNS::CountofNS)
-    if (NOT tgt MATCHES "_must_fail")
+    if (NOT tgt MATCHES "[.]build_fail")
         add_test(NAME ${tgt} COMMAND ${tgt})
     else ()
         target_compile_definitions(${tgt} PRIVATE EXAMPLE_FAIL)
