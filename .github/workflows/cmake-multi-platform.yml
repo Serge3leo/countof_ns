@@ -119,7 +119,7 @@ jobs:
           printenv >> $GITHUB_ENV
 
       - name: Non-cache install LCC MCST Elbrus e2k
-        if: ${{ matrix.c_compiler == 'lcc' && steps.cache-install.outputs.cache-hit != 'true' }}
+        if: ${{ matrix.c_compiler == 'lcc' && steps.cache-install.outputs.cache-hit != 'true' }}  # yamllint disable-line rule:line-length
         uses: mrognor/lcc-env-action@0.1.0
 
       - name: Set reusable strings
