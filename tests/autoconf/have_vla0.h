@@ -22,6 +22,10 @@
 #ifndef HAVE_VLA0_H_5115
 #define HAVE_VLA0_H_5115
 
+#if !HAVE_VLA
+    #error "Don't HAVE_VLA"
+#endif
+
 static void have_vla0(void) {
     size_t n0 = 0;
     int a1[n0];

@@ -25,7 +25,7 @@ jobs:
       # matrix combinations. Consider changing this to true when your workflow
       # is stable.
 
-      fail-fast: false
+      fail-fast: true
 
       # Set up a matrix to run the following 4 configurations:
       #
@@ -40,11 +40,13 @@ jobs:
       #
       # 4. <oneAPI 2025.1, Linux, Release, default generator>
       #
+      # 5. <LCC MCST Elbrus e2k, Linux, Release, default generator>
+      #
       # To add more build types (Release, Debug, RelWithDebInfo, etc.)
       # customize the build_type list.
 
       matrix:
-        c_compiler: [gcc, clang, cl, icx]
+        c_compiler: [gcc, clang, cl, icx, lcc]
         os: [ubuntu-latest, windows-latest]
         build_type: [Release]
         include:
@@ -65,6 +67,10 @@ jobs:
             oneapi: 2025.1
             os: ubuntu-latest
             platform: "linux"
+          - c_compiler: lcc
+            cpp_compiler: l++
+            lcc: "1.27.23.e2k-v5.5.10"
+            platform: "e2k"
         exclude:
           - os: windows-latest
             c_compiler: gcc
@@ -72,6 +78,8 @@ jobs:
             c_compiler: clang
           - os: windows-latest
             c_compiler: icx
+          - os: windows-latest
+            c_compiler: lcc
           - os: ubuntu-latest
             c_compiler: cl
 
@@ -81,14 +89,19 @@ jobs:
         with:
           python-version: '3.13'
 
-      - name: Cache install oneAPI
-        if: ${{ matrix.c_compiler == 'icx' }}
+      - name: Cache install oneAPI and LCC MCST Elbrus e2k
+        if: ${{ matrix.c_compiler == 'icx' || matrix.c_compiler == 'lcc' }}
         id: cache-install
         uses: actions/cache@v4
         with:
           path: |
             /opt/intel/oneapi
-          key: oneapi-${{ matrix.oneapi }}-apt
+            /opt/mcst
+            /usr/local/bin/e2k
+            /usr/local/bin/qemu-e2k
+            /usr/local/bin/lcc
+            /usr/local/bin/l++
+          key: oneapi-${{ matrix.oneapi }}-apt-lcc-${{ matrix.lcc }}
 
       - name: Non-cache install oneAPI
         if: ${{ matrix.c_compiler == 'icx' }}
@@ -104,6 +117,10 @@ jobs:
         run: |
           source /opt/intel/oneapi/setvars.sh
           printenv >> $GITHUB_ENV
+
+      - name: Non-cache install LCC MCST Elbrus e2k
+        if: ${{ matrix.c_compiler == 'lcc' && steps.cache-install.outputs.cache-hit != 'true' }}
+        uses: mrognor/lcc-env-action@0.1.0
 
       - name: Set reusable strings
         # Turn repeated input strings (such as the build output directory) into
@@ -129,36 +146,59 @@ jobs:
           python -m yamllint --list-file .
           python -m yamllint .
 
-      - name: Unix short_example
-        if: ${{ matrix.platform != 'win32' }}
+      - name: Linux short_example
+        if: ${{ matrix.platform == 'linux' }}
         run: |
           ./examples-build.sh -c ${{ matrix.c_compiler }}
 
-      - name: Unix FetchContent example
-        if: ${{ matrix.platform != 'win32' }}
+      - name: Linux FetchContent example
+        if: ${{ matrix.platform == 'linux' }}
         working-directory: ${{ github.workspace }}/examples/cmake_fetch_content
         run: |
           ./shortest-build.sh -c ${{ matrix.c_compiler }}
 
-      - name: Unix long_example
-        if: ${{ matrix.platform != 'win32' }}
+      - name: Linux long_example
+        if: ${{ matrix.platform == 'linux' }}
         run: |
           ./examples-build.sh -c ${{ matrix.c_compiler }} -- \
               "-DCOUNTOF_NS_SHORT_EXAMPLE=OFF" "-DCOUNTOF_NS_EXAMPLES=ON"
 
-      - name: Unix tests
-        if: ${{ matrix.platform != 'win32' }}
+      - name: Linux tests
+        if: ${{ matrix.platform == 'linux' }}
         run: |
           ./examples-build.sh -c ${{ matrix.c_compiler }} -- \
-              "-DCOUNTOF_NS_SHORT_EXAMPLE=OFF" "-DCOUNTOF_NS_EXAMPLES=OFF" \
-              "-DCOUNTOF_NS_TESTS=ON"
+              "-DCOUNTOF_NS_SHORT_EXAMPLE=OFF" "-DCOUNTOF_NS_TESTS=ON"
 
-      - name: Unix comparisons
-        if: ${{ matrix.platform != 'win32' }}
+      - name: Linux comparisons
+        if: ${{ matrix.platform == 'linux' }}
         run: |
           ./examples-build.sh -c ${{ matrix.c_compiler }} -- \
-              "-DCOUNTOF_NS_SHORT_EXAMPLE=OFF" "-DCOUNTOF_NS_EXAMPLES=OFF" \
-              "-DCOUNTOF_NS_TESTS=OFF" "-DCOUNTOF_NS_COMPARISONS=ON"
+              "-DCOUNTOF_NS_SHORT_EXAMPLE=OFF" "-DCOUNTOF_NS_COMPARISONS=ON" \
+              "-DCOUNTOF_NS_DOCTESTS=ON"
+
+      - name: E2k short_example
+        if: ${{ matrix.platform == 'e2k' }}
+        run: |
+          ./examples/LCC_MCST_Elbrus_e2k-build.sh
+
+      - name: E2k long_example
+        if: ${{ matrix.platform == 'e2k' }}
+        run: |
+          ./examples/LCC_MCST_Elbrus_e2k-build.sh \
+              "-DCOUNTOF_NS_SHORT_EXAMPLE=OFF" "-DCOUNTOF_NS_EXAMPLES=ON"
+
+      - name: E2k tests
+        if: ${{ matrix.platform == 'e2k' }}
+        run: |
+          ./examples/LCC_MCST_Elbrus_e2k-build.sh \
+              "-DCOUNTOF_NS_SHORT_EXAMPLE=OFF" "-DCOUNTOF_NS_TESTS=ON"
+
+      - name: E2k comparisons
+        if: ${{ matrix.platform == 'e2k' }}
+        run: |
+          ./examples/LCC_MCST_Elbrus_e2k-build.sh \
+              "-DCOUNTOF_NS_SHORT_EXAMPLE=OFF" "-DCOUNTOF_NS_COMPARISONS=ON" \
+              "-DCOUNTOF_NS_DOCTESTS=ON"
 
       - name: Windows short_example
         if: ${{ matrix.platform == 'win32' }}
@@ -185,16 +225,15 @@ jobs:
         shell: cmd
         run: |
           examples-build.bat -- ^
-              "-DCOUNTOF_NS_SHORT_EXAMPLE=OFF" "-DCOUNTOF_NS_EXAMPLES=OFF" ^
-              "-DCOUNTOF_NS_TESTS=ON"
+              "-DCOUNTOF_NS_SHORT_EXAMPLE=OFF" "-DCOUNTOF_NS_TESTS=ON"
 
       - name: Windows comparisons
         if: ${{ matrix.platform == 'win32' }}
         shell: cmd
         run: |
           examples-build.bat -- ^
-              "-DCOUNTOF_NS_SHORT_EXAMPLE=OFF" "-DCOUNTOF_NS_EXAMPLES=OFF" ^
-              "-DCOUNTOF_NS_TESTS=OFF" "-DCOUNTOF_NS_COMPARISONS=ON"
+              "-DCOUNTOF_NS_SHORT_EXAMPLE=OFF" "-DCOUNTOF_NS_COMPARISONS=ON" ^
+              "-DCOUNTOF_NS_DOCTESTS=ON"
 
       - name: Exclude unused files from cache
         if: ${{ matrix.c_compiler == 'icx' }}
