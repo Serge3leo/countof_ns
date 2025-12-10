@@ -114,7 +114,7 @@ jobs:
           printenv >> $GITHUB_ENV
 
       - name: Cache install LCC MCST Elbrus e2k
-        if: ${{ matrix.c_compiler == 'lcc' }
+        if: ${{ matrix.c_compiler == 'lcc' }}
         id: cache-install
         uses: actions/cache@v4
         with:
@@ -124,7 +124,7 @@ jobs:
             /usr/local/bin/qemu-e2k
             /usr/local/bin/lcc
             /usr/local/bin/l++
-        key: cache-${{ matrix.llc }}-mrognor
+          key: cache-${{ matrix.llc }}-mrognor
 
       - name: Non-cache install LCC MCST Elbrus e2k
         if: ${{ matrix.c_compiler == 'lcc' && steps.cache-install.outputs.cache-hit != 'true' }}  # yamllint disable-line rule:line-length
