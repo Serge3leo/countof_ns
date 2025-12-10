@@ -115,7 +115,7 @@ jobs:
 
       - name: Cache install LCC MCST Elbrus e2k
         if: ${{ matrix.c_compiler == 'lcc' }}
-        id: cache-install
+        id: cache-lcc
         uses: actions/cache@v4
         with:
           path: |
@@ -127,7 +127,7 @@ jobs:
           key: cache-${{ matrix.llc }}-mrognor
 
       - name: Non-cache install LCC MCST Elbrus e2k
-        if: ${{ matrix.c_compiler == 'lcc' && steps.cache-install.outputs.cache-hit != 'true' }}  # yamllint disable-line rule:line-length
+        if: ${{ matrix.c_compiler == 'lcc' && steps.cache-lcc.outputs.cache-hit != 'true' }}  # yamllint disable-line rule:line-length
         uses: mrognor/lcc-env-action@0.1.1
 
       - name: Set reusable strings
