@@ -85,9 +85,6 @@ jobs:
 
     steps:
       - uses: actions/checkout@v4
-      - uses: actions/setup-python@v6
-        with:
-          python-version: '3.13'
 
       - name: Cache install oneAPI
         if: ${{ matrix.c_compiler == 'icx' }}
@@ -130,16 +127,9 @@ jobs:
         if: ${{ matrix.c_compiler == 'lcc' && steps.cache-lcc.outputs.cache-hit != 'true' }}  # yamllint disable-line rule:line-length
         uses: mrognor/lcc-env-action@0.1.1
 
-      - name: Set reusable strings
-        # Turn repeated input strings (such as the build output directory) into
-        # step outputs. These step outputs can be used throughout the workflow
-        # file.
-
-        id: strings
-        shell: bash
-        run: |
-          echo "build-output-dir=${{ github.workspace }}/build" \
-              >> "$GITHUB_OUTPUT"
+      - uses: actions/setup-python@v6
+        with:
+          python-version: '3.13'
 
       - name: Install python module
         working-directory: ${{ github.workspace }}/tests/check_logs
