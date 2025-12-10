@@ -59,7 +59,8 @@ function (tu_countof_ns_expected expected pos_pos neg_pos)
         endif ()
     endforeach ()
     if (CMAKE_C_COMPILER_ID STREQUAL NVHPC OR
-        CMAKE_C_COMPILER_ID STREQUAL Intel)
+        CMAKE_C_COMPILER_ID STREQUAL Intel OR
+        CMAKE_C_COMPILER_ID STREQUAL LCC)
             # TODO I don't understand. Why doesn't `_Generic()` reject a VLA
             # array?  Is this a peculiarity of the C language extensions only
             # for NVHPC (pgcc) and the old Intel (icc)? Or is it the result of
