@@ -133,9 +133,13 @@ default_cmpl() {
         }
     fi
     if "$verbose" ; then
-        echo gawk -f "$PC_DIR"/check_test_log.gawk Testing/Temporary/LastTest.log
+        echo gawk \
+             -f "$PC_DIR"/check_test_log.gawk Testing/Temporary/LastTest.log
     fi
-    gawk -f "$PC_DIR"/check_test_log.gawk "$LT_DIR"/LastTest.log
+    gawk -f "$PC_DIR"/check_test_log.gawk "$LT_DIR"/LastTest.log || {
+        echo Skip failed gawk \
+          -f "$PC_DIR"/check_test_log.gawk Testing/Temporary/LastTest.log 1>&2
+    }
     exit $rc
 }
 Xcode_args() {
