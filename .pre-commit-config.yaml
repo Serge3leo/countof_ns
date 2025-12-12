@@ -1,4 +1,8 @@
 ---
+# vim:set sw=2 ts=8 et fileencoding=utf8:
+# SPDX-License-Identifier: BSD-2-Clause
+# SPDX-FileCopyrightText: 2025 Сергей Леонтьев (leo@sai.msu.ru)
+
 repos:
   - repo: https://github.com/pre-commit/pre-commit-hooks
     rev: v6.0.0
@@ -10,9 +14,18 @@ repos:
         args: ["--markdown-linebreak-ext=md"]
       - id: no-commit-to-branch
 
-# TODO remove or needed?
-#   - repo: https://github.com/koalaman/shellcheck-precommit
-#     rev: v0.9.0
-#     hooks:
-#       - id: shellcheck
-#         args: ["./check.sh"]
+  # - repo: https://github.com/koalaman/shellcheck-precommit
+  #   rev: v0.9.0
+  #   hooks:
+  #     - id: shellcheck
+  #       args: ["./check.sh"]
+
+  # https://habr.com/ru/companies/2gis/articles/838966/
+  # Git Hooks не так страшны, как их малюют, Aveldin
+
+  - repo: local
+    hooks:
+      - id: my-yamllint
+        name: Start `yamllint`
+        entry: ./.pre-commit-yamllint.sh
+        language: script
