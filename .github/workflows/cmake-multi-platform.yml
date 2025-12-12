@@ -70,7 +70,6 @@ jobs:
           - c_compiler: lcc
             cpp_compiler: l++
             mrognor_version: 0.1.1
-            lcc: "1.27.23.e2k-v5.5.10"
             os: ubuntu-latest
             platform: "e2k"
         exclude:
@@ -122,7 +121,7 @@ jobs:
             /usr/local/bin/qemu-e2k
             /usr/local/bin/lcc
             /usr/local/bin/l++
-          key: cache-${{ matrix.llc }}-mrognor  # TODO: matrix.mrognor_version
+          key: cache-${{ matrix.mrognor_version }}-mrognor
 
       - name: Non-cache install LCC MCST Elbrus e2k
         if: ${{ matrix.c_compiler == 'lcc' &&
