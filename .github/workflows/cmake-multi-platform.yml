@@ -69,7 +69,9 @@ jobs:
             platform: "linux"
           - c_compiler: lcc
             cpp_compiler: l++
+            mrognor_version: 0.1.1
             lcc: "1.27.23.e2k-v5.5.10"
+            os: ubuntu-latest
             platform: "e2k"
         exclude:
           - os: windows-latest
@@ -88,7 +90,7 @@ jobs:
 
       - name: Cache install oneAPI
         if: ${{ matrix.c_compiler == 'icx' }}
-        id: cache-install
+        id: cache-icx
         uses: actions/cache@v4
         with:
           path: |
@@ -96,13 +98,12 @@ jobs:
           key: oneapi-${{ matrix.oneapi }}-apt
 
       - name: Non-cache install oneAPI
-        if: ${{ matrix.c_compiler == 'icx' }}
+        if: ${{ matrix.c_compiler == 'icx' &&
+                ! steps.cache-icx.outputs.cache-hit }}
         run: |
-          if [ "${{ steps.cache-install.outputs.cache-hit }}" != "true" ]; then
-            bash .github/workflows/oneapi_setup_apt_repo_linux.sh
-            sudo apt install --no-install-recommends \
-                 intel-oneapi-compiler-dpcpp-cpp-${{ matrix.oneapi }}
-          fi
+          bash .github/workflows/oneapi_setup_apt_repo_linux.sh
+          sudo apt install --no-install-recommends \
+               intel-oneapi-compiler-dpcpp-cpp-${{ matrix.oneapi }}
 
       - name: Setup Intel oneAPI environment
         if: ${{ matrix.c_compiler == 'icx' }}
@@ -121,11 +122,12 @@ jobs:
             /usr/local/bin/qemu-e2k
             /usr/local/bin/lcc
             /usr/local/bin/l++
-          key: cache-${{ matrix.llc }}-mrognor
+          key: cache-${{ matrix.llc }}-mrognor  # TODO: matrix.mrognor_version
 
       - name: Non-cache install LCC MCST Elbrus e2k
-        if: ${{ matrix.c_compiler == 'lcc' && steps.cache-lcc.outputs.cache-hit != 'true' }}  # yamllint disable-line rule:line-length
-        uses: mrognor/lcc-env-action@0.1.1
+        if: ${{ matrix.c_compiler == 'lcc' &&
+                ! steps.cache-lcc.outputs.cache-hit }}
+        uses: mrognor/lcc-env-action@0.1.1  # TODO: matrix.mrognor_version
 
       - uses: actions/setup-python@v6
         with:
@@ -234,8 +236,6 @@ jobs:
               "-DCOUNTOF_NS_DOCTESTS=ON"
 
       - name: Exclude unused files from cache
-        if: ${{ matrix.c_compiler == 'icx' }}
-        run: |
-          if [ "${{ steps.cache-install.outputs.cache-hit }}" != "true" ]; then
-            bash .github/workflows/oneapi_cache_exclude_linux.sh
-          fi
+        if: ${{ matrix.c_compiler == 'icx' &&
+                ! steps.cache-icx.outputs.cache-hit }}
+        run: bash .github/workflows/oneapi_cache_exclude_linux.sh
