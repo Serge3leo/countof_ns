@@ -40,6 +40,7 @@ option(COUNTOF_NS_SHORT_EXAMPLE "Build test for short_example" ON)
 option(COUNTOF_NS_EXAMPLES "Build test for other detailed examples" OFF)
 option(COUNTOF_NS_TESTS "Build tests" OFF)
 option(COUNTOF_NS_COMPARISONS "Build comparisons tests" OFF)
+option(COUNTOF_NS_DOCTESTS "Check docs and comparisons table" OFF)
 set(CACHE COUNTOF_NS_CMP_GLOB
     TYPE STRING
     HELP "GLOB pattern of comparisons tests"
