@@ -26,8 +26,8 @@ TAC_CHECK_FUNC(cv_foo) {
             countof(b), countof(b[0]), f, m);
     printf("%zu == countof(c), %zu == countof(c[0]) for c[%zu][%zu]\n",
             countof(c), countof(c[0]), m, f);
-    assert(m == countof(a) && m == countof(a[0]) && "a[0][0]");
-    assert(f == countof(b) && m == countof(b[0]) && "b[5][0]");
-    assert(m == countof(c) && f == countof(c[0]) && "c[0][5]");
+    tac_assert(m == countof(a) && m == countof(a[0]) && "a[0][0]");
+    tac_assert(f == countof(b) && m == countof(b[0]) && "b[5][0]");
+    tac_assert(m == countof(c) && f == countof(c[0]) && "c[0][5]");
     (void)a, (void)b, (void)c;
 }

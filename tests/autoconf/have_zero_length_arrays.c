@@ -107,5 +107,5 @@ TAC_CHECK_FUNC(zla_foo) {
     sum1 += sizeof(t8[0][0][0]);
     printf("sizeof(int) = %zu ZLA_MIN = %d sum1 = %zu\n",
             sizeof(int), ZLA_MIN, sum1);
-    assert((ZLA_MIN ? 157 : 92)*sizeof(int) == sum1);
+    tac_assert((ZLA_MIN ? 157 : 92)*sizeof(int) == sum1);
 }

@@ -79,5 +79,5 @@ CMakeUserPresets.json
 *.swp
 
 # Local bat
-st.bat
-st.sh
+??.bat
+??.sh

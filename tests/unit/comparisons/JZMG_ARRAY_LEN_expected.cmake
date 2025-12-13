@@ -24,7 +24,7 @@ function (tu_jzmg_array_len_expected expected pos_pos neg_pos)
     endforeach ()
     set(neg_base "")
     foreach (b IN ITEMS ${neg_pos})
-        if (ERROR_ON_SIZEOF_POINTER_SUBTRACTION OR
+        if (NOT NO_ERROR_ON_SIZEOF_POINTER_SUBTRACTION OR
             b MATCHES "(__selftest$|_other$)")
             list(APPEND neg_base ${b}.build_fail ${b}_cxx.build_fail)
         else ()

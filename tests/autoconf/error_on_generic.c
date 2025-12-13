@@ -20,7 +20,7 @@ typedef base_t array_t[42];
 TAC_CHECK_FUNC(g_foo) {
     array_t a;
     const int good = !g_bug_on_not_array(base_t, a);
-    assert(good);
+    tac_assert(good);
     tac_static_assert(!g_bug_on_not_array(base_t, a),
                       "Check return value");
     #if !TAC_DONT_FAIL
