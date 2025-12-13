@@ -116,6 +116,107 @@
             : sizeof(a)/( sizeof(*(a)) ? sizeof(*(a)) : (size_t)-1 ))
 
 #if !__cplusplus
+#if 1
+    #if _COUNTOF_NS_REFUSE_VLA || __STDC_NO_VLA__
+        #define _COUNTOF_NS_USE_GENERIC  (1)
+    #elif _COUNTOF_NS_WANT_VLA_C11 || _COUNTOF_NS_WANT_STDC
+        #define _COUNTOF_NS_USE_SUBTRACTION  (1)
+    #elif _COUNTOF_NS_WANT_VLA_BUILTIN || \
+          defined(_countof_ns_ptr_compatible_type)
+        #define _COUNTOF_NS_USE_BUILTIN  (1)
+    #elif __SUNPRO_C
+        #warning "For SunPro, you must define either _COUNTOF_NS_REFUSE_VLA or _countof_ns_ptr_compatible_type(p, type)"
+        #define _COUNTOF_NS_USE_GENERIC  (1)
+    #else
+        // TODO: __POCC__  // Pelles Cq
+        #define _COUNTOF_NS_USE_BUILTIN  (1)
+    #endif
+    #if __STDC_VERSION__ >= 202311L
+        #define _countof_ns_assert  static_assert
+        #define _countof_ns_typeof(t)  typeof(t)
+    #elif !_COUNTOF_NS_WANT_STDC
+        #define _countof_ns_assert  _Static_assert
+        #if _COUNTOF_NS_BROKEN_TYPEOF_WORKAROUND || _COUNTOF_NS_USE_BUILTIN
+            #define _countof_ns_typeof(t)  const volatile __typeof__(t)
+        #else
+            #define _countof_ns_typeof(t)  __typeof__(t)
+        #endif
+    #else
+        #error "With _COUNTOF_NS_WANT_STDC required C23 typeof(t)"
+    #endif
+    #if _COUNTOF_NS_USE_BUILTIN
+        #if !defined(_countof_ns_ptr_compatible_type) && \
+            defined(__has_builtin)
+            #if __has_builtin(__builtin_types_compatible_p)
+#if 1
+                #define _countof_ns_ptr_compatible_type(p, type)  \
+                            __builtin_types_compatible_p( \
+                                _countof_ns_typeof(p), type)
+#else
+            #define _countof_ns_ptr_compatible_type(ppa, type)  \
+                            (!__builtin_types_compatible_p( \
+                                _countof_ns_typeof(&*(**(ppa))), \
+                                _countof_ns_typeof(**(ppa))))
+#endif
+            #endif
+        #endif
+        #if !defined(_countof_ns_ptr_compatible_type) && \
+            defined(__GNUC__) && __GNUC__ < 10
+            // Old gcc and compatibles have restrict
+            // __builtin_types_compatible_p()
+            #define _countof_ns_ptr_compatible_type(ppa, type)  \
+                            (!__builtin_types_compatible_p(
+                                _countof_ns_typeof(&*(**(ppa))),
+                                _countof_ns_typeof(**(ppa))))
+        #endif
+        #if !defined(_countof_ns_ptr_compatible_type)
+            #error "Not __builtin_types_compatible_p() or _countof_ns_ptr_compatible_type()"
+        #endif
+
+            // Constraints `a` is array and have `_countof_ns_unsafe(a)`
+            // elements (for VLA, number elements is unconstrained).
+            //
+            // Constraints identically C11 constraints of pointer
+            // subtraction.  See below.
+        #define _countof_ns_must_array(a)  \
+                (0*sizeof(struct { int _countof_ns; _countof_ns_assert( \
+                    _countof_ns_ptr_compatible_type( \
+                        (_countof_ns_typeof(a) **)&(a), \
+                        _countof_ns_typeof(*(a))(**)[_countof_ns_unsafe(a)] \
+                    ), "Must be array"); }))
+    #elif _COUNTOF_NS_USE_SUBTRACTION
+            // Constraints `a` is array and have `_countof_ns_unsafe(a)`
+            // elements (for VLA, number elements is unconstrained).
+            //
+            // Warning: only in the case C extensions of arrays that contain or
+            // may contain zero-size elements (multidimensional ZLAs, etc.),
+            // the operation subtracting the pointer to the input array and the
+            // pointer to the array with zero elements will be performed.  For
+            // C11/C23, this is undefined behavior, if array have non zero
+            // zero-size elements.  However, a common C language extension for
+            // VLAs is that these pointer types are compatible, and the
+            // operation is valid (at compile time).
+            //
+            // As result:
+            //     static_assert(sizeof(T0) == 0);
+            //     T0 a[0];  // Constraints OK - "is array"
+            //     T0 b[1];  // Constraints FAIL - "is not array"
+            //     size_t u = ...;
+            //     T0 c[u];  // Constraints OK - "is array", at compile time,
+            //               // for any `u`
+        #define _countof_ns_must_array(a)  (0*sizeof( \
+                (_countof_ns_typeof(a) **)&(a) - \
+                (_countof_ns_typeof(*(a))(**)[_countof_ns_unsafe(a)])&(a)))
+    #else
+        #define _COUNTOF_NS_VLA_UNSUPPORTED  (1)
+            // Constraints `a` is fixed array and have `_countof_ns_unsafe(a)`
+            // elements (don't have variably modified type, i.e. not VLA, not
+            // contains VLA etc).
+        #define _countof_ns_must_array(a)  (_Generic( \
+                    (_countof_ns_typeof(a) *)&(a), \
+                    _countof_ns_typeof(*(a))(*)[_countof_ns_unsafe(a)]: 0))
+    #endif
+#else
     #if __STDC_VERSION__ >= 202311L
         #define _countof_ns_assert  static_assert
         #define _countof_ns_typeof(t)  typeof(t)
@@ -201,7 +302,7 @@
                     (_countof_ns_typeof(a) *)&(a), \
                     _countof_ns_typeof(*(a))(*)[_countof_ns_unsafe(a)]: 0))
     #endif
-
+#endif
     #define countof_ns(a)  (_countof_ns_unsafe(a) + _countof_ns_must_array(a))
 #elif _COUNTOF_NS_WANT_VLA_BUILTIN
         // TODO XXX Intel 2021 - HAVE_HIDDEN_IS_SAME_CXX, but SunPro - not
