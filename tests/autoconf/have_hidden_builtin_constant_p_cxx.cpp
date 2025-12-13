@@ -3,9 +3,9 @@
 // SPDX-FileCopyrightText: 2025 Сергей Леонтьев (leo@sai.msu.ru)
 
 #ifdef __has_builtin
-    #if __has_builtin(__is_same)
-        #error "__is_same() not hidden"
+    #if __has_builtin(__builtin_constant_p)
+        #error "__builtin_constant_p() not hidden"
     #endif
 #endif
-#define is_is_same  __is_same
-#include "have_is_same_cxx.cpp"
+#define bc_builtin_constant_p __builtin_constant_p
+#include "have_builtin_constant_p_cxx.cpp"

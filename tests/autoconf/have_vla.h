@@ -26,18 +26,18 @@ volatile size_t vla_3d = VLA_3D;
 static void have_vla(void) {
     int fsa[2];
     const size_t obviously = sizeof(fsa);
-    assert(2*sizeof(int) == obviously);
+    tac_assert(2*sizeof(int) == obviously);
     tac_static_assert(sizeof(&fsa - (int(*)[2])&fsa), "Check FSA");
 
     int vla[vla_1d];
     const size_t unobvious = sizeof(vla);
-    assert(VLA_1D*sizeof(int) == unobvious);
+    tac_assert(VLA_1D*sizeof(int) == unobvious);
 
     (void)fsa; (void)vla;
 #if HAVE_VLA_CHECKS
     #if !__cplusplus
-        assert(0 == (&vla - (int(*)[3])&vla));
-        assert(0 == (&vla - (int(*)[4])&vla));
+        tac_assert(0 == (&vla - (int(*)[3])&vla));
+        tac_assert(0 == (&vla - (int(*)[4])&vla));
         int (*pvla)[vla_1d] = &vla;
         tac_static_assert(sizeof(&pvla - (int(**)[VLA_MIN])&pvla),
                           "Check VLA ptr[VLA_MIN]");
@@ -48,7 +48,7 @@ static void have_vla(void) {
     #endif
     int vlm[vla_min];
     const size_t unobvious_m = sizeof(vlm);
-    assert(VLA_MIN*sizeof(int) == unobvious_m);
+    tac_assert(VLA_MIN*sizeof(int) == unobvious_m);
     #if !__cplusplus
     int (*pvlm)[vla_min] = &vlm;
         tac_static_assert(sizeof(&pvlm - (int(**)[VLA_MIN])&pvlm),
@@ -157,7 +157,7 @@ static void have_vla(void) {
         return;  // VLA seems good
     }
     printf("VLA seems broken\n");  // TODO
-    exit(EXIT_FAILURE);
+    tac_exit_failure();
 #endif
 }
 

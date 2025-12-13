@@ -23,15 +23,15 @@ TAC_CHECK_FUNC(vla_foo) {
 
     size_t n0 = 0;
     T0 a1[n0];
-    assert(n0 == sizeof(a1));
-    assert(sizeof(T0) == sizeof(a1[0]));
+    tac_assert(n0 == sizeof(a1));
+    tac_assert(sizeof(T0) == sizeof(a1[0]));
 
     size_t m2 = 42;
     T0 a2[m2];
-    assert(n0 == sizeof(a2));
-    assert(sizeof(T0) == sizeof(a2[0]));
+    tac_assert(n0 == sizeof(a2));
+    tac_assert(sizeof(T0) == sizeof(a2[0]));
     for (size_t i = 0; i < m2; i++) {
-        assert(sizeof(T0) == sizeof(a2[i]));
+        tac_assert(sizeof(T0) == sizeof(a2[i]));
     }
 
     (void)a1; (void)a2;

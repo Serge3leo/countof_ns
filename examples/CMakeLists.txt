@@ -70,7 +70,7 @@ if (COUNTOF_NS_EXAMPLES)
 
     example(long_example.c "" "" "")
     if (HAVE_VLA AND NOT HAVE_BROKEN_VLA)
-        if (ERROR_ON_SIZEOF_POINTER_SUBTRACTION)
+        if (NO_ERROR_ON_SIZEOF_POINTER_SUBTRACTION)
                 # If the compiler complies with the C11 constraints for
                 # pointer subtraction
             set(opt_c11 "-DENABLE_VLA_C11_EXAMPLE")

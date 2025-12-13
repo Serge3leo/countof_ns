@@ -6,20 +6,24 @@
 
 #if defined __has_builtin
     #if __has_builtin (__builtin_types_compatible_p)
-        #define builtin_types_compatible_p(type1, type2)  \
+        #define btc_builtin_types_compatible_p(type1, type2)  \
                         __builtin_types_compatible_p(type1, type2)
     #endif
 #endif
-#ifndef builtin_types_compatible_p
+#ifndef btc_builtin_types_compatible_p
     #error "Don't have __builtin_types_compatible_p()"
 #endif
 
-TAC_CHECK_FUNC(cntf_foo) {
+TAC_CHECK_FUNC(btc_foo) {
     int a[1] = {0};
     int *b = 0;
-    tac_static_assert(builtin_types_compatible_p(__typeof__(a), int[1]), "1");
-    tac_static_assert(builtin_types_compatible_p(__typeof__(&a), int(*)[1]), "2");
-    tac_static_assert(!builtin_types_compatible_p(__typeof__(b), int[1]), "3");
-    tac_static_assert(!builtin_types_compatible_p(__typeof__(&b), int(*)[1]), "4");
+    tac_static_assert(btc_builtin_types_compatible_p(__typeof__(a), int[1]),
+                      "1");
+    tac_static_assert(btc_builtin_types_compatible_p(__typeof__(&a), int(*)[1]),
+                      "2");
+    tac_static_assert(!btc_builtin_types_compatible_p(__typeof__(b), int[1]),
+                      "3");
+    tac_static_assert(!btc_builtin_types_compatible_p(__typeof__(&b), int(*)[1]),
+                     "4");
     (void)a, (void)b;
 }

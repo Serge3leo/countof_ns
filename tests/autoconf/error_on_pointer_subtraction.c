@@ -77,7 +77,7 @@ TAC_CHECK_FUNC(ps_foo) {
     (void)good;
     #if __NVCOMPILER || _MSC_VER || __SUNPRO_C || TAC_PEDANTIC \
         || (defined(__clang_major__) && __clang_major__ < 16)
-        assert(!ps_bug_on_not_array(base1_t, array1_t, a1));
+        tac_assert(!ps_bug_on_not_array(base1_t, array1_t, a1));
     #else
         tac_static_assert(!ps_bug_on_not_array(base1_t, array1_t, a1),
                           "Check return value");
