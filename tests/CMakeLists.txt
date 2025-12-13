@@ -4,6 +4,9 @@
 
 add_subdirectory(unit)
 add_subdirectory(complex)
+if (COUNTOF_NS_DOCTESTS)
+    add_subdirectory(docs)
+endif ()
 # TODO add_subdirectory(check_logs)
 
 enable_testing()

@@ -46,7 +46,8 @@ set(CACHE COUNTOF_NS_CMP_GLOB
     HELP "GLOB pattern of comparisons tests"
     VALUE "*")  # TODO not set default? Workaround: add "*" in tests/unit.
 
-if (COUNTOF_NS_EXAMPLES OR COUNTOF_NS_TESTS OR COUNTOF_NS_COMPARISONS)
+if (COUNTOF_NS_EXAMPLES OR COUNTOF_NS_TESTS OR COUNTOF_NS_COMPARISONS OR
+    COUNTOF_NS_DOCTESTS)
     set(TAC_SOURCE_DIR "${CMAKE_CURRENT_SOURCE_DIR}/tests/autoconf")
     include("${TAC_SOURCE_DIR}/autoconf.cmake")
 endif ()
@@ -54,7 +55,7 @@ set_property(GLOBAL PROPERTY USE_FOLDERS ON)
 if (COUNTOF_NS_SHORT_EXAMPLE OR COUNTOF_NS_EXAMPLES)
     add_subdirectory(examples)
 endif ()
-if (COUNTOF_NS_TESTS OR COUNTOF_NS_COMPARISONS)
+if (COUNTOF_NS_TESTS OR COUNTOF_NS_COMPARISONS OR COUNTOF_NS_DOCTESTS)
     set(CMAKE_FOLDER "tests")
     add_subdirectory(tests)
 endif ()

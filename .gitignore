@@ -75,6 +75,15 @@ CTestTestfile.cmake
 _deps
 CMakeUserPresets.json
 
+# Partial Python.gitignore
+# Byte-compiled / optimized / DLL files
+__pycache__/
+*.py[codz]
+*$py.class
+
+# C extensions
+*.so
+
 # vim files
 *.swp
 
