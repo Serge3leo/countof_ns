@@ -64,8 +64,9 @@ SEGV = '💥<sub>-SEGV</sub>'
 DIV0 = '💣<sub>-DIV0</sub>'
 comments = [
         # Editorial
+        'n/a...',
         'n/a',
-        'Broken, N/A',
+        'Broken,N/A',
         '⚠️<sub>TODO</sub>',
         # Unimplemented
         FPE,  # TODO need check by logs
