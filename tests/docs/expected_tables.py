@@ -46,18 +46,19 @@ Method = "Method"
 ID = "Compiler<br>ID"
 Opt = "Opt"
 ExampleSkip = "e.g.:"
-services = { Method, ID, Opt }
-terms = {
-        'pos_.*[.]build_fail':        '❌',
-        'pos_.*[.]run_0_unexpected':  '☸️',
-        'pos_.*[.]run_fail':          '⚠️',
-        'pos_.*':                     '✅',
-        'neg_.*[.]run_fail':          '❌',
-        'neg_.*[.]run_0_unexpected':  '☸️',
-        'neg_.build_unexpected':      '⚠️',
-        'neg_.*[.]build_fail':        '✅',
-        'neg_.*':                     '**TODO**',
-    }
+    # With the usual layout, the first and last columns are empty.
+services = { Method, ID, Opt, "" }
+terms = [
+        (r'pos_.*\.build_fail',         '❌'),
+        (r'pos_.*\.run_0_unexpected',   '☸️'),
+        (r'pos_.*\.run_fail',           '⚠️'),
+        (r'pos_.*',                     '✅'),
+        (r'neg_.*\.run_fail',           '❌'),
+        (r'neg_.*\.run_0_unexpected',   '☸️'),
+        (r'neg_.*\.build_unexpected',   '⚠️'),
+        (r'neg_.*\.build_fail',         '✅'),
+        (r'neg_.*',                     '**TODO**'),
+    ]
 FPE = '💥<sub>-FPE</sub>'
 SEGV = '💥<sub>-SEGV</sub>'
 DIV0 = '💣<sub>-DIV0</sub>'
@@ -130,7 +131,7 @@ def check_expected(table_fn: str, check_id: str, args: "Namespace") -> bool:
             kid[meth] = r
         # Add key <base name test case> -> columns header
         mt.case_hdr = {}
-        for h in mt.headers[1:-1]:
+        for h in mt.headers:
             if h in services:
                 continue
             for bnc in [re.sub(r'(`|\s)', '', c) for c in h.split('<br>')]:
@@ -150,15 +151,20 @@ def check_expected(table_fn: str, check_id: str, args: "Namespace") -> bool:
             continue
         ...  # Выбор из ETC_modules[k]
         for ec in args.__dict__[k].split(';'):
-            m = re.match("([^.]*)(|.c11|.bltn|_cxx|_cxx.bltn)(.*)", ec)
+            m = re.match(r"([^.]*)(\.c11|\.bltn|)($|\..*?)", ec)
             if not m:
                 print(f"{k}: unrecognized case: {ec, m=}")
                 res = False
                 continue
-            elif m.group(2).startswith("_cxx"):
+            elif m.group(1).endswith("_cxx"):
+                m = re.match(r"([^.]*)(_cxx.bltn|_cxx)($|\..*)", ec)
+                if not m:
+                    print(f"{k}: unrecognized case: {ec, m=}")
+                    res = False
+                    continue
                 rxx_ext = cxx_ext.id_meth[check_id][ETC_modules[k][m.group(2)]]
                 if m.group(1) not in cxx_ext.case_hdr:
-                    print(f"{mt.begin}: error: not test case {m.group(1), ec=}")
+                    print(f"{ETC_modules[k][m.group(2)]}: {check_id}: error: not test case {m.group(1), ec=}")
                     res = False
                     continue
                 cell = rxx_ext[cxx_ext.case_hdr[m.group(1)]]
@@ -180,17 +186,23 @@ def check_expected(table_fn: str, check_id: str, args: "Namespace") -> bool:
                     cell = r_ext[c_ext.case_hdr[m.group(1)]]
                 else:
                     print(f"{k}: error: case not found"
-                          f" {m.group(1), ec=}")
+                          f" {m.group(1), m.group(2),
+                          ETC_modules[k][m.group(2)], ec=}")
                     res = False
                     continue
             cell = re.sub(r'(`|\s)', '', cell)
             for c in comments:
                 cell = cell.replace(c, "")
-            for p, s in terms.items():
+            for p, s in terms:
                 if re.match(p, ec):
                     if not s in cell:
-                        print(f"{mt.begin}: not test case {ec, s=}")
+                        # TODO print(f"{p, s=}")
+                        print(f"{ETC_modules[k][m.group(2)]}: {check_id}:"
+                              f" error: not result {ec, m.group(1), s, cell=}")
                         res = False
+                    break
+                #else:
+                #    print(f"Not match {p, s=}")
             ...  # TODO: all cell used
     return res
 
