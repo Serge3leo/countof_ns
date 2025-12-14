@@ -129,6 +129,15 @@ def check_expected(table_fn: str, check_id: str, args: "Namespace") -> bool:
                 print(f"{mt.begin}: error: duplicate {meth, cid=}")
                 res = False
             kid[meth] = r
+            for h in mt.headers:
+                if h in services:
+                    continue
+                cell = r[h]
+                orig = cell
+                cell = re.sub(r'(`|\s)', '', cell)
+                for c in comments:
+                    cell = cell.replace(c, "")
+                r[h] = {'orig': orig, 'cell': cell, 'cnt': 0}
         # Add key <base name test case> -> columns header
         mt.case_hdr = {}
         for h in mt.headers:
@@ -190,21 +199,34 @@ def check_expected(table_fn: str, check_id: str, args: "Namespace") -> bool:
                           ETC_modules[k][m.group(2)], ec=}")
                     res = False
                     continue
-            cell = re.sub(r'(`|\s)', '', cell)
-            #for c in comments:
-            #    cell = cell.replace(c, "")
             for p, s in terms:
                 if re.match(p, ec):
-                    if not s in cell:
+                    if not s in cell['orig']:
                         print(f"{ETC_modules[k][m.group(2)]}: {check_id}:"
                               f" error: not result {ec, m.group(1), s, cell=}")
                         res = False
+                    else:
+                        cell['cell'] = cell['cell'].replace(s, "")
                     break
             else:
                 print(f"{ETC_modules[k][m.group(2)]}: {check_id}:"
                       f" Unknown unmatched {ec=}")
                 res = False
-            ...  # TODO: all cell used
+    for mt in c_base, c_ext, cxx_ext:
+        for m, r in mt.id_meth[check_id].items():
+            for k in args.__dict__:
+                if args.__dict__[k] and k in m:
+                    break
+            else:
+                continue
+            for h in mt.headers:
+                if h in services:
+                    continue
+                if args.verbose:
+                    print(f"{check_id}: {m}: info: {h, r[h]=}")
+                if r[h]['cell']:
+                    print(f"{check_id}: {m}: left unused {h, r[h]=}")
+                    res = False
     return res
 
 if __name__ == '__main__':
