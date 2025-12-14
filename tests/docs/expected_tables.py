@@ -191,18 +191,19 @@ def check_expected(table_fn: str, check_id: str, args: "Namespace") -> bool:
                     res = False
                     continue
             cell = re.sub(r'(`|\s)', '', cell)
-            for c in comments:
-                cell = cell.replace(c, "")
+            #for c in comments:
+            #    cell = cell.replace(c, "")
             for p, s in terms:
                 if re.match(p, ec):
                     if not s in cell:
-                        # TODO print(f"{p, s=}")
                         print(f"{ETC_modules[k][m.group(2)]}: {check_id}:"
                               f" error: not result {ec, m.group(1), s, cell=}")
                         res = False
                     break
-                #else:
-                #    print(f"Not match {p, s=}")
+            else:
+                print(f"{ETC_modules[k][m.group(2)]}: {check_id}:"
+                      f" Unknown unmatched {ec=}")
+                res = False
             ...  # TODO: all cell used
     return res
 
