@@ -21,11 +21,13 @@ csv.register_dialect("markdown", markdown_dialect)
 
 class Md:
     def __init__(self, name: str):
-        with open(name, encoding='utf-8') as f:
+        self.name = name
+        with open(self.name, encoding='utf-8') as f:
             self.content = f.readlines()
 
 class MdTable:
     def __init__(self, md: Md, begin: str, end: str):
+        self.begin = begin
         b, e = None, None
         for i in range(len(md.content)):
             if md.content[i].startswith(begin):
@@ -33,6 +35,10 @@ class MdTable:
             if md.content[i].startswith(end):
                 e = i
                 break
+        if b is None:
+            raise KeyError(f"{md.name}: error: begin not found {begin=}")
+        if e is None:
+            raise KeyError(f"{md.name}: error: end not found {end=}")
         self.headers = None
         self.header_len = 0
         for r in csv.reader(md.content[b:e], dialect="markdown"):
@@ -43,6 +49,7 @@ class MdTable:
         tbl = [r for r in csv.DictReader(md.content[b:e],
                                          fieldnames=self.headers,
                                          dialect="markdown")]
+        self.header_len += 1
         self.header = tbl[:self.header_len]
         self.table = tbl[self.header_len:]
 

@@ -15,6 +15,7 @@ from markdown_table import Md, MdTable
 
 def compiler_versions(table_fn: str, check_id: str, check_version: str,
                       check_extensions: list[str], verbose: bool) -> bool:
+    res = True
     comparison_table = Md(table_fn)
     compiler_versions = MdTable(comparison_table,
                                 "### Compiler versions and extensions",
@@ -34,7 +35,7 @@ def compiler_versions(table_fn: str, check_id: str, check_version: str,
             s[mm].remove('')
     if not (s['min'] <= s['max']):
         print(f"error: table extensions corrupt {s['min'], s['max']=}")
-        return False
+        res = False
     for mm in 'Min', 'Max':
         r[mm] = r[mm].strip()
     if '' == r['Min'] or not s['min']:
@@ -42,25 +43,25 @@ def compiler_versions(table_fn: str, check_id: str, check_version: str,
         s['min'] = s['max']
     if not (r['Min'] <= r['Max']):
         print(f"error: table versions corrupt {r['Min'], r['Max']=}")
-        return False
+        res = False
     if not (r['Min'] <= check_version):
         print(f"error: version too low {r['Min'], check_version=}")
-        return False
+        res = False
     if not (r['Max'] >= check_version):
         print(f"error: version too high {r['Max'], check_version=}")
-        return False
+        res = False
     sext = set(re.sub(r'(`|\s)', '', e)
                for l in check_extensions for e in l.split())
     if not (s['min'] <= sext):
         print(f"error: too few extensions {s['min'], sext=}")
-        return False
+        res = False
     if not (s['max'] >= sext):
         print(f"error: too more extensions {s['max'], sext=}")
-        return False
+        res = False
     if verbose:
         print(f"{r['Min'], check_version, r['Max']=}")
         print(f"{s['min'], sext, s['max']=}")
-    return True
+    return res
 
 if __name__ == '__main__':
     parser = argparse.ArgumentParser()
