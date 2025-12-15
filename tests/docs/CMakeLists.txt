@@ -24,6 +24,7 @@ tac_report(rep)
 add_test(NAME compiler_versions
          COMMAND ${Python3_EXECUTABLE}
                  ${CMAKE_CURRENT_SOURCE_DIR}/compiler_versions.py
+                 --verbose
                  --id ${CMAKE_C_COMPILER_ID}
                  --version ${CMAKE_C_COMPILER_VERSION}
                  ${rep})
@@ -44,7 +45,10 @@ list(GET ${tu_params_list} 3 available)
 add_test(NAME expected_tables
          COMMAND ${Python3_EXECUTABLE}
                  ${CMAKE_CURRENT_SOURCE_DIR}/expected_tables.py
+                 --verbose
                  --id ${CMAKE_C_COMPILER_ID}
-                 --countof_ns "${${available}}")
+                 --version ${CMAKE_C_COMPILER_VERSION}
+                 --countof_ns "${${available}}"
+                ${rep})
 
 enable_testing()

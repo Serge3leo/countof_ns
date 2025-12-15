@@ -8,10 +8,10 @@ Checking tables of expected test case results
 """
 
 import argparse
-import os
 import re
 
 from markdown_table import Md, MdTable
+from compiler_versions import compiler_versions, cv_result
 
 ETC_modules = {
         "countof_ns": {
@@ -76,10 +76,17 @@ comments = [
         '<sub>+Cmpl</sub>',
         '<sub>-Inv</sub>',
         '<sub>+Expect</sub>',
-        '<sub>+Inv0</sub>',
+        '<sub>Inv0</sub>',
     ]
 
-def check_expected(table_fn: str, check_id: str, args: "Namespace") -> bool:
+def check_expected(table_fn: str, check_id: str,
+                   args: argparse.Namespace) -> bool:
+    last_unused = compiler_versions(table_fn, check_id,
+                                   args.version, args.extensions, args.verbose)
+    res_unused = not (last_unused >= cv_result.last_extensions)
+    msg_unused = "warning" if res_unused else "error"
+    if args.verbose:
+        print(f"{last_unused, res_unused, msg_unused=}")
     res = True
     comparison_table = Md(table_fn)
     c_base = MdTable(comparison_table,
@@ -226,16 +233,25 @@ def check_expected(table_fn: str, check_id: str, args: "Namespace") -> bool:
                 if args.verbose:
                     print(f"{check_id}: {m}: info: {h, r[h]=}")
                 if r[h]['cell']:
-                    print(f"{check_id}: {m}: left unused {h, r[h]=}")
-                    res = False
+                    print(f"{check_id}: {m}: {msg_unused}:"
+                          f" left unused {h, r[h]=}")
+                    res &= res_unused
     return res
 
 if __name__ == '__main__':
+    import os
+    import sys
+
+    sys.stdout.reconfigure(encoding='utf-8')
+    sys.stderr.reconfigure(encoding='utf-8')
     parser = argparse.ArgumentParser()
+    parser.add_argument("extensions", nargs='+',
+                        help="Compilers autoconf extensions", default="")
     parser.add_argument("--table", help="Tables file", nargs='?',
                         default=os.path.join(os.path.dirname(__file__),
                                              "../../docs/comparison_table.md"))
     parser.add_argument("--id", help="ID for check", required=True)
+    parser.add_argument("--version", help="Version for check", required=True)
     for k in ETC_modules.keys():
         parser.add_argument(f"--{k}", help=f"{k} expected test cases")
     parser.add_argument("--verbose", action="store_true", help="verbose output")
