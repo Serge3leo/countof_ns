@@ -24,7 +24,31 @@ tac_report(rep)
 add_test(NAME compiler_versions
          COMMAND ${Python3_EXECUTABLE}
                  ${CMAKE_CURRENT_SOURCE_DIR}/compiler_versions.py
+                 --verbose
                  --id ${CMAKE_C_COMPILER_ID}
                  --version ${CMAKE_C_COMPILER_VERSION}
                  ${rep})
+
+include(../unit/unit_cases.cmake)
+
+set(tu_params_list "")
+include (../unit/countof_ns_expected.cmake)
+
+#message("tu_pos_hdr=${tu_pos_hdr}")
+#message("tu_neg_hdr=${tu_neg_hdr}")
+#message("tu_params_list=${tu_params_list}")
+#message("${tu_params_list}=${${tu_params_list}}")
+list(GET ${tu_params_list} 3 available)
+#message("available=${available}")
+#message("${available}=${${available}}")
+
+add_test(NAME expected_tables
+         COMMAND ${Python3_EXECUTABLE}
+                 ${CMAKE_CURRENT_SOURCE_DIR}/expected_tables.py
+                 --verbose
+                 --id ${CMAKE_C_COMPILER_ID}
+                 --version ${CMAKE_C_COMPILER_VERSION}
+                 --countof_ns "${${available}}"
+                ${rep})
+
 enable_testing()

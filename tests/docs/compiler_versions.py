@@ -7,14 +7,20 @@
 Check unique hashs over files
 """
 
-import argparse
-import os
 import re
+import enum
 
 from markdown_table import Md, MdTable
 
+class cv_result(enum.IntEnum):
+    fail = 0
+    good = 1
+    last_extensions = 2
+    last_version = 3
+
 def compiler_versions(table_fn: str, check_id: str, check_version: str,
-                      check_extensions: list[str], verbose: bool) -> bool:
+                      check_extensions: list[str], verbose: bool) -> cv_result:
+    res = cv_result.good
     comparison_table = Md(table_fn)
     compiler_versions = MdTable(comparison_table,
                                 "### Compiler versions and extensions",
@@ -24,7 +30,7 @@ def compiler_versions(table_fn: str, check_id: str, check_version: str,
             break
     else:
         print(f"error: not found {check_id=}")
-        return False
+        return cv_result.fail
     s = {}
     for mm in 'min', 'max':
         t = re.sub('⚛︎.*$', '', r[f'Extensions {mm}'])
@@ -34,7 +40,7 @@ def compiler_versions(table_fn: str, check_id: str, check_version: str,
             s[mm].remove('')
     if not (s['min'] <= s['max']):
         print(f"error: table extensions corrupt {s['min'], s['max']=}")
-        return False
+        res = cv_result.fail
     for mm in 'Min', 'Max':
         r[mm] = r[mm].strip()
     if '' == r['Min'] or not s['min']:
@@ -42,27 +48,40 @@ def compiler_versions(table_fn: str, check_id: str, check_version: str,
         s['min'] = s['max']
     if not (r['Min'] <= r['Max']):
         print(f"error: table versions corrupt {r['Min'], r['Max']=}")
-        return False
+        res = cv_result.fail
     if not (r['Min'] <= check_version):
         print(f"error: version too low {r['Min'], check_version=}")
-        return False
+        res = cv_result.fail
     if not (r['Max'] >= check_version):
         print(f"error: version too high {r['Max'], check_version=}")
-        return False
+        res = cv_result.fail
     sext = set(re.sub(r'(`|\s)', '', e)
                for l in check_extensions for e in l.split())
     if not (s['min'] <= sext):
-        print(f"error: too few extensions {s['min'], sext=}")
-        return False
+        print(f"error: too few extensions"
+              f" {s['min']-sext, sext-s['min'], s['min'], sext=}")
+        res = cv_result.fail
     if not (s['max'] >= sext):
-        print(f"error: too more extensions {s['max'], sext=}")
-        return False
+        print(f"error: too more extensions"
+              f" {s['max']-sext, sext-s['max'], s['max'], sext=}")
+        res = cv_result.fail
+    if s['max'] == sext:
+        res = cv_result.last_extensions
+    if r['Max'] == check_version:
+        res = cv_result.last_version
     if verbose:
         print(f"{r['Min'], check_version, r['Max']=}")
         print(f"{s['min'], sext, s['max']=}")
-    return True
+        print(f"{res=}")
+    return res
 
 if __name__ == '__main__':
+    import argparse
+    import os
+    import sys
+
+    sys.stdout.reconfigure(encoding='utf-8')
+    sys.stderr.reconfigure(encoding='utf-8')
     parser = argparse.ArgumentParser()
     parser.add_argument("extensions", nargs='+',
                         help="Compilers autoconf extensions", default="")
