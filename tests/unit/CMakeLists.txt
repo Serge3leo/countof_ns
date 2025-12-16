@@ -2,12 +2,6 @@
 # SPDX-License-Identifier: BSD-2-Clause
 # SPDX-FileCopyrightText: 2025 Сергей Леонтьев (leo@sai.msu.ru)
 
-if (CMAKE_C_COMPILER_ID STREQUAL GCC)  # Workaround gcc 13 bug
-    set(ENV{LANG} "ru_RU.UTF-8")
-else ()
-    set(ENV{LANG} C)  # For detect warning and error messages
-endif ()
-
 include(${CMAKE_SOURCE_DIR}/examples/countof_ns_builtin_options.cmake)
 
 function (process_params params)
