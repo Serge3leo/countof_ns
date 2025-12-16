@@ -31,33 +31,37 @@ ETC_modules = {
         "stdc_countof": {
                 "": "countof",
             },
-        "ALX_COUNTOF": {
-                "": "COUNTOF",
+        "alx_countof": {
+                "": "ALX_COUNTOF",
             },
-        "JZMG_ARRAY_LEN": {
-                "_cxx": "ARRAY_LEN",
-                "": "ARRAY_LEN",
+        "jzmg_array_len": {
+                "_cxx": "JZMG_ARRAY_LEN",
+                "": "JZMG_ARRAY_LEN",
             },
-        "LNX_ARRAY_SIZE": {
-                "": "ARRAY_SIZE",
+        "lnx_array_size": {
+                "": "LNX_ARRAY_SIZE",
             },
     }
 Method = "Method"
 ID = "Compiler<br>ID"
 Opt = "Opt"
-ExampleSkip = "e.g.:"
+OptSkips = ["e.g.:", "**Hdrs:**"]
     # With the usual layout, the first and last columns are empty.
 services = { Method, ID, Opt, "" }
 terms = [
+        (r'(pos|neg).*\.run_FPE',       '💥<sub>-FPE</sub>'),
+        (r'(pos|neg).*\.run_SEGV',      '💥<sub>-SEGV</sub>'),
+        (r'(pos|neg).*\.run_DIV0',      '💣<sub>wDIV0</sub>'),
+        (r'(pos|neg).*\.build_DIV0',    '💣<sub>wDIV0</sub>'),
         (r'pos_.*\.build_fail',         '❌'),
-        (r'pos_.*\.run_0_unexpected',   '☸️'),
-        (r'pos_.*\.run_fail',           '⚠️'),
-        (r'pos_.*',                     '✅'),
-        (r'neg_.*\.run_fail',           '❌'),
-        (r'neg_.*\.run_0_unexpected',   '☸️'),
+        (r'pos_.*\.run_0_unexpected',   '☸️<sub>Inv0</sub>'),
+        (r'pos_.*\.run_fail',           '⚠️<sub>-Inv</sub>'),
+        (r'pos_[^.]*(\.c11|\.bltn|)$',  '✅'),
+        (r'neg_.*\.run_fail',           '❌<sub>-Inv</sub>'),
+        (r'neg_.*\.run_0_unexpected',   '☸️i<sub>Inv0</sub>'),
         (r'neg_.*\.build_unexpected',   '⚠️'),
         (r'neg_.*\.build_fail',         '✅'),
-        (r'neg_.*',                     '**TODO**'),
+        (r'neg_[^.]*(\.c11|\.bltn|)$',  '**TODO**'),
     ]
 FPE = '💥<sub>-FPE</sub>'
 SEGV = '💥<sub>-SEGV</sub>'
@@ -68,15 +72,6 @@ comments = [
         'n/a',
         'Broken,N/A',
         '⚠️<sub>TODO</sub>',
-        # Unimplemented
-        FPE,  # TODO need check by logs
-        SEGV,  # TODO need check by logs
-        DIV0,  # TODO need check by logs
-        # Informal
-        '<sub>+Cmpl</sub>',
-        '<sub>-Inv</sub>',
-        '<sub>+Expect</sub>',
-        '<sub>Inv0</sub>',
     ]
 
 def check_expected(table_fn: str, check_id: str,
@@ -119,9 +114,9 @@ def check_expected(table_fn: str, check_id: str,
                     print(f"{mt.begin}: info: skip empty")
                 continue
             if ("" == r[Method].strip() and "" == r[ID].strip() and
-                ExampleSkip == r[Opt].strip()):
+                r[Opt].strip() in OptSkips):
                 if args.verbose:
-                    print(f"{mt.begin}: info: skip {ExampleSkip=}")
+                    print(f"{mt.begin}: info: skip {r[Opt].strip()=}")
                 continue
             meth = r[Method].strip()
             if "" == meth:
@@ -162,7 +157,8 @@ def check_expected(table_fn: str, check_id: str,
                     res = False
                 mt.case_hdr[bnc] = h
     for k in ETC_modules.keys():
-        if not k in args.__dict__ or args.__dict__[k] is None:
+        if (not k in args.__dict__ or args.__dict__[k] is None or
+            not args.__dict__[k]):
             if args.verbose:
                 print(f"not '{k}' in args.__dict__")
             continue
@@ -179,6 +175,11 @@ def check_expected(table_fn: str, check_id: str,
                     print(f"{k}: unrecognized case: {ec, m=}")
                     res = False
                     continue
+                if not ETC_modules[k][m.group(2)] in cxx_ext.id_meth[check_id]:
+                    print(f"{k}: not in C++ Extension table"
+                      f" {m.group(2), ETC_modules[k][m.group(2)], check_id=}")
+                    res = False
+                    continue
                 rxx_ext = cxx_ext.id_meth[check_id][ETC_modules[k][m.group(2)]]
                 if m.group(1) not in cxx_ext.case_hdr:
                     print(f"{ETC_modules[k][m.group(2)]}: {check_id}: error: not test case {m.group(1), ec=}")
@@ -186,6 +187,16 @@ def check_expected(table_fn: str, check_id: str,
                     continue
                 cell = rxx_ext[cxx_ext.case_hdr[m.group(1)]]
             else:
+                if not ETC_modules[k][m.group(2)] in c_base.id_meth[check_id]:
+                    print(f"{k}: not in C Language table"
+                      f" {m.group(2), ETC_modules[k][m.group(2)], check_id=}")
+                    res = False
+                    continue
+                if not ETC_modules[k][m.group(2)] in c_ext.id_meth[check_id]:
+                    print(f"{k}: not in C Extension table"
+                      f" {m.group(2), ETC_modules[k][m.group(2)], check_id=}")
+                    res = False
+                    continue
                 r_base = c_base.id_meth[check_id][ETC_modules[k][m.group(2)]]
                 r_ext = c_ext.id_meth[check_id][ETC_modules[k][m.group(2)]]
                 if m.group(1) in c_base.case_hdr:
@@ -208,18 +219,18 @@ def check_expected(table_fn: str, check_id: str,
                     res = False
                     continue
             for p, s in terms:
-                if re.match(p, ec):
+                if re.search(p, ec):
                     if not s in cell['orig']:
-                        print(f"{ETC_modules[k][m.group(2)]}: {check_id}:"
+                        print(f"{ETC_modules[k][m.group(2)]}: {m.group(2)}:"
+                              f" {check_id}:"
                               f" error: not result {ec, m.group(1), s, cell=}")
                         res = False
                     else:
                         cell['cell'] = cell['cell'].replace(s, "")
-                    break
-            else:
-                print(f"{ETC_modules[k][m.group(2)]}: {check_id}:"
-                      f" Unknown unmatched {ec=}")
-                res = False
+            #else:
+            #    print(f"{ETC_modules[k][m.group(2)]}: {check_id}:"
+            #          f" Unknown unmatched {ec=}")
+            #    res = False
     for mt in c_base, c_ext, cxx_ext:
         for m, r in mt.id_meth[check_id].items():
             for k in args.__dict__:
@@ -230,10 +241,8 @@ def check_expected(table_fn: str, check_id: str,
             for h in mt.headers:
                 if h in services:
                     continue
-                if args.verbose:
-                    print(f"{check_id}: {m}: info: {h, r[h]=}")
                 if r[h]['cell']:
-                    print(f"{check_id}: {m}: {msg_unused}:"
+                    print(f"{mt.begin} {m}: {check_id}: {msg_unused}:"
                           f" left unused {h, r[h]=}")
                     res &= res_unused
     return res
