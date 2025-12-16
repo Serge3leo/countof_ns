@@ -72,6 +72,7 @@ comments = [
         'n/a',
         'Broken,N/A',
         '⚠️<sub>TODO</sub>',
+        '<br>'
     ]
 
 def check_expected(table_fn: str, check_id: str,
