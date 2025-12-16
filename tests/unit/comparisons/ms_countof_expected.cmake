@@ -40,17 +40,18 @@ function (tu_ms_countof_expected expected pos_pos neg_pos)
                              pos_base "${pos_base}")
     endif ()
     set(build_div0_Clang pos_alone_n0 pos_zla_00 pos_zla_alone_00 pos_zla_n0
-                         pos_zla_struct_00 neg_alone_ptr)
+                         pos_zla_struct_00 neg_alone_ptr neg_zla_ptr)
     set(run_div0_Clang pos_vla_alone_00 pos_vla_alone_n0
                        pos_vla_struct_00 pos_vla_struct_n0
-                       pos_vla_zla_00 pos_vla_zla_n0)
+                       pos_vla_zla_00 pos_vla_zla_n0
+                       neg_zla_ptr)
     set(run_fpe_Clang pos_vla_alone_00 pos_vla_alone_n0
                       pos_vla_00 pos_vla_n0
                       pos_vla_struct_00 pos_vla_struct_n0
                       pos_vla_zla_00 pos_vla_zla_n0
                       neg_vla_zla_ptr neg_zla_vla_ptr)
     set(build_div0_GNU pos_alone_n0 pos_zla_00 pos_zla_alone_00 pos_zla_n0
-                       pos_zla_struct_00 neg_alone_ptr)
+                       pos_zla_struct_00 neg_alone_ptr neg_zla_ptr)
     set(run_div0_GNU pos_vla_alone_00 pos_vla_alone_n0
                      pos_vla_struct_00 pos_vla_struct_n0
                      pos_vla_zla_00 pos_vla_zla_n0

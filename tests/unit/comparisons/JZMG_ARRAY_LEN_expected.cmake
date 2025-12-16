@@ -65,6 +65,11 @@ function (tu_jzmg_array_len_expected expected pos_pos neg_pos)
     set(run_div0_IntelLLVM pos_vla_alone_00 pos_vla_alone_n0
                            pos_vla_struct_00 pos_vla_struct_n0
                            pos_vla_zla_00 pos_vla_zla_n0)
+    set(build_div0_LCC pos_zla_n0)
+    set(run_fpe_LCC pos_vla_00 pos_vla_n0
+                    pos_vla_struct_00 pos_vla_struct_n0
+                    pos_vla_zla_00 pos_vla_zla_n0
+                    neg_vla_zla_ptr neg_zla_ptr neg_zla_vla_ptr)
     set(build_div0_NVHPC pos_zla_n0 eg_zla_ptr)
     set(run_div0_NVHPC pos_vla_struct_00 pos_vla_struct_n0
                        pos_vla_zla_00 pos_vla_zla_n0)
