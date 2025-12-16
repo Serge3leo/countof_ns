@@ -2,7 +2,7 @@
 # SPDX-License-Identifier: BSD-2-Clause
 # SPDX-FileCopyrightText: 2025 Сергей Леонтьев (leo@sai.msu.ru)
 
-function (tu_jms_countof_expected expected pos_pos neg_pos)
+function (tu_ms_countof_expected expected pos_pos neg_pos)
     set(pos_base "")
     foreach (b IN ITEMS ${pos_pos})
         if (b MATCHES "pos_struct_n0")
@@ -39,12 +39,72 @@ function (tu_jms_countof_expected expected pos_pos neg_pos)
         string(REGEX REPLACE "_00.run_fail" "_00.run_0_unexpected"
                              pos_base "${pos_base}")
     endif ()
+    set(build_div0_Clang pos_alone_n0 pos_zla_00 pos_zla_alone_00 pos_zla_n0
+                         pos_zla_struct_00 neg_alone_ptr)
+    set(run_div0_Clang pos_vla_alone_00 pos_vla_alone_n0
+                       pos_vla_struct_00 pos_vla_struct_n0
+                       pos_vla_zla_00 pos_vla_zla_n0)
+    set(run_fpe_Clang pos_vla_alone_00 pos_vla_alone_n0
+                      pos_vla_00 pos_vla_n0
+                      pos_vla_struct_00 pos_vla_struct_n0
+                      pos_vla_zla_00 pos_vla_zla_n0
+                      neg_vla_zla_ptr neg_zla_vla_ptr)
+    set(build_div0_GNU pos_alone_n0 pos_zla_00 pos_zla_alone_00 pos_zla_n0
+                       pos_zla_struct_00 neg_alone_ptr)
+    set(run_div0_GNU pos_vla_alone_00 pos_vla_alone_n0
+                     pos_vla_struct_00 pos_vla_struct_n0
+                     pos_vla_zla_00 pos_vla_zla_n0
+                     pos_zla_alone_00 pos_zla_n0 pos_zla_struct_00
+                     neg_zla_ptr)
+    set(run_fpe_GNU pos_vla_00 pos_vla_n0
+                    pos_vla_alone_00 pos_vla_alone_n0
+                    pos_vla_struct_00 pos_vla_struct_n0
+                    pos_vla_zla_00 pos_vla_zla_n0
+                    neg_zla_ptr neg_vla_zla_ptr neg_zla_vla_ptr)
+    set(build_div0_Intel pos_zla_00 pos_zla_n0 pos_zla_struct_00)
+    set(run_div0_Intel pos_vla_struct_n0 pos_vla_zla_n0 neg_zla_ptr)
+    set(run_fpe_Intel neg_vla_zla_ptr neg_zla_ptr neg_zla_vla_ptr)
+    set(build_div0_IntelLLVM pos_alone_n0 pos_zla_00 pos_zla_alone_00 pos_zla_n0
+                             pos_zla_struct_00 neg_alone_ptr)
+    set(run_div0_IntelLLVM neg_zla_ptr
+                           pos_vla_alone_00 pos_vla_alone_n0
+                           pos_vla_struct_00 pos_vla_struct_n0
+                           pos_vla_zla_00 pos_vla_zla_n0)
+    set(run_segv_IntelLLVM neg_vla_zla_ptr neg_zla_ptr neg_zla_vla_ptr)
+    set(build_div0_LCC pos_zla_00 pos_zla_n0 pos_zla_struct_00)
+    set(run_fpe_LCC pos_vla_00 pos_vla_n0 pos_vla_struct_00
+                    pos_vla_struct_n0 pos_vla_zla_00 pos_vla_zla_n0
+                    neg_vla_zla_ptr neg_zla_ptr neg_zla_vla_ptr)
+    set(build_div0_NVHPC pos_zla_00 pos_zla_n0 pos_zla_struct_00)
+    set(div0_NVHPC pos_vla_struct_00 pos_vla_struct_n0
+                   pos_vla_zla_00 pos_vla_zla_n0
+                   neg_zla_ptr)
+    set(run_fpe_NVHPC pos_vla_00 pos_vla_0n pos_vla_n0)
+    set(run_fpe_SunPro pos_vla_00 pos_vla_n0)
+    foreach (base IN ITEMS pos_base neg_base)
+        foreach (b IN LISTS build_div0_${CMAKE_C_COMPILER_ID})
+            string(REPLACE "${b}.build_fail" "${b}.build_fail.build_DIV0"
+                   ${base} "${${base}}")
+        endforeach ()
+        foreach (b IN LISTS run_div0_${CMAKE_C_COMPILER_ID})
+            string(REPLACE "${b}.run_fail" "${b}.run_fail.run_DIV0"
+                   ${base} "${${base}}")
+        endforeach ()
+        foreach (b IN LISTS run_fpe_${CMAKE_C_COMPILER_ID})
+            string(REPLACE "${b}.run_fail" "${b}.run_fail.run_FPE"
+                   ${base} "${${base}}")
+        endforeach ()
+        foreach (b IN LISTS run_segv_${CMAKE_C_COMPILER_ID})
+            string(REPLACE "${b}.run_fail" "${b}.run_fail.run_SEGV"
+                   ${base} "${${base}}")
+        endforeach ()
+    endforeach ()
     set(${expected} "${pos_base};${neg_base}" PARENT_SCOPE)
 endfunction ()
 
-tu_jms_countof_expected(tu_jms_countof_available
+tu_ms_countof_expected(tu_ms_countof_available
                            "${tu_pos_pos}" "${tu_neg_pos}")
-set(tu_jms_countof_params FALSE
+set(tu_ms_countof_params FALSE
                           "ms_countof" "_comparisons/ms_countof.h"
-                          tu_jms_countof_available)
-list(APPEND tu_params_list tu_jms_countof_params)
+                          tu_ms_countof_available)
+list(APPEND tu_params_list tu_ms_countof_params)
