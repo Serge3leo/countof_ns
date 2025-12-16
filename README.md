@@ -6,7 +6,7 @@
 of the C language standards of previous editions, which are supported by most
 compilers.
 
-Incomplete list of supported compilers: Clang, GNU gcc, IntelLLVM (icx), MSVC
+Incomplete list of supported compilers: Clang, GNU gcc, Intel (classic icc), IntelLLVM (icx), LCC, MSVC
 (Visual Studio 2022), NVHPC (NVIDIA HPC Compiler), Pelles C, PGI (The Portland
 Group(?)), SunPro (Oracle Developer Studio).
 
