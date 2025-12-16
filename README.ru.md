@@ -14,9 +14,10 @@
 
 Он реализован средствами стандартов C23/C++11 или с использованием расширений
 стандартов C99/C++11, которые поддерживаются большинством компиляторов.
-Неполный список совместимых компиляторов: Clang, GNU gcc, IntelLLVM (icx),
-старый Intel (icс), MSVC (Visual Studio 2022), NVHPC (NVIDIA HPC Compiler),
-Pelles C, PGI (The Portland Group(?)), SunPro (Oracle Developer Studio).
+Неполный список совместимых компиляторов: Clang, GNU gcc, Intel (классический
+icc), IntelLLVM (icx), MSVC (Visual Studio 2022), LCC (MCST Elbrus), NVHPC
+(NVIDIA HPC Compiler), Pelles C, PGI (The Portland Group(?)), SunPro (Oracle
+Developer Studio).
 
 ## Содержание
 
