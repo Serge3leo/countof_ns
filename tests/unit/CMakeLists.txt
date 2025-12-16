@@ -2,7 +2,15 @@
 # SPDX-License-Identifier: BSD-2-Clause
 # SPDX-FileCopyrightText: 2025 Сергей Леонтьев (leo@sai.msu.ru)
 
-set(ENV{LANG} C)  # For detect warning and error messages
+if (CMAKE_C_COMPILER_ID STREQUAL LCC AND
+    ((NOT "$ENV{LANG}" STREQUAL "C") OR
+     (DEFINED ENV{"LC_ALL"} AND NOT "$ENV{LC_ALL}" STREQUAL "C") OR
+     (DEFINED ENV{"LC_MESSAGES"} AND NOT "$ENV{LC_MESSAGES}" STREQUAL "C")))
+    message("WARNING: Your locale settings are not 'C'."
+            " Compiler message checking may be inaccurate."
+            " (LANG='$ENV{LANG}' LC_ALL='$ENV{LC_ALL}'"
+            " LC_MESSAGES=$ENV{LC_MESSAGES})")
+endif ()
 
 include(${CMAKE_SOURCE_DIR}/examples/countof_ns_builtin_options.cmake)
 

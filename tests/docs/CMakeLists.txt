@@ -55,8 +55,8 @@ add_test(NAME expected_tables
                  --stdc_countof "${${stdc_countof_available}}"
                  --std_size "${${std_size_available}}"
                  --jzmg_array_len "${${jzmg_array_len_available}}"
-                 #--lnx_array_size "${${lnx_array_size_available}}"
-                 #--alx_countof "${{alx_countof_available}}"
+                 --lnx_array_size "${${lnx_array_size_available}}"
+                 --alx_countof "${${alx_countof_available}}"
                 ${rep})
 
 enable_testing()
