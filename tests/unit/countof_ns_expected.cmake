@@ -78,6 +78,12 @@ function (tu_countof_ns_expected expected pos_pos neg_pos)
                              "pos_vla_zla_n0.run_fail"
                              pos_base "${pos_base}")
     endif ()
+    if (CMAKE_CXX_COMPILER_ID STREQUAL GNU AND
+        CMAKE_CXX_COMPILER_VERSION MATCHES "^13\.")
+        message("TODO: github gcc-13 bug workaround")
+        string(REGEX REPLACE "pos_vla_zla_[0n]0_cxx\.build_fail;" ""
+                             pos_base "${pos_base}")
+    endif ()
     set(${expected} "${pos_base};${neg_base}" PARENT_SCOPE)
 endfunction ()
 

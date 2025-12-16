@@ -26,6 +26,55 @@ function (tu_lnx_array_size_expected expected pos_pos neg_pos)
         string(REGEX REPLACE "pos_vla_0n" "pos_vla_0n.run_fail"
                              pos_base "${pos_base}")
     endif ()
+    set(build_div0_Clang pos_alone_n0 pos_struct_n0 pos_zla_n0
+                         pos_zla_00 pos_zla_alone_00 pos_zla_struct_00
+                         neg_alone_ptr neg_zla_ptr)
+    set(run_div0_Clang pos_vla_alone_00 pos_vla_alone_n0
+                       pos_vla_struct_00 pos_vla_struct_n0
+                       pos_vla_zla_00 pos_vla_zla_n0)
+    set(run_fpe_Clang pos_vla_00 pos_vla_n0
+                      pos_vla_alone_00 pos_vla_alone_n0
+                      pos_vla_struct_00 pos_vla_struct_n0
+                      pos_vla_zla_00 pos_vla_zla_n0)
+    set(build_div0_GNU pos_alone_n0 pos_struct_n0
+                       pos_zla_00 pos_zla_alone_00 pos_zla_struct_00 pos_zla_n0
+                       neg_alone_ptr neg_zla_ptr)
+    set(run_div0_GNU pos_vla_alone_00 pos_vla_alone_n0
+                     pos_vla_struct_00 pos_vla_struct_n0
+                     pos_vla_zla_00 pos_vla_zla_n0)
+    set(run_fpe_GNU pos_vla_00 pos_vla_n0
+                    pos_vla_alone_00 pos_vla_alone_n0
+                    pos_vla_struct_00 pos_vla_struct_n0
+                    pos_vla_zla_00 pos_vla_zla_n0)
+    set(build_div0_IntelLLVM pos_alone_n0 pos_struct_n0 pos_zla_n0
+                             pos_zla_00 pos_zla_alone_00 pos_zla_struct_00
+                             neg_alone_ptr neg_zla_ptr)
+    set(run_div0_IntelLLVM pos_vla_alone_00 pos_vla_alone_n0
+                           pos_vla_struct_00 pos_vla_struct_n0
+                           pos_vla_zla_00 pos_vla_zla_n0)
+    set(build_div0_NVHPC pos_struct_n0 pos_zla_00 pos_zla_n0
+                         pos_zla_struct_00 neg_zla_ptr)
+    set(run_div0_NVHPC pos_vla_struct_00 pos_vla_struct_n0
+                       pos_vla_zla_00 pos_vla_zla_n0)
+    set(run_fpe_NVHPC pos_vla_00 pos_vla_0n pos_vla_n0)
+    foreach (base IN ITEMS pos_base neg_base)
+        foreach (b IN LISTS build_div0_${CMAKE_C_COMPILER_ID})
+            string(REPLACE "${b}.build_fail" "${b}.build_fail.build_DIV0"
+                   ${base} "${${base}}")
+        endforeach ()
+        foreach (b IN LISTS run_div0_${CMAKE_C_COMPILER_ID})
+            string(REPLACE "${b}.run_fail" "${b}.run_fail.run_DIV0"
+                   ${base} "${${base}}")
+        endforeach ()
+        foreach (b IN LISTS run_fpe_${CMAKE_C_COMPILER_ID})
+            string(REPLACE "${b}.run_fail" "${b}.run_fail.run_FPE"
+                   ${base} "${${base}}")
+        endforeach ()
+        foreach (b IN LISTS run_segv_${CMAKE_C_COMPILER_ID})
+            string(REPLACE "${b}.run_fail" "${b}.run_fail.run_SEGV"
+                   ${base} "${${base}}")
+        endforeach ()
+    endforeach ()
     set(${expected} "${pos_base};${neg_base}" PARENT_SCOPE)
 endfunction ()
 

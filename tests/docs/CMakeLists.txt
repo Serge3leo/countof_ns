@@ -24,7 +24,6 @@ tac_report(rep)
 add_test(NAME compiler_versions
          COMMAND ${Python3_EXECUTABLE}
                  ${CMAKE_CURRENT_SOURCE_DIR}/compiler_versions.py
-                 --verbose
                  --id ${CMAKE_C_COMPILER_ID}
                  --version ${CMAKE_C_COMPILER_VERSION}
                  ${rep})
@@ -33,14 +32,17 @@ include(../unit/unit_cases.cmake)
 
 set(tu_params_list "")
 include (../unit/countof_ns_expected.cmake)
+include (../unit/comparisons/ms_countof_expected.cmake)
+include (../unit/comparisons/stdc_countof_expected.cmake)
+include (../unit/comparisons/std_size_expected.cmake)
+include (../unit/comparisons/JZMG_ARRAY_LEN_expected.cmake)
+include (../unit/comparisons/LNX_ARRAY_SIZE_expected.cmake)
+include (../unit/comparisons/ALX_COUNTOF_expected.cmake)
 
-#message("tu_pos_hdr=${tu_pos_hdr}")
-#message("tu_neg_hdr=${tu_neg_hdr}")
-#message("tu_params_list=${tu_params_list}")
-#message("${tu_params_list}=${${tu_params_list}}")
-list(GET ${tu_params_list} 3 available)
-#message("available=${available}")
-#message("${available}=${${available}}")
+foreach (prm IN ITEMS ${tu_params_list})
+    string(REGEX REPLACE "^tu_(.*)_params$" "\\1" cmp "${prm}")
+    list(GET ${prm} 3 ${cmp}_available)
+endforeach ()
 
 add_test(NAME expected_tables
          COMMAND ${Python3_EXECUTABLE}
@@ -48,7 +50,13 @@ add_test(NAME expected_tables
                  --verbose
                  --id ${CMAKE_C_COMPILER_ID}
                  --version ${CMAKE_C_COMPILER_VERSION}
-                 --countof_ns "${${available}}"
+                 --countof_ns "${${countof_ns_available}}"
+                 --ms_countof "${${ms_countof_available}}"
+                 --stdc_countof "${${stdc_countof_available}}"
+                 --std_size "${${std_size_available}}"
+                 --jzmg_array_len "${${jzmg_array_len_available}}"
+                 #--lnx_array_size "${${lnx_array_size_available}}"
+                 #--alx_countof "${{alx_countof_available}}"
                 ${rep})
 
 enable_testing()

@@ -124,11 +124,11 @@ default_cmpl() {
 
     rc=0
     if [ -z "$ctest_args" ] ; then
-        ctest || {
+        ctest --output-on-failure || {
             rc=$?
         }
     else
-        echo "$ctest_args" | xargs ctest || {
+        echo "$ctest_args" | xargs ctest --output-on-failure || {
             rc=$?
         }
     fi
