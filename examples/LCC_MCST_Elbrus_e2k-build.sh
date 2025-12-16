@@ -11,6 +11,6 @@
 #   https://habr.com/ru/articles/898040/
 #   https://gitflic.ru/project/mrognor/lcc-env.git
 
-./examples-build.sh -c lcc -C l++ -- \
+LANG=C ./examples-build.sh -c lcc -C l++ -- \
     -DCMAKE_CROSSCOMPILING=ON -DCMAKE_SYSTEM_NAME=Generic-ELF \
     -DCMAKE_CROSSCOMPILING_EMULATOR=e2k "$@"
