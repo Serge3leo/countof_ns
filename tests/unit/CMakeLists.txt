@@ -133,7 +133,6 @@ function (process_params params)
                         PASS_REGULAR_EXPRESSION "${fail_regexp}")
         endif ()
         set_tests_properties(${tgt} PROPERTIES
-                             ENVIRONMENT "LANG=$ENV{LANG}"
                              FAIL_REGULAR_EXPRESSION "${vla_fail_regex}"
                              FAIL_REGULAR_EXPRESSION "${tu_fail_regexp}"
                              LABELS "${lbl}")
