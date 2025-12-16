@@ -36,6 +36,8 @@ include (../unit/comparisons/ms_countof_expected.cmake)
 include (../unit/comparisons/stdc_countof_expected.cmake)
 include (../unit/comparisons/std_size_expected.cmake)
 include (../unit/comparisons/JZMG_ARRAY_LEN_expected.cmake)
+include (../unit/comparisons/LNX_ARRAY_SIZE_expected.cmake)
+include (../unit/comparisons/ALX_COUNTOF_expected.cmake)
 
 foreach (prm IN ITEMS ${tu_params_list})
     string(REGEX REPLACE "^tu_(.*)_params$" "\\1" cmp "${prm}")
@@ -45,6 +47,7 @@ endforeach ()
 add_test(NAME expected_tables
          COMMAND ${Python3_EXECUTABLE}
                  ${CMAKE_CURRENT_SOURCE_DIR}/expected_tables.py
+                 --verbose
                  --id ${CMAKE_C_COMPILER_ID}
                  --version ${CMAKE_C_COMPILER_VERSION}
                  --countof_ns "${${countof_ns_available}}"
@@ -52,6 +55,8 @@ add_test(NAME expected_tables
                  --stdc_countof "${${stdc_countof_available}}"
                  --std_size "${${std_size_available}}"
                  --jzmg_array_len "${${jzmg_array_len_available}}"
+                 #--lnx_array_size "${${lnx_array_size_available}}"
+                 #--alx_countof "${{alx_countof_available}}"
                 ${rep})
 
 enable_testing()
