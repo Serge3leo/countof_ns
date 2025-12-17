@@ -37,7 +37,7 @@ include(FetchContent)
 FetchContent_Declare(
     CountofNS
     GIT_REPOSITORY https://github.com/Serge3leo/countof_ns.git
-    GIT_TAG  71aa5528b84dbdc168a4750e4621a209ae5903c2 # v0.1.0-pre-examples
+    GIT_TAG  7b7519560a4c77b011919c960e505cfcd1c98a9c # v0.2.0-pre-examples
 )
 FetchContent_MakeAvailable(CountofNS)
 ```
