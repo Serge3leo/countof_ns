@@ -4,7 +4,7 @@
 
 cmake_minimum_required (VERSION 3.25)
 project(example_fetch_content_countof_ns
-    VERSION 0.1.0
+    VERSION 0.3.0
     DESCRIPTION "Example use countof_ns with cmake FetchContent"
     LANGUAGES C)
 
