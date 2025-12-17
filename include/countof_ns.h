@@ -203,31 +203,85 @@
     #endif
 
     #define countof_ns(a)  (_countof_ns_unsafe(a) + _countof_ns_must_array(a))
-#elif _COUNTOF_NS_WANT_VLA_BUILTIN
-        // TODO XXX Intel 2021 - HAVE_HIDDEN_IS_SAME_CXX, but SunPro - not
-
-        // C++ with VLA or ZLA extension
-    template<bool cnd>
-    constexpr size_t _countof_ns_0_if_assert() noexcept {
-        static_assert(cnd, "Must be array");
-        return 0;
-    }
-    #define _countof_ns_must_array(a)  (_countof_ns_0_if_assert< \
-                                        !__is_same(decltype(&*(a)), decltype(a))>())
-    #define countof_ns(a)  (_countof_ns_unsafe(a) + _countof_ns_must_array(a))
 #else
-        // C++ with ZLA extension
-    #define _COUNTOF_NS_VLA_UNSUPPORTED  (1)
+        // Count of fixed size arrays, case: standard C++ array
     template<size_t A, size_t E, class T, size_t N>
     constexpr static size_t _countof_ns_aux(const T (&)[N]) noexcept {
         return N;
     }
+        // Count of fixed size arrays, case: extensions ZLA C++ array
     template<size_t A, size_t E, class T>
     constexpr static size_t _countof_ns_aux(const T (&)) noexcept {
         static_assert(0 == A, "Argument must be zero-length array");
         return 0;
     }
-    #define countof_ns(a)  (_countof_ns_aux<sizeof(a), sizeof(*(a))>(a))
+    #if _COUNTOF_NS_WANT_VLA_BUILTIN
+            // TODO XXX Intel 2021 - HAVE_HIDDEN_IS_SAME_CXX, but SunPro - not
+            // C++ with VLA extension
+        template<bool cnd>
+        constexpr size_t _countof_ns_0_if_assert() noexcept {
+            static_assert(cnd, "Must be array");
+            return 0;
+        }
+        #define _countof_ns_must_array(a)  (_countof_ns_0_if_assert< \
+                                !__is_same(decltype(&*(a)), decltype(a))>())
+        #if __SUNPRO_CC
+            #error "Unimplemented, always __builtin_constant_p(sizeof(VLA)) == 1"
+        #elif __LCC__ // TODO XXX TODO  Have __is_same(), but...
+            #define _vla_countof_ns(a)  (_countof_ns_unsafe(a))
+        #else
+            #define _vla_countof_ns(a)  (_countof_ns_unsafe(a) + \
+                                         _countof_ns_must_array(a))
+        #endif
+#if 0
+            // Clang/GNU/NHPC (pgcc Nvidia HPC) - work fine
+
+            // Internal VLA stub
+        template<size_t A, size_t E>
+        constexpr static size_t _countof_ns_aux(...) noexcept {
+            return 0;
+        }
+
+            // For VLA clip not constexpr argument to constexpr 0
+        #define _countof_ns_2cexp(a, v)  (__builtin_constant_p(sizeof(a)) \
+                                         ? (v) : 0)
+
+            // If sizeof(a) - compile-time constant, then count fixed size
+            // array , otherwise count VLA.
+        #define countof_ns(a)  (__builtin_constant_p(sizeof(a)) \
+                  ? _countof_ns_aux<_countof_ns_2cexp((a), sizeof(a)), \
+                                    _countof_ns_2cexp((a), sizeof(*(a)))>(a) \
+                  : _vla_countof_ns(a))
+#else
+            // But IntelLLVM sometimes considers:
+            // __builtin_constant_p(sizeof(VLA)) == 1
+
+            // Internal VLA stub
+        template<size_t A, size_t E>
+        constexpr static size_t _countof_ns_aux(...) noexcept {
+            return size_t(-1917); // A value that is incredible to encounter
+        }
+
+            // For VLA clip not constexpr argument to constexpr 0
+        #define _countof_ns_2cexp(a, v)  (__builtin_constant_p(sizeof(a)) \
+                                         ? (v) : 0)
+
+        #define _countof_ns_fix(a)  (_countof_ns_aux<\
+                                     _countof_ns_2cexp((a), sizeof(a)), \
+                                     _countof_ns_2cexp((a), sizeof(*(a)))>(a))
+        #define countof_ns(a)  (!__builtin_constant_p(sizeof(a)) \
+                    ? _vla_countof_ns(a) \
+                    : size_t(-1917) == _countof_ns_fix(a) ? _vla_countof_ns(a) \
+                                                          : _countof_ns_fix(a))
+#endif
+    #elif _COUNTOF_NS_WANT_VLA_CXX
+        #warning "There is no correct implementation in pure C++ (wait C++26?)"
+        #define countof_ns(a)  (_countof_ns_unsafe(a))
+    #else
+            // C++ with ZLA extension only
+        #define _COUNTOF_NS_VLA_UNSUPPORTED  (1)
+        #define countof_ns(a)  (_countof_ns_aux<sizeof(a), sizeof(*(a))>(a))
+    #endif
 #endif
 
 #endif // COUNTOF_NS_H_6951

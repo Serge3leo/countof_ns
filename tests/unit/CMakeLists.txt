@@ -70,7 +70,16 @@ function (process_params params)
         set(div0re "[Dd]ivision.*[Bb]y.*[Zz]ero")
         set(pass_regexp "(${nxre})")
         set(fail_regexp "(${exre}|${fpere}|${segvre}|${div0re}|${nxre})")
-        if (etgt MATCHES "[.]build_.*")
+        if (etgt MATCHES "[.]compiler_bug")
+            set_target_properties(${tgt} PROPERTIES EXCLUDE_FROM_ALL TRUE)
+            add_test(NAME ${tgt}
+                     COMMAND ${CMAKE_COMMAND}
+                        --build .
+                        --target ${tgt}
+                        --config "${CMAKE_BUILD_TYPE}"
+                     WORKING_DIRECTORY ${CMAKE_BINARY_DIR})
+            set_tests_properties(${tgt} PROPERTIES WILL_FAIL TRUE)
+        elseif (etgt MATCHES "[.]build_.*")
             if (etgt MATCHES "[.]build_.*[.]build_DIV0")
                 string(REPLACE "${div0re}|" "" fail_regexp "${fail_regexp}")
                 string(REPLACE "${nxre}" "${div0re}|${nxre}"

@@ -53,6 +53,7 @@ terms = [
         (r'(pos|neg).*\.run_SEGV',      '💥<sub>-SEGV</sub>'),
         (r'(pos|neg).*\.run_DIV0',      '💣<sub>wDIV0</sub>'),
         (r'(pos|neg).*\.build_DIV0',    '💣<sub>wDIV0</sub>'),
+        (r'(pos|neg).*\.compiler_bug',  '🪲'),
         (r'pos_.*\.build_fail',         '❌'),
         (r'pos_.*\.run_0_unexpected',   '☸️<sub>Inv0</sub>'),
         (r'pos_.*\.run_fail',           '⚠️<sub>-Inv</sub>'),
