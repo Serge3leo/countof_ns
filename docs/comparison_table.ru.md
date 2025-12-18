@@ -4,10 +4,11 @@
 [//]: # (История:)
 [//]: # (2025-12-18 13:42:32 - Создан.)
 
-# Comparison of methods for obtaining the number of array elements
+# Сравнение методов получения числа элементов массива
 
-## Table of Contents
+## Содержание
 
+- [Ведение](#введение)
 - [C language standard](#c-language-standard)
 - [Extensions of C language](#extensions-of-c-language)
 - [Extensions of C++ language](#extensions-of-c-language-1)
@@ -18,6 +19,17 @@
   - [Compiler versions and extensions](#compiler-versions-and-extensions)
   - [Compiler ID](#compiler-id)
 - [Discussion](#discussion)
+
+## Введение
+
+Данные таблицы являются визуализацией ожидаемых результатов модульных тестов:
+- [`countof_ns_expected`](../tests/unit/countof_ns_expected.cmake);
+- [`stdc_countof_expected`](../tests/unit/comparisons/stdc_countof_expected.cmake);
+- [`std_size_expected`](../tests/unit/comparisons/std_size_expected.cmake);
+- [`ms_countof_expected`](../tests/unit/comparisons/ms_countof_expected.cmake);
+- [`JZMG_ARRAY_LEN_expected`](../tests/unit/comparisons/JZMG_ARRAY_LEN_expected.cmake);
+- [`LNX_ARRAY_SIZE_expected`](../tests/unit/comparisons/LNX_ARRAY_SIZE_expected.cmake);
+- [`ALX_COUNTOF_expected`](../tests/unit/comparisons/ALX_COUNTOF_expected.cmake).
 
 ## C language standard
 
