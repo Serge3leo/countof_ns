@@ -62,5 +62,6 @@ add_test(NAME expected_tables
 add_test(NAME compare.en.ru
          COMMAND ${Python3_EXECUTABLE}
                  ${CMAKE_CURRENT_SOURCE_DIR}/compare.en.ru.py
-                 --verbose)
+                 #--verbose
+                 )
 enable_testing()
