@@ -8,13 +8,13 @@
 ## Table of Contents
 
 - [C language standard](#c-language-standard)
-  - [`countof_ns()`](#countof-ns)
+  - [`countof_ns()`](#countof_ns)
   - [Comparisons](#comparisons)
 - [Extensions of C language](#extensions-of-c-language)
-  - [`countof_ns()`](#countof-ns-1)
+  - [`countof_ns()`](#countof_ns-1)
   - [Comparisons](#comparisons-1)
 - [Extensions of C++ language](#extensions-of-c-language-1)
-  - [`countof_ns()`](#countof-ns-2)
+  - [`countof_ns()`](#countof_ns-2)
   - [Comparisons](#comparisons-2)
 - [Terms and definitions](#terms-and-definitions)
   - [Methods](#methods)
