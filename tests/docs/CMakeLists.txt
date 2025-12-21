@@ -47,7 +47,7 @@ endforeach ()
 add_test(NAME expected_tables
          COMMAND ${Python3_EXECUTABLE}
                  ${CMAKE_CURRENT_SOURCE_DIR}/expected_tables.py
-                 --verbose
+                 -v
                  --id ${CMAKE_C_COMPILER_ID}
                  --version ${CMAKE_C_COMPILER_VERSION}
                  --countof_ns "${${countof_ns_available}}"
@@ -59,4 +59,8 @@ add_test(NAME expected_tables
                  --alx_countof "${${alx_countof_available}}"
                 ${rep})
 
+add_test(NAME compare.en.ru
+         COMMAND ${Python3_EXECUTABLE}
+                 ${CMAKE_CURRENT_SOURCE_DIR}/compare.en.ru.py
+                 --verbose)
 enable_testing()

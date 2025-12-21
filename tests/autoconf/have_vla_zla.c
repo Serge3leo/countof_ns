@@ -8,10 +8,6 @@
     #error "VLA don't supported"
 #endif
 
-#if !HAVE_VLA
-    #error "Don't HAVE_VLA"
-#endif
-
 #if !HAVE_EMPTY_STRUCTURE
     #error "Empty structures don't supported"
 #endif

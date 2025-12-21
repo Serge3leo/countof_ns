@@ -4,8 +4,8 @@
 
 #include "tac_defs.h"
 
-#include "have_vla.h"
+#ifndef __STDC_NO_VLA__
+    #error "Don't __STDC_NO_VLA__"
+#endif
 
-TAC_CHECK_FUNC(vla_foo) {
-    have_vla();
-}
+TAC_CHECK_FUNC(novla_foo) { }

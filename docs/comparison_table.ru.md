@@ -1,30 +1,41 @@
-<!-- vim:set sw=4 ts=8 fileencoding=utf8:
+<!-- vim:set sw=4 ts=8 fileencoding=utf8::Кодировка:UTF-8[АБЁЪЯабёъя])
  SPDX-License-Identifier: BSD-2-Clause
  SPDX-FileCopyrightText: 2025 Сергей Леонтьев (leo@sai.msu.ru)
  -->
+# Сравнение методов получения числа элементов массива
 
-# Comparison of methods for obtaining the number of array elements
+## Содержание
 
-## Table of Contents
-
-- [C language standard](#c-language-standard)
-- [Extensions of C language](#extensions-of-c-language)
-- [Extensions of C++ language](#extensions-of-c-language-1)
-- [Terms and definitions](#terms-and-definitions)
-  - [Methods](#methods)
-  - [Test cases legend](#test-cases-legend)
-  - [Test results legend](#test-results-legend)
-  - [Compiler versions and extensions](#compiler-versions-and-extensions)
+- [Ведение](#введение)
+- [Стандарт языка C](#стандарт-языка-c)
+- [Расширения C](#расширения-c)
+- [Расширения C++](#расширения-c-1)
+- [Определения](#определения)
+  - [Методы](#методы)
+  - [Тесты](#тесты)
+  - [Результаты](#результаты)
+  - [Версии компиляторов и поддерживаемые расширения](#версии-компиляторов-и-поддерживаемые-расширения)
   - [Compiler ID](#compiler-id)
-- [Discussion](#discussion)
+- [Обсуждение](#обсуждение)
 
-## C language standard
+## Введение
+
+Данные таблицы являются визуализацией ожидаемых результатов модульных тестов:
+- [`countof_ns_expected`](../tests/unit/countof_ns_expected.cmake);
+- [`stdc_countof_expected`](../tests/unit/comparisons/stdc_countof_expected.cmake);
+- [`std_size_expected`](../tests/unit/comparisons/std_size_expected.cmake);
+- [`ms_countof_expected`](../tests/unit/comparisons/ms_countof_expected.cmake);
+- [`JZMG_ARRAY_LEN_expected`](../tests/unit/comparisons/JZMG_ARRAY_LEN_expected.cmake);
+- [`LNX_ARRAY_SIZE_expected`](../tests/unit/comparisons/LNX_ARRAY_SIZE_expected.cmake);
+- [`ALX_COUNTOF_expected`](../tests/unit/comparisons/ALX_COUNTOF_expected.cmake).
+
+## Стандарт языка C
 <!-- span: "c" keys: "Method", "ID" -->
 
 | Method                    | ID        | Opt              | `pos_array`       | `pos_cv_array`       | `neg_ptr`          | `neg_cv_ptr`       | `neg_other`     | `pos_vla`     | `pos_vla_cv`          | `neg_vla_ptr`      | `pos__selftest`     | `neg__selftest`     |
 | ------------------------- | --------- | ---------------- | ----------------- | -------------------- | ------------------ | ------------------ | --------------- | ------------- | --------------------- | ------------------ | ------------------- | ------------------- |
 | &nbsp;                    | &nbsp;    | e.g.:            | `array[N]`        | `const array[N]`<br> | `*ptr`             | `const *ptr`<br>   | other<br>       | `VLA[n]`<br>  | `volatile VLA[n]`<br> | `(*VLA)[n]`<br>    |                     |                     |
-|                           |           |                  |                   |                      |                    |                    |                 |               |                       |                    |                     |                     |
+| &nbsp;                    | &nbsp;    |                  |                   |                      |                    |                    |                 |               |                       |                    |                     |                     |
 | countof_ns<sup>gen</sup>  | Clang     |                  | ✅                 | ✅                    | ✅                  | ✅                  | ✅               | ❌             | ❌                     | ✅                  | ✅                   | ✅                   |
 |                           | GNU       |                  | ✅                 | ✅                    | ✅                  | ✅                  | ✅               | ❌             | ❌                     | ✅                  | ✅                   | ✅                   |
 |                           | Intel     |                  | ✅                 | ✅                    | ✅                  | ✅                  | ✅               | ❌             | ❌                     | ✅                  | ✅                   | ✅                   |
@@ -85,13 +96,13 @@
 |                           | NVHPC     |                  | ✅                 | ✅                    | ✅                  | ✅                  | ✅               | ✅             | ✅                     | ✅                  | ✅                   | ✅                   |
 | &nbsp;                    | &nbsp;    | **Hdrs:**        | **`pos_array`**   | **`pos_cv_array`**   | **`neg_ptr`**      | **`neg_cv_ptr`**   | **`neg_other`** | **`pos_vla`** | **`pos_vla_cv`**      | **`neg_vla_ptr`**  | **`pos__selftest`** | **`neg__selftest`** |
 <!-- endspan: "c" -->
-## Extensions of C language
+## Расширения C
 <!-- span: "c" keys: "Method", "ID" -->
 
 | Method                    | ID        | Opt              | `neg_alone_ptr`     | `pos_zla_0n`     | `pos_zla_00`<br>`pos_zla_alone_00`<br>`pos_zla_struct_00`     | `pos_zla_n0`<br>`pos_alone_n0`<br>`pos_struct_n0`     | `neg_zla_ptr`                                          | `pos_vla_0n`                                        | `pos_vla_00`                           | `pos_vla_n0`                       | `neg_zla_vla_ptr`                    | `pos_vla_zla_0n`     | `pos_vla_zla_00`<br>`pos_vla_alone_00`<br>`pos_vla_struct_00`     | `pos_vla_zla_n0`<br>`pos_vla_alone_n0`<br>`pos_vla_struct_n0`     | `neg_vla_zla_ptr`                    |
 | ------------------------- | --------- | ---------------- | ------------------- | ---------------- | ------------------------------------------------------------- | ----------------------------------------------------- | ------------------------------------------------------ | --------------------------------------------------- | -------------------------------------- | ---------------------------------- | ------------------------------------ | -------------------- | ----------------------------------------------------------------- | ----------------------------------------------------------------- | ------------------------------------ |
 | &nbsp;                    | &nbsp;    | e.g.:            | `Size0 *ptr`        | `ZLA[0][N]`      | `ZLA[0][0]`                                                   | `ZLA[N][0]`                                           | `(*ZLA)[0]`                                            | `VLA[d0][n]`                                        | `VLA[d0][d0]`                          | `VLA[n][d0]`                       | `(*VLA)[d0]`                         | `VLAofZLA[d0][N]`    | `VLAofZLA[d0][0]`                                                 | `VLAofZLA[n][0]`                                                  | `(*VLAofZLA)[d0][0]`                 |
-|                           |           |                  |                     |                  |                                                               |                                                       |                                                        |                                                     |                                        |                                    |                                      |                      |                                                                   |                                                                   |                                      |
+| &nbsp;                    | &nbsp;    |                  |                     |                  |                                                               |                                                       |                                                        |                                                     |                                        |                                    |                                      |                      |                                                                   |                                                                   |                                      |
 | countof_ns<sup>gen</sup>  | Clang     |                  | ✅                   | ✅                | ✅                                                             | ❌                                                     | ✅                                                      | ❌                                                   | ❌                                      | ❌                                  | ✅                                    | ❌                    | ❌                                                                 | ❌                                                                 | ✅                                    |
 |                           | GNU       |                  | ✅                   | ✅                | ✅                                                             | ❌                                                     | ✅                                                      | ❌                                                   | ❌                                      | ❌                                  | ✅                                    | ❌                    | ❌                                                                 | ❌                                                                 | ✅                                    |
 |                           | Intel     |                  |                     | ✅                | ✅                                                             | ❌                                                     | ✅                                                      | ❌                                                   | ❌                                      | ❌                                  | ✅                                    | ❌                    | ✅                                                                 | ⚠️<sub>-Inv</sub>                                                 | ✅                                    |
@@ -152,13 +163,13 @@
 |                           | NVHPC     |                  | ✅💣<sub>wDIV0</sub> | ✅                | ❌💣<sub>wDIV0</sub>                                           | ❌💣<sub>wDIV0</sub>                                   | ✅💣<sub>wDIV0</sub>                                    | ⚠️<sub>-Inv</sub>💥<sub>-FPE</sub>                  | ⚠️<sub>-Inv</sub>💥<sub>-FPE</sub>     | ⚠️<sub>-Inv</sub>💥<sub>-FPE</sub> | ✅                                    | ✅                    | ⚠️<sub>-Inv</sub>💣<sub>wDIV0</sub>                               | ⚠️<sub>-Inv</sub>💣<sub>wDIV0</sub>                               | ✅                                    |
 | &nbsp;                    | &nbsp;    | **Hdrs:**        | **`neg_alone_ptr`** | **`pos_zla_0n`** | **`pos_zla_00`<br>`pos_zla_alone_00`<br>`pos_zla_struct_00`** | **`pos_zla_n0`<br>`pos_alone_n0`<br>`pos_struct_n0`** | **`neg_zla_ptr`**                                      | **`pos_vla_0n`**                                    | **`pos_vla_00`**                       | **`pos_vla_n0`**                   | **`neg_zla_vla_ptr`**                | **`pos_vla_zla_0n`** | **`pos_vla_zla_00`<br>`pos_vla_alone_00`<br>`pos_vla_struct_00`** | **`pos_vla_zla_n0`<br>`pos_vla_alone_n0`<br>`pos_vla_struct_n0`** | **`neg_vla_zla_ptr`**                |
 <!-- endspan: "c" -->
-## Extensions of C++ language
+## Расширения C++
 <!-- span: "c++" keys: "Method", "ID" -->
 
 | Method                    | ID        | Opt              | `neg_alone_ptr`     | `pos_zla_0n`     | `pos_zla_00`<br>`pos_zla_alone_00`<br>`pos_zla_struct_00`     | `pos_zla_n0`<br>`pos_alone_n0`     | `pos_struct_n0`     | `neg_zla_ptr`     | `pos_array`     | `pos_cv_array`     | `neg_ptr`     | `neg_cv_ptr`     | `neg_other`     | `pos_vla`     | `pos_vla_cv`     | `neg_vla_ptr`     | `pos_vla_0n`     | `pos_vla_00`     | `pos_vla_n0`      | `neg_zla_vla_ptr`     | `pos_vla_zla_0n`     | `pos_vla_zla_00`<br>`pos_vla_alone_00`     | `pos_vla_struct_00`     | `pos_vla_zla_n0`<br>`pos_vla_alone_n0`     | `pos_vla_struct_n0`     | `neg_vla_zla_ptr`     | `pos__selftest`     | `neg__selftest`     |
 | ------------------------- | --------- | ---------------- | ------------------- | ---------------- | ------------------------------------------------------------- | ---------------------------------- | ------------------- | ----------------- | --------------- | ------------------ | ------------- | ---------------- | --------------- | ------------- | ---------------- | ----------------- | ---------------- | ---------------- | ----------------- | --------------------- | -------------------- | ------------------------------------------ | ----------------------- | ------------------------------------------ | ----------------------- | --------------------- | ------------------- | ------------------- |
 | &nbsp;                    | &nbsp;    | e.g.:            | `Size0 *ptr`        | `ZLA[0][N]`      | `ZLA[0][0]`                                                   | `ZLA[N][0]`                        | C++ struct != 0     | `(*ZLA)[0]`       |                 |                    |               |                  |                 |               |                  |                   |                  |                  |                   |                       |                      |                                            |                         |                                            | C++ struct != 0         |                       |                     |                     |
-|                           |           |                  |                     |                  |                                                               |                                    |                     |                   |                 |                    |               |                  |                 |               |                  |                   |                  |                  |                   |                       |                      |                                            |                         |                                            |                         |                       |                     |                     |
+| &nbsp;                    | &nbsp;    |                  |                     |                  |                                                               |                                    |                     |                   |                 |                    |               |                  |                 |               |                  |                   |                  |                  |                   |                       |                      |                                            |                         |                                            |                         |                       |                     |                     |
 | countof_ns<sup>tmpl</sup> | Clang     |                  | ✅                   | ✅                | ✅                                                             | ✅                                  | ✅                   | ✅                 | ✅               | ✅                  | ✅             | ✅                | ✅               | ❌             | ❌                | ✅                 | ❌                | ❌                | ❌                 | ✅                     | ❌                    | ❌                                          | ❌                       | ❌                                          | ❌                       | ✅                     | ✅                   | ✅                   |
 |                           | GNU       |                  | ✅                   | ✅                | ✅                                                             | ✅                                  | ✅                   | ✅                 | ✅               | ✅                  | ✅             | ✅                | ✅               | ❌             | ❌                | ✅                 | ❌                | ❌                | ❌                 | ✅                     | ❌                    | 🪲❌                                        | ❌                       | 🪲❌                                        | ❌                       | ✅                     | ✅                   | ✅                   |
 |                           | Intel     |                  |                     | ✅                | ✅                                                             | ✅                                  | ✅                   | ✅                 | ✅               | ✅                  | ✅             | ✅                | ✅               | ❌             | ❌                | ✅                 | ❌                | ❌                | ❌                 | ✅                     | ❌                    | ❌                                          | ❌                       | ❌                                          | ❌                       | ✅                     | ✅                   | ✅                   |
@@ -206,9 +217,9 @@
 |                           | SunPro    |                  |                     | ✅                | ✅                                                             | ❌                                  | ✅                   | ✅                 | ✅               | ✅                  | ✅             | ✅                | ✅               |               |                  | ✅                 |                  |                  |                   | ✅                     |                      |                                            |                         |                                            |                         | ✅                     | ✅                   | ✅                   |
 | &nbsp;                    | &nbsp;    | **Hdrs:**        | **`neg_alone_ptr`** | **`pos_zla_0n`** | **`pos_zla_00`<br>`pos_zla_alone_00`<br>`pos_zla_struct_00`** | **`pos_zla_n0`<br>`pos_alone_n0`** | **`pos_struct_n0`** | **`neg_zla_ptr`** | **`pos_array`** | **`pos_cv_array`** | **`neg_ptr`** | **`neg_cv_ptr`** | **`neg_other`** | **`pos_vla`** | **`pos_vla_cv`** | **`neg_vla_ptr`** | **`pos_vla_0n`** | **`pos_vla_00`** | **`pos_vla_n0`**  | **`neg_zla_vla_ptr`** | **`pos_vla_zla_0n`** | **`pos_vla_zla_00`<br>`pos_vla_alone_00`** | **`pos_vla_struct_00`** | **`pos_vla_zla_n0`<br>`pos_vla_alone_n0`** | **`pos_vla_struct_n0`** | **`neg_vla_zla_ptr`** | **`pos__selftest`** | **`neg__selftest`** |
 <!-- endspan: "c++" -->
-## Terms and definitions
+## Определения
 
-### Methods
+### Методы
 <!-- span: "methods" keys: "Name<br>(with link to code)", "Language" -->
 
 | Name<br>(with link to code)                                | Language | Description                                                                                                                    |
@@ -222,7 +233,7 @@
 | [ALX_COUNTOF](../include/_comparisons/ALX_COUNTOF.h)       | С        | Implementation by [alx - recommends codidact](https://stackoverflow.com/a/57537491/8585880)                                    |
 | [ms_countof](../include/_comparisons/ms_countof.h)         | C/C++    | Implementation of `_countof()` [MSVC](https://learn.microsoft.com/cpp/c-runtime-library/reference/countof-macro?view=msvc-170) |
 <!-- endspan: "methods" -->
-### Test cases legend
+### Тесты
 <!-- span: "cases" keys: "Legend<br>(with link to code)" -->
 
 | Legend<br>(with link to code)                                                                                                                                                                                 | Type     | Description                                                                                                                                                                                                                                                                                                                                                                                                             |
@@ -249,7 +260,7 @@
 | `VLAofZLA[n][0]`<br>[`pos_vla_zla_n0`](../tests/unit/pos_vla_zla_n0.h)<br>[`pos_vla_alone_n0`](../tests/unit/pos_vla_alone_n0.h)<br>[`pos_vla_struct_n0`](../tests/unit/pos_vla_struct_n0.h)                  | Positive | VLA of ZLA                                                                                                                                                                                                                                                                                                                                                                                                              |
 | `(*VLAofZLA)[d0][0]`<br>[`neg_vla_zla_ptr`](../tests/unit/neg_vla_zla_ptr.h)<br>                                                                                                                              | Negative | Pointer to zero-length VLA                                                                                                                                                                                                                                                                                                                                                                                              |
 <!-- endspan: "cases" -->
-### Test results legend
+### Результаты
 <!-- span: "result" keys: "Legend&nbsp;&nbsp;",  "Test names" -->
 
 | Legend&nbsp;&nbsp; | Test names                                               | Description                                                                                                      |
@@ -265,7 +276,7 @@
 | 💣<sub>wDIV0</sub> | `(pos\|neg).*\.build_DIV0`<br>`(pos\|neg).*\.run_DIV0`   | A compile warning: "division by zero"                                                                            |
 | 🪲                 | `(pos\|neg).*\.compiler_bug`                             | Compiler bug (crash) for this test case                                                                          |
 <!-- endspan: "result" -->
-### Compiler versions and extensions
+### Версии компиляторов и поддерживаемые расширения
 <!-- span: "compiler-versions-and-extensions" keys: "ID" -->
 
 | ID        | Max               | Extensions max                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                             | Min           | Extensions min                                                                                                                                                                                                                                                                                                                                                                   |
@@ -297,7 +308,7 @@
 | PGI       | pgcc  | pgc++   | The Portland Group                                                                                        |
 | SunPro    | suncc | sunCC   | Oracle Developer Studio                                                                                   |
 <!-- endspan: "compiler-id" -->
-## Discussion
+## Обсуждение
 
 ### Поддержка массивов и типов данных
 

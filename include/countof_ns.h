@@ -62,16 +62,16 @@
 //     К примеру, его возможно использовать для гарантированных настроек старых
 //     добрых компиляторов:
 //
-//     $ icc -diag-error=1121 \
-//         -D'_countof_ns_ptr_compatible_type(p,t)=(0==0*sizeof((p)-(t)(p)))' \
+//     $ icc -diag-error=1121
+//         -D'_countof_ns_ptr_compatible_type(p,t)=(0==0*sizeof((p)-(t)(p)))'
 //         -D_COUNTOF_NS_WANT_VLA_BUILTIN ...
 //
-//     $ pgcc --diag_error=nonstandard_ptr_minus_ptr \
-//         -D'_countof_ns_ptr_compatible_type(p,t)=(0==0*sizeof((p)-(t)(p)))' \
+//     $ pgcc --diag_error=nonstandard_ptr_minus_ptr
+//         -D'_countof_ns_ptr_compatible_type(p,t)=(0==0*sizeof((p)-(t)(p)))'
 //         -D_COUNTOF_NS_WANT_VLA_BUILTIN ...
 //
-//     $ suncc -errwarn=E_BAD_POINTER_SUBTRACTION \
-//         -D'_countof_ns_ptr_compatible_type(p,t)=(0==0*sizeof((p)-(t)(p)))' \
+//     $ suncc -errwarn=E_BAD_POINTER_SUBTRACTION
+//         -D'_countof_ns_ptr_compatible_type(p,t)=(0==0*sizeof((p)-(t)(p)))'
 //         -D_COUNTOF_NS_WANT_VLA_BUILTIN ...
 //
 //     Маловероятно, что кому-нибудь потребуется `_COUNTOF_NS_WANT_VLA_BUILTIN`
