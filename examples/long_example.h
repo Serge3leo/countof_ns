@@ -18,7 +18,7 @@
 //
 // EXAMPLE_VLA_BUILTIN_ENABLE - Variable-length arrays (VLA) C/C++ examples;
 //
-// HAVE_ZERO_LENGTH_ARRAYS - The compiler supports the C/C++ extension for
+// HAVE_ZLA - The compiler supports the C/C++ extension for
 //                           zero-length arrays (clang, gcc, intel, nvidia...);
 //
 // HAVE_ALONE_FLEXIBLE_ARRAY - The compiler supports the C/C++ extension for
@@ -38,15 +38,13 @@
 //                        language. C++ treats empty structures as if they had
 //                        a single member of type char;
 //
-// HAVE_VLA - The C compiler supports optional variable-length arrays
-//            (clang, gcc, intel, nvidia, Pelles C, PGI, SunPRO...).  This is
-//            workaround of __STDC_NO_VLA__, some compilers have broken
-//            implementation of VLA (pgcc 25.9.0);
+// __STDC_NO_VLA__ - The C compiler don't supports optional variable-length arrays
+//            (MSVC).
 //
 // HAVE_BROKEN_VLA - VLA implementation don't support two-dimensional
 //                   VLA. See "tests/autoconf/have_vla.h". Check:
 //
-//     ${CC} -DHAVE_VLA tests/autoconf/no_have_broken_vla.c && ./a.out
+//     ${CC} tests/autoconf/no_have_broken_vla.c && ./a.out
 //
 // HAVE_VLA_CXX - The compiler supports the C++ extension variable-length
 //                arrays (clang, gcc, intel, nvidia, PGI...);
@@ -63,8 +61,8 @@
         // compilation errors if the argument is a VLA array. This is often the
         // most expected behavior, see the README for details.
 
-    #if defined(HAVE_VLA) && defined(HAVE_BROKEN_VLA)
-        #undef HAVE_VLA
+    #if !__cplusplus && !__STDC_NO_VLA__ && !defined(HAVE_BROKEN_VLA)
+        #define HAVE_VLA  (1)
     #endif
     #if defined(HAVE_VLA_CXX) && defined(HAVE_BROKEN_VLA_CXX)
         #undef HAVE_VLA_CXX
@@ -88,7 +86,7 @@
 #include "short_example.h"
 
 static void zla_example(void) {
-#ifdef HAVE_ZERO_LENGTH_ARRAYS
+#ifdef HAVE_ZLA
     size_t fail = 0;
     int z1[0];
     int z2[0][0];
@@ -111,7 +109,7 @@ static void zla_example(void) {
         example_assert(5 == countof_ns(z3));
         example_assert(5 == countof_ns(z5));
     #elif EXAMPLE_FAIL && defined(__NVCOMPILER)
-        #warning "TODO for pgcc (aka nvc) 25.9 & HAVE_ZERO_LENGTH_ARRAYS"
+        #warning "TODO for pgcc (aka nvc) 25.9 & HAVE_ZLA"
     #elif EXAMPLE_FAIL
                             #pragma message ("Must error below @{")
         fail += countof_ns(z3);  // compile error, if complete object type not
@@ -270,7 +268,7 @@ static void vla_example() {
                             #pragma message ("}@ Must error above")
     #endif
 
-    #ifdef HAVE_ZERO_LENGTH_ARRAYS
+    #ifdef HAVE_ZLA
         size_t n = 0;
         size_t f = 5;
         int vz1[n][n];
@@ -334,7 +332,7 @@ static void countof_example() {
     static_assert(countof(a1) == countof_ns(a1));
     static_assert(countof(a9) == countof_ns(a9));
 
-    #ifdef HAVE_ZERO_LENGTH_ARRAYS
+    #ifdef HAVE_ZLA
         int z1[0][0];
         int z2[countof(z1)][5];
         int z3[countof(z2[0])][0];
@@ -356,7 +354,7 @@ static void countof_example() {
             assert(0 == countof_ns(vz3));  // zero-by-zero indeterminate for VLA
         #endif
     #endif
-    #if (HAVE_VLA|| HAVE_VLA_CXX) && !_COUNTOF_NS_VLA_UNSUPPORTED
+    #if (HAVE_VLA || HAVE_VLA_CXX) && !_COUNTOF_NS_VLA_UNSUPPORTED
         const size_t d = 2;
         int v[d];
 
@@ -402,7 +400,7 @@ static void std_size_example() {
         #endif
     #endif
 #endif
-    #ifdef HAVE_ZERO_LENGTH_ARRAYS
+    #ifdef HAVE_ZLA
         int z1[5][0];
         int z2[0][5];
         int z3[0][0]; (void)z3;

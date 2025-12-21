@@ -8,17 +8,19 @@
                             // 4 - on T (*)[0]  (ZLA)
                             // 5 - on T (*)[n]  (VLA)
                             // 6 - resolve the uncertain zero-by-zero for ZLA
-#if !defined(HAVE_ZLA) && !defined(_MSC_VER) && !defined(__SUNPRO_C)
+#if !defined(HAVE_ZLA) && !defined(_MSC_VER) && !defined(__POCC__) && \
+    !defined(__SUNPRO_C)
     // To enable ZLA for SunPro, use: -features=zla -DHAVE_ZLA=1
     #define HAVE_ZLA  (1)
 #endif
-#if !defined(HAVE_BROKEN_VLA) && defined(__NVCOMPILER)
+#if !defined(HAVE_BROKEN_VLA) && (defined(__NVCOMPILER) || defined(__POCC__))
     // NVHPC (pgcc) have broken VLA implementation
     // See: no_have_broken_vla.c and have_vla.h
     #define HAVE_BROKEN_VLA  (1)
 #endif
 
-#if !__STDC_NO_VLA__
+#if !__STDC_NO_VLA__ && \
+    !defined(_COUNTOF_NS_WANT_VLA_C11) && !defined(_COUNTOF_NS_WANT_VLA_BUILTIN)
     #define _COUNTOF_NS_WANT_VLA_BUILTIN  (1)  // TODO: remove
 #endif
 #include "countof_ns.h"
@@ -48,7 +50,7 @@
     #define g_static_assert(e)  assert(e)
 #endif
 
-#if !__STDC_NO_VLA__
+#if !__STDC_NO_VLA__ && !HAVE_BROKEN_VLA
     int sum1(size_t n, int (*a)[n]) {
         assert(n*sizeof((*a)[0]) == sizeof(*a));
         countof_compare(n == countof(*a));
@@ -200,6 +202,9 @@ int main(void) {
         printf("Ok");
     #else
         printf("Fail, EXAMPLE_FAIL=%d", EXAMPLE_FAIL);
+    #endif
+    #if _COUNTOF_NS_VLA_UNSUPPORTED
+        printf(", _COUNTOF_NS_VLA_UNSUPPORTED");
     #endif
     #if HAVE_ZLA
         printf(", HAVE_ZLA");

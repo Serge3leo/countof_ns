@@ -23,14 +23,8 @@ def compiler_versions(table_fn: str, check_id: str, check_version: str,
     res = cv_result.good
     comparison_table = Md(table_fn)
     compiler_versions = MdTable(comparison_table,
-                                "### Compiler versions and extensions",
-                                "### Compiler ID")
-    for r in compiler_versions.table:
-        if r['ID'].strip() == check_id:
-            break
-    else:
-        print(f"error: not found {check_id=}")
-        return cv_result.fail
+                                "compiler-versions-and-extensions")
+    r = compiler_versions.get(ID=check_id)
     s = {}
     for mm in 'min', 'max':
         t = re.sub('⚛︎.*$', '', r[f'Extensions {mm}'])
@@ -65,9 +59,9 @@ def compiler_versions(table_fn: str, check_id: str, check_version: str,
         print(f"error: too more extensions"
               f" {s['max']-sext, sext-s['max'], s['max'], sext=}")
         res = cv_result.fail
-    if s['max'] == sext:
+    if s['max'] == sext and cv_result.fail != res:
         res = cv_result.last_extensions
-    if r['Max'] == check_version:
+    if r['Max'] == check_version and cv_result.fail != res:
         res = cv_result.last_version
     if verbose:
         print(f"{r['Min'], check_version, r['Max']=}")
@@ -85,14 +79,14 @@ if __name__ == '__main__':
     parser = argparse.ArgumentParser()
     parser.add_argument("extensions", nargs='+',
                         help="Compilers autoconf extensions", default="")
-    parser.add_argument("--table", help="Tables file", nargs='?',
+    parser.add_argument("--file", help="Tables file", nargs='?',
                         default=os.path.join(os.path.dirname(__file__),
                                              "../../docs/comparison_table.md"))
     parser.add_argument("--id", help="ID for check", required=True)
     parser.add_argument("--version", help="Version for check", required=True)
     parser.add_argument("--verbose", action="store_true", help="verbose output")
     args = parser.parse_args()
-    res = compiler_versions(args.table, args.id, args.version, args.extensions,
+    res = compiler_versions(args.file, args.id, args.version, args.extensions,
                             args.verbose)
     if args.verbose:
         print("Ok" if res else "Fail")

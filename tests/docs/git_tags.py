@@ -10,7 +10,7 @@ Check unique hashs over files
 import argparse
 import re
 
-def search_hashs_versions(fname: str, verbose: bool) -> tuple(set, set):
+def search_hashs_versions(fname: str, verbose: bool) -> tuple[set, set]:
     hpat = r"\s([0-9A-Fa-f]{32,})\s"
     vpat = r"(([0-9]+\.?)+)($|[^0-9])"
     hashs, versions = set(), set()

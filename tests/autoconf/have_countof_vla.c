@@ -8,7 +8,7 @@
     #include <stdcountof.h>
 #endif
 
-#ifdef HAVE_ZLA
+#ifdef HAVE_VLA0
     #define CV_MIN  (0)
 #else
     #define CV_MIN  (1)

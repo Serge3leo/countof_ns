@@ -22,8 +22,8 @@
 #ifndef HAVE_VLA0_H_5115
 #define HAVE_VLA0_H_5115
 
-#if !HAVE_VLA
-    #error "Don't HAVE_VLA"
+#if __STDC_NO_VLA__
+    #error "Don't have VLA"
 #endif
 
 static void have_vla0(void) {

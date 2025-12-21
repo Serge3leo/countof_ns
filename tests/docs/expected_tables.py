@@ -8,6 +8,7 @@ Checking tables of expected test case results
 """
 
 import argparse
+from pprint import pprint
 import re
 
 from markdown_table import Md, MdTable
@@ -43,7 +44,7 @@ ETC_modules = {
             },
     }
 Method = "Method"
-ID = "Compiler<br>ID"
+ID = "ID"
 Opt = "Opt"
 OptSkips = ["e.g.:", "**Hdrs:**"]
     # With the usual layout, the first and last columns are empty.
@@ -86,54 +87,25 @@ def check_expected(table_fn: str, check_id: str,
         print(f"{last_unused, res_unused, msg_unused=}")
     res = True
     comparison_table = Md(table_fn)
-    c_base = MdTable(comparison_table,
-                     "## C language standard",
-                     "## Extensions of C language")
-    c_ext = MdTable(comparison_table,
-                    "## Extensions of C language",
-                    "## Extensions of C++ language")
-    cxx_ext = MdTable(comparison_table,
-                    "## Extensions of C++ language",
-                    "## Terms and definitions")
+    c_lang = MdTable(comparison_table, "c")
+    cxx_lang = MdTable(comparison_table, "c++")
+
     if args.verbose:
-        for mt in c_base, c_ext, cxx_ext:
-            print(f"{mt.begin, mt.header_len, len(mt.table)}")
-            print(mt.table[0])
-            print(mt.table[1])
-            print(f"~~~~  End fragment {mt.begin} ~~~~")
+        for mt in c_lang, cxx_lang:
+            print(f"{mt.name, len(mt.table), mt.headers=}")
+            print("=== mt.keys:")
+            pprint(mt.keys)
+            if 1 < args.verbose:
+                up = len(mt.table)
+            else:
+                up = 3
+            print(f"=== mt.table[0], mt.table[1], ... mt.table[{up-1}]")
+            for i in range(up):
+                pprint(mt.table[i])
+            print(f"~~~~  End fragment {mt.name} ~~~~")
         print("~~~~~~~~~~~~")
-    for mt in c_base, c_ext, cxx_ext:
-        #print(f"{mt.begin}: info: {mt.headers, mt.table=}")
-        # Add key (ID, Method) -> row
-        mt.id_meth = {}
-        last = ""
+    for mt in c_lang, cxx_lang:
         for r in mt.table:
-            for _, c in r.items():
-                if c.strip():
-                    break
-            else:
-                if args.verbose:
-                    print(f"{mt.begin}: info: skip empty")
-                continue
-            if ("" == r[Method].strip() and "" == r[ID].strip() and
-                r[Opt].strip() in OptSkips):
-                if args.verbose:
-                    print(f"{mt.begin}: info: skip {r[Opt].strip()=}")
-                continue
-            meth = r[Method].strip()
-            if "" == meth:
-                meth = last
-            else:
-                last = meth
-            cid = r[ID].strip()
-            if not cid in mt.id_meth:
-                mt.id_meth[cid] = {}
-            kid = mt.id_meth[cid]
-            #print(f"{mt.begin}: {meth, cid, kid, r=}")
-            if meth in kid:
-                print(f"{mt.begin}: error: duplicate {meth, cid=}")
-                res = False
-            kid[meth] = r
             for h in mt.headers:
                 if h in services:
                     continue
@@ -143,7 +115,6 @@ def check_expected(table_fn: str, check_id: str,
                 for c in comments:
                     cell = cell.replace(c, "")
                 r[h] = {'orig': orig, 'cell': cell, 'cnt': 0}
-        # Add key <base name test case> -> columns header
         mt.case_hdr = {}
         for h in mt.headers:
             if h in services:
@@ -177,43 +148,14 @@ def check_expected(table_fn: str, check_id: str,
                     print(f"{k}: unrecognized case: {ec, m=}")
                     res = False
                     continue
-                if not ETC_modules[k][m.group(2)] in cxx_ext.id_meth[check_id]:
-                    print(f"{k}: not in C++ Extension table"
-                      f" {m.group(2), ETC_modules[k][m.group(2)], check_id=}")
-                    res = False
-                    continue
-                rxx_ext = cxx_ext.id_meth[check_id][ETC_modules[k][m.group(2)]]
-                if m.group(1) not in cxx_ext.case_hdr:
-                    print(f"{ETC_modules[k][m.group(2)]}: {check_id}: error: not test case {m.group(1), ec=}")
-                    res = False
-                    continue
-                cell = rxx_ext[cxx_ext.case_hdr[m.group(1)]]
+                rxx_lang = cxx_lang.get(Method=ETC_modules[k][m.group(2)],
+                                      ID=check_id)
+                cell = rxx_lang[cxx_lang.case_hdr[m.group(1)]]
             else:
-                if not ETC_modules[k][m.group(2)] in c_base.id_meth[check_id]:
-                    print(f"{k}: not in C Language table"
-                      f" {m.group(2), ETC_modules[k][m.group(2)], check_id=}")
-                    res = False
-                    continue
-                if not ETC_modules[k][m.group(2)] in c_ext.id_meth[check_id]:
-                    print(f"{k}: not in C Extension table"
-                      f" {m.group(2), ETC_modules[k][m.group(2)], check_id=}")
-                    res = False
-                    continue
-                r_base = c_base.id_meth[check_id][ETC_modules[k][m.group(2)]]
-                r_ext = c_ext.id_meth[check_id][ETC_modules[k][m.group(2)]]
-                if m.group(1) in c_base.case_hdr:
-                    if m.group(1) in c_ext.case_hdr:
-                        print(f"{k}: error: duplicate case"
-                            f" {m.group(1), c_base.case_hdr, c_ext.case_hdr=}")
-                        res = False
-                    if not c_base.case_hdr[m.group(1)] in r_base:
-                        print(f"{k}: {ec, m.group(1),
-                              c_base.case_hdr[m.group(1)], r_base=}")
-                        res = False  # TODO
-                        continue
-                    cell = r_base[c_base.case_hdr[m.group(1)]]
-                elif m.group(1) in c_ext.case_hdr:
-                    cell = r_ext[c_ext.case_hdr[m.group(1)]]
+                r_lang = c_lang.get(Method=ETC_modules[k][m.group(2)],
+                                   ID=check_id)
+                if m.group(1) in c_lang.case_hdr:
+                    cell = r_lang[c_lang.case_hdr[m.group(1)]]
                 else:
                     print(f"{k}: error: case not found"
                           f" {m.group(1), m.group(2),
@@ -233,10 +175,10 @@ def check_expected(table_fn: str, check_id: str,
             #    print(f"{ETC_modules[k][m.group(2)]}: {check_id}:"
             #          f" Unknown unmatched {ec=}")
             #    res = False
-    for mt in c_base, c_ext, cxx_ext:
-        for m, r in mt.id_meth[check_id].items():
+    for mt in c_lang, cxx_lang:
+        for r in mt.iter(ID=check_id):
             for k in args.__dict__:
-                if args.__dict__[k] and k in m:
+                if args.__dict__[k] and k in r[Method]:
                     break
             else:
                 continue
@@ -244,7 +186,7 @@ def check_expected(table_fn: str, check_id: str,
                 if h in services:
                     continue
                 if r[h]['cell']:
-                    print(f"{mt.begin} {m}: {check_id}: {msg_unused}:"
+                    print(f"{mt.name} {m}: {check_id}: {msg_unused}:"
                           f" left unused {h, r[h]=}")
                     res &= res_unused
     return res
@@ -258,16 +200,17 @@ if __name__ == '__main__':
     parser = argparse.ArgumentParser()
     parser.add_argument("extensions", nargs='+',
                         help="Compilers autoconf extensions", default="")
-    parser.add_argument("--table", help="Tables file", nargs='?',
+    parser.add_argument("--file", help="Tables file", nargs='?',
                         default=os.path.join(os.path.dirname(__file__),
                                              "../../docs/comparison_table.md"))
     parser.add_argument("--id", help="ID for check", required=True)
     parser.add_argument("--version", help="Version for check", required=True)
     for k in ETC_modules.keys():
         parser.add_argument(f"--{k}", help=f"{k} expected test cases")
-    parser.add_argument("--verbose", action="store_true", help="verbose output")
+    parser.add_argument("--verbose", "-v", help="verbose output",
+                        action='count', default=0)
     args = parser.parse_args()
-    res = check_expected(args.table, args.id, args)
+    res = check_expected(args.file, args.id, args)
     if args.verbose:
         print("Ok" if res else "Fail")
     exit(0 if res else 1)

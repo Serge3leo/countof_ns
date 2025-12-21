@@ -1,8 +1,7 @@
-[//]: # (vim:set sw=4 ts=8 fileencoding=utf8::Кодировка:UTF-8[АБЁЪЯабёъя])
-[//]: # (SPDX-License-Identifier: BSD-2-Clause)
-[//]: # (SPDX-FileCopyrightText: 2025 Сергей Леонтьев (leo@sai.msu.ru))
-[//]: # (История:)
-[//]: # (2025-12-18 13:42:32 - Создан.)
+<!-- vim:set sw=4 ts=8 fileencoding=utf8::Кодировка:UTF-8[АБЁЪЯабёъя])
+ SPDX-License-Identifier: BSD-2-Clause
+ SPDX-FileCopyrightText: 2025 Сергей Леонтьев (leo@sai.msu.ru)
+ -->
 
 # Русский вариант документации [`countof_ns.h`](../include/countof_ns.h)
 

@@ -16,7 +16,8 @@
     #define HAVE_ZLA  (1)
 #endif
 
-#if HAVE_VLA_CXX
+#if HAVE_VLA_CXX && \
+    !defined(_COUNTOF_NS_WANT_VLA_C11) && !defined(_COUNTOF_NS_WANT_VLA_BUILTIN)
     #define _COUNTOF_NS_WANT_VLA_BUILTIN  (1)  // TODO: remove
 #endif
 #include "countof_ns.h"
@@ -97,16 +98,19 @@ int main(void) {
         assert(35 == sum1(a1));
         assert(1952 == sum2(a2));
     #endif
+    std::cout << "sum1() & sum2() - Ok\n";
 
     #if EXAMPLE_FAIL == 1
         auto *p1 = &a1[0];
 
         (void)std_size(p1);
         (void)countof_ns(p1);
+        std::cout << "auto *p1 = &a1[0] - fail\n";
     #endif
 
     #if EXAMPLE_FAIL == 2
         (void)bad1(1917, a1);
+        std::cout << "not pure array function argument - Fail\n";
     #endif
 
     #if EXAMPLE_FAIL == 3
@@ -114,6 +118,7 @@ int main(void) {
 
         (void)std_size(p2);
         (void)countof_ns(p2);
+        std::cout << "auto *p2 = &a2[0] - fail\n";
     #endif
 
     #if HAVE_ZLA
@@ -146,10 +151,13 @@ int main(void) {
         static_assert(0  == countof_ns(z0n), "0 == countof_ns(z0n)");
         static_assert(10  == countof_ns(z0n[0]), "10 == countof_ns(z0n[0])");
 
+        std::cout << "ZLA - Ok\n";
+
         #if EXAMPLE_FAIL == 4
             auto *zp = &z;
 
             (void)countof_ns(zp);
+            std::cout << "auto *zp = &z - Fail\n";
         #endif
     #endif
 
@@ -179,14 +187,21 @@ int main(void) {
 
                 // Compile-time constraint violation
                 (void)countof_ns(vp);
+
+                std::cout << "auto *vp = &vn0[0] - Fail\n";
             #endif
         }
+
+        std::cout << "VLA - Ok\n";
     #endif
     std::cout
         #ifndef EXAMPLE_FAIL
             << "Ok"
         #else
             << "Fail, EXAMPLE_FAIL=" << EXAMPLE_FAIL
+        #endif
+        #if _COUNTOF_NS_VLA_UNSUPPORTED
+            << ", _COUNTOF_NS_VLA_UNSUPPORTED"
         #endif
         #if HAVE_VLA_CXX
             << ", HAVE_VLA_CXX"
