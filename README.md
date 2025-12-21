@@ -2,9 +2,9 @@
 
 # C2y `countof()` platform independent implementation with C23/C++11
 
-`countof_ns()` is a portable implementation of the macro `countof()` draft C2y by means of the C23/C++11 standards or using extensions
-of the C language standards of previous editions, which are supported by most
-compilers.
+`countof_ns()` is a portable implementation of the macro `countof()` draft C2y
+by means of the C23/C++11 standards or using extensions of the C language
+standards of previous editions, which are supported by most compilers.
 
 Incomplete list of supported compilers: Clang, GNU gcc, Intel (classic icc),
 IntelLLVM (icx), LCC (MCST Elbrus), MSVC (Visual Studio 2022), NVHPC (NVIDIA
@@ -81,4 +81,4 @@ Sorry for my best English. Alas, this file is actually a yandex translation of
 
 ## License
 
-[BSD-2-Clause © 2025 Сергей Леонтьев (leo@sai.msu.ru).](../LICENSE)
+[BSD-2-Clause © 2025 Сергей Леонтьев (leo@sai.msu.ru).](LICENSE)

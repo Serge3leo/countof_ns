@@ -42,7 +42,22 @@ def check_tables(file1: str, file2: str, args: argparse.Namespace) -> bool:
             print(f"{name}: number row diff {len(t1.table), len(t2.table)=}")
             res = False
             continue
-        for r1, r2 in zip(t1.table, t2.table):
+        for r1 in t1.table:
+            get_kwarg = dict()
+            for k in t1.keys:
+                get_kwarg[k] = r1[k]
+            r2 = t2.get(**get_kwarg)
+            for h in set(r1.keys())&set(r2.keys()):
+                if r1[h].strip() != r2[h].strip():
+                    print(f"{name}: cell diff"
+                          f" {h, r1[h].strip(), r2[h].strip(), r1, r2=}")
+                    res = False
+                    continue
+        for r2 in t2.table:
+            get_kwarg = dict()
+            for k in t2.keys:
+                get_kwarg[k] = r2[k]
+            r1 = t1.get(**get_kwarg)
             for h in set(r1.keys())&set(r2.keys()):
                 if r1[h].strip() != r2[h].strip():
                     print(f"{name}: cell diff"
