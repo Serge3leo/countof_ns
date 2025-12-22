@@ -32,7 +32,8 @@
 #elif _COUNTOF_NS_WANT_VLA_BUILTIN
     #define TU_C11_VLA  (" _COUNTOF_NS_WANT_VLA_BUILTIN")
 #else
-    #error "Wrong autoconf of countof_ns"
+    #define TU_C11_VLA  (" _COUNTOF_NS_WANT_VLA_TODO_AUTOCONF")
+    //#error "Wrong autoconf of countof_ns"
 #endif
 #ifdef __cplusplus
     #define TU_LANG  ("C++")

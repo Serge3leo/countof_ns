@@ -124,7 +124,8 @@ if (COUNTOF_NS_EXAMPLES)
     if (CXX_ENABLED)
         if (NOT HAVE_VLA_CXX OR HAVE_BROKEN_VLA_CXX)
             example(godbolt_cxx.cpp "" "" "" 3)  # MSVC - 3, TODO: must fail
-        elseif (HAVE_IS_SAME_CXX)
+        elseif (HAVE_IS_SAME_CXX OR HAVE_HIDDEN_IS_SAME_CXX OR
+                HAVE_HIDDEN_IS_SAME_AS_CXX)
             set(opt_cxx_bltn ${countof_ns_builtin_options_${CMAKE_C_COMPILER_ID}})
             example(godbolt_cxx.cpp "_bltn" opt_cxx_bltn
                                     "_COUNTOF_NS_VLA_UNSUPPORTED" 5)

@@ -16,7 +16,8 @@ def check_tables(file1: str, file2: str, args: argparse.Namespace) -> bool:
     md1 = Md(file1)
     md2 = Md(file2)
     for name in ("c", "c++", "methods", "cases", "result",
-                 "compiler-versions-and-extensions", "compiler-id"):
+                 "compiler-versions-and-extensions", "extensions",
+                 "compiler-id"):
         if args.verbose:
              print(f'Compare "{name}"')
         t1 = MdTable(md1, name)

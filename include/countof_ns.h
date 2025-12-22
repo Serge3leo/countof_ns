@@ -116,46 +116,55 @@
             : sizeof(a)/( sizeof(*(a)) ? sizeof(*(a)) : (size_t)-1 ))
 
 #if !__cplusplus
+    #if _COUNTOF_NS_REFUSE_VLA || __STDC_NO_VLA__
+        #define _COUNTOF_NS_USE_GENERIC  (1)
+    #elif _COUNTOF_NS_WANT_VLA_C11 || _COUNTOF_NS_WANT_STDC
+        #define _COUNTOF_NS_USE_SUBTRACTION  (1)
+    #elif _COUNTOF_NS_WANT_VLA_BUILTIN || \
+          defined(_countof_ns_ptr_compatible_type)
+        #define _COUNTOF_NS_USE_BUILTIN  (1)
+    #elif __SUNPRO_C
+        #warning "For SunPro, you must define either _COUNTOF_NS_REFUSE_VLA or _countof_ns_ptr_compatible_type(p, type)"
+        #define _COUNTOF_NS_USE_GENERIC  (1)
+    #elif __POCC__
+        #define _COUNTOF_NS_USE_SUBTRACTION  (1)
+    #else
+        #define _COUNTOF_NS_USE_BUILTIN  (1)
+    #endif
     #if __STDC_VERSION__ >= 202311L
         #define _countof_ns_assert  static_assert
         #define _countof_ns_typeof(t)  typeof(t)
     #elif !_COUNTOF_NS_WANT_STDC
         #define _countof_ns_assert  _Static_assert
-        #if !_COUNTOF_NS_BROKEN_TYPEOF_WORKAROUND
-                // Simplest C23 way
-                // But partial failure for old Intel (icc) and NVHPC(pgcc)
-            #define _countof_ns_typeof(t)  __typeof__(t)
-        #else
-                // In case the pre C23 language extension is like this:
-                // `__typeof__(x) === typeof_unqual(x)` (old Intel(icc) and
-                // NVHPC(pgcc)), we dummy add "all" qualifiers.
-                //
-                // But full failure for SunPro (suncc)
-                // And MSVC, warning C4114: same type qualifier used more than
-                // once
-                //
-                // In this case, it would be better to use __TYPEOF_UNQUAL__,
-                // but there is no function with this name for Intel(icc),
-                // NVHPC(pgcc) and SunPro(suncc)
+        #if !defined(_countof_ns_ptr_compatible_type) && \
+            (_COUNTOF_NS_BROKEN_TYPEOF_WORKAROUND || _COUNTOF_NS_USE_BUILTIN)
             #define _countof_ns_typeof(t)  const volatile __typeof__(t)
+        #else
+            #define _countof_ns_typeof(t)  __typeof__(t)
         #endif
     #else
         #error "With _COUNTOF_NS_WANT_STDC required C23 typeof(t)"
     #endif
-
-    #if _COUNTOF_NS_WANT_VLA_BUILTIN && !__STDC_NO_VLA__ && \
-        !_COUNTOF_NS_WANT_STDC
-        #if !defined(_countof_ns_ptr_compatible_type) && defined(__has_builtin)
-            #if __has_builtin(__builtin_types_compatible_p)
-                #define _countof_ns_ptr_compatible_type(p, type) \
-                            __builtin_types_compatible_p( \
-                                _countof_ns_typeof(p), type)
+    #if _COUNTOF_NS_USE_BUILTIN
+        #if !defined(_countof_ns_ptr_compatible_type)
+            #if defined(__has_builtin)
+                #if __has_builtin(__builtin_types_compatible_p) && \
+                    !__NVCOMPILER && \
+                    !_COUNTOF_NS_BROKEN_BUILTIN_TYPES_COMPATIBLE_P
+                    #define _countof_ns_ptr_compatible_type(p, type)  \
+                                __builtin_types_compatible_p( \
+                                    _countof_ns_typeof(p), type)
+                #endif
+            #endif
+            #if !defined(_countof_ns_ptr_compatible_type)
+                #define _countof_ns_ptr_compatible_type(ppa, type)  \
+                                (!__builtin_types_compatible_p( \
+                                    _countof_ns_typeof(&*(**(ppa))), \
+                                    _countof_ns_typeof(**(ppa))))
             #endif
         #endif
         #if !defined(_countof_ns_ptr_compatible_type)
-            #error "Not __builtin_types_compatible_p() or" \
-                   " _countof_ns_ptr_compatible_type() for" \
-                   "_COUNTOF_NS_WANT_VLA_BUILTIN"
+            #error "Not __builtin_types_compatible_p() or _countof_ns_ptr_compatible_type()"
         #endif
 
             // Constraints `a` is array and have `_countof_ns_unsafe(a)`
@@ -169,7 +178,7 @@
                         (_countof_ns_typeof(a) **)&(a), \
                         _countof_ns_typeof(*(a))(**)[_countof_ns_unsafe(a)] \
                     ), "Must be array"); }))
-    #elif _COUNTOF_NS_WANT_VLA_C11 && !__STDC_NO_VLA__
+    #elif _COUNTOF_NS_USE_SUBTRACTION
             // Constraints `a` is array and have `_countof_ns_unsafe(a)`
             // elements (for VLA, number elements is unconstrained).
             //
@@ -201,7 +210,6 @@
                     (_countof_ns_typeof(a) *)&(a), \
                     _countof_ns_typeof(*(a))(*)[_countof_ns_unsafe(a)]: 0))
     #endif
-
     #define countof_ns(a)  (_countof_ns_unsafe(a) + _countof_ns_must_array(a))
 #else
         // Count of fixed size arrays, case: standard C++ array
@@ -216,20 +224,23 @@
         return 0;
     }
     #if _COUNTOF_NS_WANT_VLA_BUILTIN
-            // TODO XXX Intel 2021 - HAVE_HIDDEN_IS_SAME_CXX, but SunPro - not
             // C++ with VLA extension
         template<bool cnd>
         constexpr size_t _countof_ns_0_if_assert() noexcept {
             static_assert(cnd, "Must be array");
             return 0;
         }
-        #define _countof_ns_must_array(a)  (_countof_ns_0_if_assert< \
-                                !__is_same(decltype(&*(a)), decltype(a))>())
         #if __SUNPRO_CC
             #error "Unimplemented, always __builtin_constant_p(sizeof(VLA)) == 1"
-        #elif __LCC__ // TODO XXX TODO  Have __is_same(), but...
+        #elif __LCC__
+            // #define _countof_ns_must_array(a)  (_countof_ns_0_if_assert< \
+            //                 !__is_same(__typeof__(&*(a)), __typeof__(a))>())
+            #define _countof_ns_must_array(a)  (_countof_ns_0_if_assert< \
+                            !__is_same_as(decltype(&*(a)), decltype(a))>())
             #define _vla_countof_ns(a)  (_countof_ns_unsafe(a))
         #else
+            #define _countof_ns_must_array(a)  (_countof_ns_0_if_assert< \
+                                !__is_same(decltype(&*(a)), decltype(a))>())
             #define _vla_countof_ns(a)  (_countof_ns_unsafe(a) + \
                                          _countof_ns_must_array(a))
         #endif

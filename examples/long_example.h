@@ -56,17 +56,17 @@
 //            tests/autoconf/no_have_broken_vla_cxx.cpp && ./a.out
 //
 
-#if ENABLE_VLA_C11_EXAMPLE || ENABLE_VLA_BUILTIN_EXAMPLE
-        // TODO, need change, but... By default, `countof_ns()` causes
-        // compilation errors if the argument is a VLA array. This is often the
-        // most expected behavior, see the README for details.
-
     #if !__cplusplus && !__STDC_NO_VLA__ && !defined(HAVE_BROKEN_VLA)
         #define HAVE_VLA  (1)
     #endif
     #if defined(HAVE_VLA_CXX) && defined(HAVE_BROKEN_VLA_CXX)
         #undef HAVE_VLA_CXX
     #endif
+#if ENABLE_VLA_C11_EXAMPLE || ENABLE_VLA_BUILTIN_EXAMPLE
+        // TODO, need change, but... By default, `countof_ns()` causes
+        // compilation errors if the argument is a VLA array. This is often the
+        // most expected behavior, see the README for details.
+
     #if !defined(HAVE_VLA) && !defined(HAVE_VLA_CXX)
         #pragma message ("VLA support don't detected, may be broken " \
                          "(as some `pgcc`)")
