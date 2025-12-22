@@ -10,7 +10,7 @@
 
 #include <stdlib.h>
 
-#ifdef HAVE_ZLA
+#ifdef HAVE_VLA0
     #define VLA_MIN  (0)
 #else
     #define VLA_MIN  (1)

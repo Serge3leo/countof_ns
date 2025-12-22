@@ -10,7 +10,7 @@ function (tu_countof_ns_expected expected pos_pos neg_pos)
             if (HAVE_IS_SAME_CXX OR HAVE_HIDDEN_IS_SAME_CXX)
                 list(APPEND ints ${b}_cxx.bltn)
             endif ()
-        elseif (HAVE_VLA)
+        elseif (NOT HAVE___STDC_NO_VLA__)
             set(ints ${b} ${b}.c11 ${b}.bltn ${b}_cxx)
             if (HAVE_IS_SAME_CXX OR HAVE_HIDDEN_IS_SAME_CXX)
                 list(APPEND ints ${b}_cxx.bltn)
@@ -22,9 +22,8 @@ function (tu_countof_ns_expected expected pos_pos neg_pos)
             if (i MATCHES "struct_n0_cxx")
                 list(APPEND pos_base ${i})
             elseif (i MATCHES "_vla.*_n0" AND NOT i MATCHES "[.]build_fail")
-                # list(APPEND pos_base ${i}.run_fail)  # TODO .run_0_unexpected
                 list(APPEND pos_base ${i}.run_0_unexpected)
-            elseif (i MATCHES "_n0" AND NOT i MATCHES "_cxx$" AND
+            elseif (i MATCHES "_n0" AND NOT i MATCHES "_cxx" AND
                     NOT i MATCHES "[.]build_fail")
                 list(APPEND pos_base ${i}.build_fail)
             else ()
@@ -35,7 +34,7 @@ function (tu_countof_ns_expected expected pos_pos neg_pos)
 
     set(neg_base "")
     foreach (b IN ITEMS ${neg_pos})
-        if (HAVE_VLA)
+        if (NOT HAVE___STDC_NO_VLA__)
             set(ints ${b}.build_fail ${b}.c11.build_fail ${b}.bltn.build_fail
                      ${b}_cxx.build_fail)
             if (HAVE_IS_SAME_CXX OR HAVE_HIDDEN_IS_SAME_CXX)
@@ -63,21 +62,28 @@ function (tu_countof_ns_expected expected pos_pos neg_pos)
         CMAKE_C_COMPILER_ID STREQUAL LCC)
             # TODO I don't understand. Why doesn't `_Generic()` reject a VLA
             # array?  Is this a peculiarity of the C language extensions only
-            # for NVHPC (pgcc) and the old Intel (icc)? Or is it the result of
-            # optimizations?
-        string(REGEX REPLACE "pos_vla_struct_00[.]build_fail"
-                             "pos_vla_struct_00"
+            # for NVHPC (pgcc) and the classic Intel (icc)? Or is it the result
+            # of optimizations?
+        string(REGEX REPLACE "(pos_vla_(struct|zla)_00)\.build_fail" "\\1"
                              pos_base "${pos_base}")
-        string(REGEX REPLACE "pos_vla_zla_00.build_fail"
-                             "pos_vla_zla_00"
-                             pos_base "${pos_base}")
-        string(REGEX REPLACE "pos_vla_struct_n0[.]build_fail"
-                             "pos_vla_struct_n0.run_fail"
-                             pos_base "${pos_base}")
-        string(REGEX REPLACE "pos_vla_zla_n0.build_fail"
-                             "pos_vla_zla_n0.run_fail"
+        string(REGEX REPLACE "(pos_vla_(struct|zla)_n0)\.build_fail"
+                             "\\1.run_fail"
                              pos_base "${pos_base}")
     endif ()
+    if (CMAKE_CXX_COMPILER_ID STREQUAL GNU AND
+        CMAKE_CXX_COMPILER_VERSION MATCHES "^1[1-5]\.")
+        string(REGEX REPLACE "(pos_vla_(alone|zla)_[0n]0_cxx(\.bltn|))"
+                             "\\1.compiler_bug"
+                             pos_base "${pos_base}")
+    endif ()
+    if ((CMAKE_CXX_COMPILER_ID STREQUAL NVHPC AND
+         CMAKE_CXX_COMPILER_VERSION MATCHES "^25\.9\." ) OR
+        (CMAKE_CXX_COMPILER_ID STREQUAL Intel AND
+         CMAKE_CXX_COMPILER_VERSION MATCHES "^2021\." ))
+        string(REGEX REPLACE "(pos_vla_cv_cxx.bltn)" "\\1.compiler_bug"
+                             pos_base "${pos_base}")
+    endif ()
+
     set(${expected} "${pos_base};${neg_base}" PARENT_SCOPE)
 endfunction ()
 

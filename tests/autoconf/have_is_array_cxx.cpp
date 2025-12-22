@@ -25,7 +25,7 @@ TAC_CHECK_FUNC(ia_foo) {
         printf("int v[n] = %d\n", ia_is_array(decltype(v)));
         (void)v;
     #endif
-    #if HAVE_ZERO_LENGTH_ARRAYS
+    #if HAVE_ZLA
         int z[0];
         printf("int z[0] = %d\n", ia_is_array(decltype(z)));
         (void)z;

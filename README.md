@@ -2,13 +2,14 @@
 
 # C2y `countof()` platform independent implementation with C23/C++11
 
-`countof_ns()` is a portable implementation of the macro `countof()` draft C2y by means of the C23/C++11 standards or using extensions
-of the C language standards of previous editions, which are supported by most
-compilers.
+`countof_ns()` is a portable implementation of the macro `countof()` draft C2y
+by means of the C23/C++11 standards or using extensions of the C language
+standards of previous editions, which are supported by most compilers.
 
-Incomplete list of supported compilers: Clang, GNU gcc, IntelLLVM (icx), MSVC
-(Visual Studio 2022), NVHPC (NVIDIA HPC Compiler), Pelles C, PGI (The Portland
-Group(?)), SunPro (Oracle Developer Studio).
+Incomplete list of supported compilers: Clang, GNU gcc, Intel (classic icc),
+IntelLLVM (icx), LCC (MCST Elbrus), MSVC (Visual Studio 2022), NVHPC (NVIDIA
+HPC Compiler), Pelles C, PGI (The Portland Group(?)), SunPro (Oracle Developer
+Studio).
 
 ## Table of Contents
 
@@ -36,7 +37,7 @@ include(FetchContent)
 FetchContent_Declare(
     CountofNS
     GIT_REPOSITORY https://github.com/Serge3leo/countof_ns.git
-    GIT_TAG  71aa5528b84dbdc168a4750e4621a209ae5903c2 # v0.1pre-examples
+    GIT_TAG  4994018d5470d118e3cb86c510a4365287901277 # v0.3.0-pre-examples
 )
 FetchContent_MakeAvailable(CountofNS)
 ```
@@ -80,4 +81,4 @@ Sorry for my best English. Alas, this file is actually a yandex translation of
 
 ## License
 
-[BSD-2-Clause © 2025 Сергей Леонтьев (leo@sai.msu.ru).](../LICENSE)
+[BSD-2-Clause © 2025 Сергей Леонтьев (leo@sai.msu.ru).](LICENSE)

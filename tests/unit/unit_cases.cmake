@@ -7,14 +7,17 @@
 # information (Warning: TODO: If there is a build error, it's still about
 # "Required regular expression not found...").
 
-file(GLOB tu_check_hdr RELATIVE "${CMAKE_CURRENT_SOURCE_DIR}" "check_*.h")
-file(GLOB tu_pos_hdr RELATIVE "${CMAKE_CURRENT_SOURCE_DIR}" "pos_*.h")
+file(GLOB tu_check_hdr RELATIVE "${CMAKE_CURRENT_LIST_DIR}"
+                                "${CMAKE_CURRENT_LIST_DIR}/check_*.h")
+file(GLOB tu_pos_hdr RELATIVE "${CMAKE_CURRENT_LIST_DIR}"
+                              "${CMAKE_CURRENT_LIST_DIR}/pos_*.h")
 set(tu_pos_pass_regexp "Ok [0-9] TU_[A-Z_]*ASSERT_AND_RETURN")  # TODO remove?
 
 # Negative tests must don't compile. But, for comparison purposes, we are
 # trying to find out what a wrongly compiled test does.
 
-file(GLOB tu_neg_hdr RELATIVE "${CMAKE_CURRENT_SOURCE_DIR}" "neg_*.h")
+file(GLOB tu_neg_hdr RELATIVE "${CMAKE_CURRENT_LIST_DIR}"
+                              "${CMAKE_CURRENT_LIST_DIR}/neg_*.h")
 set(tu_neg_not_terrifying_regexp "(Fail 0 desired=|Ok 0 TU_)")
 set(tu_fail_regexp
     "(Ok .[0-9]|Ok[^ ]|Ok [^0-9]|Fail[^ ]|Fail [^0]|Fail 0[^ ])") # TODO
@@ -23,8 +26,8 @@ function(tu_filter_have possible cases)
     set(p "")
     foreach (cc IN ITEMS ${cases})
         get_filename_component(c ${cc} NAME_WLE)
-        if (("${c}" MATCHES "_vla" AND NOT HAVE_VLA) OR
-            ("${c}" MATCHES "_zla" AND NOT HAVE_ZERO_LENGTH_ARRAYS) OR
+        if (("${c}" MATCHES "_vla" AND HAVE___STDC_NO_VLA__) OR
+            ("${c}" MATCHES "_zla" AND NOT HAVE_ZLA) OR
             ("${c}" MATCHES "_struct" AND NOT HAVE_EMPTY_STRUCTURE) OR
             ("${c}" MATCHES "_alone" AND NOT HAVE_ALONE_FLEXIBLE_ARRAY))
             continue ()

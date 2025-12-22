@@ -5,7 +5,7 @@ size_t TU_UNIT(void) {
     size_t m = 1;
 #if HAVE_EMPTY_INITIALIZER
     double param[] = {};
-#elif HAVE_ZERO_LENGTH_ARRAYS
+#elif HAVE_ZLA
     double param[0];
 #else
     size_t n = 0;

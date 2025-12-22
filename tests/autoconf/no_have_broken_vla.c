@@ -5,11 +5,11 @@
 #include "tac_defs.h"
 
 #define HAVE_VLA_CHECKS (1)
-#if HAVE_VLA
+#if !__STDC_NO_VLA__
     #include "have_vla.h"
 #endif
 TAC_CHECK_FUNC(vla_foo) {
-    #if HAVE_VLA
+    #if !__STDC_NO_VLA__
         have_vla();
     #endif
 }

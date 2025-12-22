@@ -26,11 +26,11 @@ cd build\%platform%
 set build_type=Release
 if %generator%=="NMake Makefiles" (
     cmake --preset default -G %generator% ..\.. %2 %3 %4 %5 %6 %7 %8 %9
-    cmake --build .
+    cmake --output-on-failure --build .
     ctest
 ) else (
     cmake -B . -DCMAKE_CXX_COMPILER=cl -DCMAKE_C_COMPILER=cl ^
           -DCMAKE_BUILD_TYPE=%build_type% -S ..\.. --preset default %2 %3 %4 %5 %6 %7 %8 %9
     cmake --build . --config %build_type%
-    ctest --build-config %build_type%
+    ctest --output-on-failure --build-config %build_type%
 )

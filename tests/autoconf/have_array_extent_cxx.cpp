@@ -31,7 +31,7 @@ TAC_CHECK_FUNC(ae_foo) {
         printf("v[n][m] = %zu %zu\n", dvv1, dvv2);
         (void)v; (void)vv;
     #endif
-    #if HAVE_ZERO_LENGTH_ARRAYS
+    #if HAVE_ZLA
         int z[25][0];
         auto dz1 = ae_array_extent(decltype(z), 0);
         auto dz2 = ae_array_extent(decltype(z), 1);

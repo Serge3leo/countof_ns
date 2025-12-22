@@ -100,30 +100,43 @@ string(APPEND CMAKE_C_FLAGS " ${cmn_flags}")
 string(APPEND CMAKE_CXX_FLAGS " ${cmn_flags}")
 endif () # TODO Pelles XXX Remove or?
 
-set(tac_checks        have_zero_length_arrays have_alone_flexible_array
+set(tac_checks        have_alone_flexible_array
                       have_array_extent_cxx
                       have_builtin_constant_p_cxx
                       have_hidden_builtin_constant_p_cxx
                       have_builtin_types_compatible_p
                       have_hidden_builtin_types_compatible_p
-                      have_countof  # have_countof_zla have_countof_vla
+                      have_countof
                       have_countof_cxx
-                      have_empty_initializer have_empty_structure
+                      have_empty_initializer
+                      have_empty_structure
                       have_is_array_cxx
                       have_hidden_is_array_cxx
-                      have_is_same_as_cxx have_hidden_is_same_as_cxx
-                      have_is_same_cxx have_hidden_is_same_cxx
-                      have_typeof have___typeof__ have___typeof_unqual__
+                      have_is_same_as_cxx
+                      have_hidden_is_same_as_cxx
+                      have_is_same_cxx
+                      have_hidden_is_same_cxx
+                      have_typeof
+                      have___typeof__
                       have_broken___typeof__
-                      have_vla have_vla0 have_vla_cxx have_vla0_cxx
-                      no_have_broken_vla no_have_broken_vla0
-                      no_have_broken_vla_cxx no_have_broken_vla0_cxx
-                      have_vla_zla)
+                      have___typeof_unqual__
+                      have___stdc_no_vla__
+                      no_have_broken_vla
+                      have_vla0
+                      no_have_broken_vla0
+                      have_vla0_cxx
+                      no_have_broken_vla0_cxx
+                      have_vla_cxx
+                      no_have_broken_vla_cxx
+                      have_vla_zla
+                      have_zla)
 
-set(tac_error_checks  error_on_generic error_on_negative_array_size
-                      # error_on_pointer_subtraction  # deprecated, !constexpr
+set(tac_error_checks  error_on_generic
+                      error_on_negative_array_size
+                      #error_on_pointer_subtraction  # deprecated, !constexpr
                       error_on_sizeof_pointer_subtraction
-                      error_on_struct_bit_field error_on_struct_static_assert)
+                      error_on_struct_bit_field
+                      error_on_struct_static_assert)
 
 function (tac_register var)
     # TODO message("tac_register ${var}")

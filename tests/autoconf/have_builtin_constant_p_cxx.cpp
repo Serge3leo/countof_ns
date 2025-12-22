@@ -20,7 +20,7 @@ TAC_CHECK_FUNC(bc_foo) {
         printf("int v[n] sizeof - %d\n", bc_builtin_constant_p(sizeof(v)));
         (void)v;
     #endif
-    #if HAVE_ZERO_LENGTH_ARRAYS
+    #if HAVE_ZLA
         int z[0];
         printf("int z[0] sizeof - %d\n", bc_builtin_constant_p(sizeof(z)));
         (void)z;

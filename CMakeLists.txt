@@ -4,7 +4,7 @@
 
 cmake_minimum_required (VERSION 3.25)
 project(countof_ns
-    VERSION 0.1.0
+    VERSION 0.3.0
     DESCRIPTION "C2y countof() platform independent implementation C23/C++11"
     HOMEPAGE_URL https://github.com/Serge3leo/countof_ns.git
     LANGUAGES C CXX)
@@ -21,7 +21,7 @@ if (NOT DEFINED CMAKE_CXX_STANDARD_REQUIRED)
     set(CMAKE_CXX_STANDARD_REQUIRED 11)
 endif ()
 if (NOT DEFINED CMAKE_CXX_STANDARD)
-    set(CMAKE_CXX_STANDARD 23)
+    set(CMAKE_CXX_STANDARD 20)  # TODO: clang-14 <iostream> from godbolt_cxx.cpp
 endif ()
 if (CMAKE_C_STANDARD_REQUIRED MATCHES "[78].*|9[0-8]" OR
     CMAKE_C_STANDARD MATCHES "[78].*|9[0-8]" OR
