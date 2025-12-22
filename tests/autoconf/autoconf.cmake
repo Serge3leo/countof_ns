@@ -104,8 +104,11 @@ set(tac_checks        have_alone_flexible_array
                       have_array_extent_cxx
                       have_builtin_constant_p_cxx
                       have_hidden_builtin_constant_p_cxx
+                      no_have_broken_builtin_constant_p_cxx
+                      have_strange_builtin_constant_p_cxx
                       have_builtin_types_compatible_p
                       have_hidden_builtin_types_compatible_p
+                      no_have_broken_builtin_types_compatible_p
                       have_countof
                       have_countof_cxx
                       have_empty_initializer
@@ -123,9 +126,7 @@ set(tac_checks        have_alone_flexible_array
                       have___stdc_no_vla__
                       no_have_broken_vla
                       have_vla0
-                      no_have_broken_vla0
                       have_vla0_cxx
-                      no_have_broken_vla0_cxx
                       have_vla_cxx
                       no_have_broken_vla_cxx
                       have_vla_zla

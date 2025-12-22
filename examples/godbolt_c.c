@@ -143,7 +143,11 @@ int main(void) {
         // Current countof_ns(zn0), can't resolve the uncertain zero-by-zero.
         // For ZLA case, fail if resolve not true
         #if EXAMPLE_FAIL == 6
-            (void)countof_ns(zn0);  // TODO pgcc
+            #if !__LCC__ && !__NVCOMPILER
+                (void)countof_ns(zn0);  // TODO pgcc
+            #else
+                g_static_assert(!(0 == countof_ns(zn0)));
+            #endif
             printf("resolve the uncertain zero-by-zero for ZLA - Fail\n");
         #endif
 
@@ -171,6 +175,12 @@ int main(void) {
     #if !__STDC_NO_VLA__
         size_t n0 = 0;
         for (size_t n = 0; n < 25; n++) {
+            int v[n];
+
+            assert(n*sizeof(v[0]) == sizeof(v));
+            countof_compare(n == countof(v));
+            assert(n == countof_ns(v));
+
             int vn0[n][n0];  // Formally UB, but common C extensions...?
             int v00[n0][n0];
             int v0n[n0][n];

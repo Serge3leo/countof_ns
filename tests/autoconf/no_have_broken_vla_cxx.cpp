@@ -13,5 +13,7 @@
 TAC_CHECK_FUNC(vlac_foo) {
     #if HAVE_VLA_CXX
         have_vla();
+    #else
+        printf("Don't have C++ VLA extension\n");
     #endif
 }
