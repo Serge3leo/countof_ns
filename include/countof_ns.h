@@ -1,66 +1,94 @@
 // vim:set sw=4 ts=8 et fileencoding=utf8:
 // SPDX-License-Identifier: BSD-2-Clause
 // SPDX-FileCopyrightText: 2024 Сергей Леонтьев (leo@sai.msu.ru)
-// История:
-// 2024-07-30 23:09:46 - Создан.
-// 2025-11-13 16:30:46 - Убран конфликты с C2y, MS, VLA
-// 2025-11-16 15:58:13 - Пример
-// 2025-11-18 04:07:37 - Поддержка C99/C11 вычитания указателей
-// 2025-12-04 20:05:35 - Новый стабильный интерфейс
 //
 //
-// Реализация макроса `countof()` черновика C2y для C23/C++11
+// Implementing the macro `countof()' C2y draft for C23/C++11
+// ==========================================================
 //
-// Для стандартных массивов C/C++11 результат идентичен `countof()`.  В
-// противном случае, если аргумент не является массивом, возникает ошибка
-// компиляции, т.е. полностью аналогично `countof()`.
+// The macro `countof_ns(array)` returns the number of elements in its operand.
+// The number of elements is determined by the type of the operand. The result
+// is an integer. If the number of array elements is variable, the operand is
+// evaluated, otherwise the operand is not evaluated, and the expression is an
+// integer constant expression.
 //
-// Если аргумент является расширенным zero-length массивом, или содержит такие
-// массивы, или содержит элементы нулевого размера, то:
+// For standard C/C++11 arrays, the result is identical to `countof()`.
+// Otherwise, if the argument is not an array, a compilation error occurs,
+// i.e., the behavior is completely identical to `countof()`.
 //
-//     - Для массивов C++11 выдаёт идентичный `countof()` результат;
+// If the argument is an extended zero-length array (ZLA), or contains such
+// arrays, or contains zero-size elements, then:
 //
-//     - Для фиксированных массивов С, в случае `sizeof(*array) == 0`, если
-//       число элементов 0, то будет возвращён 0, в противном случае возникает
-//       ошибка компиляции;
+// - For fixed arrays, C++11 produces an identical result to `countof()`;
 //
-//     - Для VLA массивов C, в случае `sizeof(*array) == 0`, всегда возвращает 0
-//       (в общепринятых расширениях языка C для массивов содержащих элементы
-//       нулевого размера, полные типы VLA `T0 [0]` и `T0 [u]` оказываются
-//       совместимыми, поэтому неопределённость ноль-на-ноль всегда разрешатся
-//       в пользу 0).
+// - For fixed arrays C, in the case of `sizeof(*array) == 0`, if the number If
+//   there are 0 elements, then 0 will be returned, otherwise an error occurs.
+//   compilation (the behavior depends on the capabilities of the compiler, on
+//   some compilers can always return 0);
 //
-//
-// Требования:
-//
-//     - C23 или C++11;
-//
-//     - С99 c расширениями `__typeof__()` и другими (clang, gcc, Intel, MSVC,
-//       Sun C, PGI Compilers, ...);
+// - For variable-length arrays (VLA) of the C standard or the C++ extension,
+//   in the case of `sizeof(*array) == 0`, always returns 0.
 //
 //
-// До первого включения можно определить следующие макросы в значение 1:
+// Requirements
+// ============
 //
-// `_COUNTOF_NS_WANT_VLA_C11` - обеспечить поддержку VLA (если не определён
-//     `__STDC_NO_VLA__`). Без этих определений аргумент VLA будет вызывать
-//     ошибку компиляции;
+// - C23 or C++11;
 //
-//     ПРЕДУПРЕЖДЕНИЕ: Поддержка VLA требует соответствия компилятора `6.5.6
-//     Additive operators` C11 и выше для всех типов аргументов.  Не смотря на
-//     то, что в C11 ограничения на вычитание указателей ужесточились,
-//     некоторые компиляторы (старые Intel, PGI и Sun) продолжают их
-//     реализовывать такими же образом, как и операции сравнения указателей.
+// - C99 with extensions `__typeof__()` and others (Clang, GNU gcc, Intel
+//   (classic icc), IntelLLVM (icx), LCC (MCST Elbrus), MSVC (Visual Studio
+//   2022), NVHPC (NVIDIA HPC Compiler), Pelles C, PGI (The Portland Group(?)),
+//   SunPro (Oracle Developer Studio)).
 //
-// `_COUNTOF_NS_WANT_VLA_BUILTIN` - использовать сравнительно широко
-//     распространённую встроенную функцию `__builtin_types_compatible_p()`, в
-//     случае если нет определений `__STDC_NO_VLA__` или
-//     `_COUNTOF_NS_WANT_STDC`;
 //
-//     Обычно, компиляторы, которые поддерживают
-//     `__builtin_types_compatible_p()`, так же соответствуют C11, в части
-//     ограничений на вычитание указателей, но могут быть и иные соображения.
-//     К примеру, его возможно использовать для гарантированных настроек старых
-//     добрых компиляторов:
+// Usage
+// =====
+//
+// Before the first include, you can define the following macros to the value 1:
+//
+// - `_COUNTOF_NS_WANT_VLA_BUILTIN` - use built-in functions
+//   (`__builtin_types_compatible_p()` for C or `__builtin_constant_p()` and
+//   `__is_same()` for C++ and others). This is used by default if
+//   `__STDC_NO_VLA__`, `_MSC_VER`, `__POCC__`, or `_COUNTOF_NS_WANT_STDC` are
+//   not defined;
+//
+// - `_COUNTOF_NS_WANT_VLA_C11` - to provide VLA support with standard C11/C23
+//   features, requires compiler compliance with `6.5.6 Additive operators` C11
+//   and higher, for all types of arguments. This is used by default if the
+//   symbol `__POCC__` (Pelles C) is defined.
+//
+// - `_COUNTOF_NS_REFUSE_VLA` - no VLA support (VLA arguments cause a compile
+//   error). This is used by default if the symbols `__STDC_NO_VLA__` or
+//   `_MSC_VER` (Visual Studio) are defined.
+//
+// - `_COUNTOF_NS_BROKEN_TYPEOF` - The C extension `__typeof__()` removes
+//   qualifiers, i.e., functions similarly to `typeof_unqual()` in C23. For
+//   compilers: classic Intel (icc), LCC (lcc), and NVHPC (pgcc), no need to
+//   specify, automatically taken into account;
+//
+// - `_COUNTOF_NS_BROKEN_BUILTIN_TYPES_COMPATIBLE_P` - the
+//   `__builtin_types_compatible_p()` function does not check for full VLA
+//   matching of arrays: `static_assert(!__builtin_types_compatible_p(int
+//   (*)[d1], int (*)[d1]))`. For compilers: classic Intel (icc), LCC (lcc),
+//   and NVHPC(pgcc), this does not need to be specified; it is taken into
+//   account automatically;
+//
+// - `_COUNTOF_NS_WANT_STDC` - do not use extensions: `__typeof__()` and
+//   others;
+//
+// Comparison of VLA support options
+// ---------------------------------
+//
+// - If the priority is minimizing compilation errors on various compilers,
+//   then if VLA is required, `_COUNTOF_NS_WANT_VLA_C11` should be preferred;
+//
+// - If the priority is correctness of the constraint check, then
+//   `_COUNTOF_NS_WANT_VLA_BUILTIN` is preferable, since constraint checks do
+//   not depend on compiler switches (but, unfortunately, problematic compilers
+//   do not support `__has_builtin()`).
+//
+// The `_COUNTOF_NS_WANT_VLA_BUILTIN` macro also allows you to document
+// compiler settings:
 //
 //     $ icc -diag-error=1121
 //         -D'_countof_ns_ptr_compatible_type(p,t)=(0==0*sizeof((p)-(t)(p)))'
@@ -74,36 +102,40 @@
 //         -D'_countof_ns_ptr_compatible_type(p,t)=(0==0*sizeof((p)-(t)(p)))'
 //         -D_COUNTOF_NS_WANT_VLA_BUILTIN ...
 //
-//     Маловероятно, что кому-нибудь потребуется `_COUNTOF_NS_WANT_VLA_BUILTIN`
-//     для MSVC, но это тоже возможно:
+//     It is unlikely that anyone will need `_COUNTOF_NS_WANT_VLA_BUILTIN` for
+//     MSVC, but for testing, it's also possible:
 //
 //     > cl /std:clatest /wd4116 /we4047 ^
 //          /FI_countof_ns_ptr_compatible_type_msvc.h ^
 //          /D_COUNTOF_NS_WANT_VLA_BUILTIN ...
 //
-// `_COUNTOF_NS_BROKEN_TYPEOF_WORKAROUND` - у некоторых компиляторов (старый
-//     Intel(icc) и NVHPC(pgcc)) функция `__typeof__()` работает как C23
-//     `typeof_unqual()`, что приводит к отказам компиляции в случае
-//     квалификаторов.  Негативным следствием определения этого флага являются
-//     ложные предупреждения MSVC(cl) и др., а так же ошибки компиляции
-//     SunPro(suncc).
 //
-// `_COUNTOF_NS_WANT_STDC` - не использовать расширения: `__typeof__()` и
-//     другие;
+// VLA Support Status
+// ==================
+//
+// This header file defines:
+//
+// - `_COUNTOF_NS_VLA_UNSUPPORTED` in case VLA support is not provided;
+//
+// - `_COUNTOF_NS_USE_GENERIC`, if `_Generic()` is used
+//   (`_COUNTOF_NS_VLA_UNSUPPORTED`);
+//
+// - `_COUNTOF_NS_USE_TEMPLATE`, if standard C++ templates are used
+//   (`_COUNTOF_NS_VLA_UNSUPPORTED`);
+//
+// - `_COUNTOF_NS_USE_SUBTRACTION`, if subtraction of pointers by C11/C23 is
+//   used to support VLAs;
+//
+// - `_COUNTOF_NS_USE_BUILTIN`, if built-in functions are used to support VLAs,
+//   etc.
 //
 //
-// Сравнение опций поддержки VLA:
-//     - Если приоритет - минимизация ошибок компиляции на различных
-//       компиляторах, то при наличии VLA следует предпочесть
-//       `_COUNTOF_NS_WANT_VLA_C11`;
+// Disclaimer
+// ==========
 //
-//     - Если приоритет - корректность контроля, то предпочтительнее
-//       `_COUNTOF_NS_WANT_VLA_BUILTIN` (к сожалению, проблемные компиляторы не
-//       поддерживают `__has_builtin()`).
-//
-//
-// Данный заголовочный файл определяет `_COUNTOF_NS_VLA_UNSUPPORTED` в случае,
-// если не обеспечивается поддержка VLA.
+// Sorry for my best English. Alas, this file is actually a yandex translation
+// of [countof_ns.h.ru.md](../countof_ns.h.ru.md) with minimal editorial
+// changes.
 
 #ifndef COUNTOF_NS_H_6951
 #define COUNTOF_NS_H_6951
@@ -137,7 +169,7 @@
     #elif !_COUNTOF_NS_WANT_STDC
         #define _countof_ns_assert  _Static_assert
         #if !defined(_countof_ns_ptr_compatible_type) && \
-            (_COUNTOF_NS_BROKEN_TYPEOF_WORKAROUND || _COUNTOF_NS_USE_BUILTIN)
+            (_COUNTOF_NS_BROKEN_TYPEOF || _COUNTOF_NS_USE_BUILTIN)
             #define _countof_ns_typeof(t)  const volatile __typeof__(t)
         #else
             #define _countof_ns_typeof(t)  __typeof__(t)
@@ -212,6 +244,18 @@
     #endif
     #define countof_ns(a)  (_countof_ns_unsafe(a) + _countof_ns_must_array(a))
 #else
+    #if _COUNTOF_NS_REFUSE_VLA || _MSC_VER
+            // _MSC_VER is the only compiler without support for the C++
+            // VLA extension.
+        #define _COUNTOF_NS_USE_TEMPLATE  (1)
+    #elif _COUNTOF_NS_WANT_VLA_CXX
+        #define _COUNTOF_NS_USE_STUB  (1)
+    #elif _COUNTOF_NS_WANT_VLA_BUILTIN
+        #define _COUNTOF_NS_USE_BUILTIN  (1)
+    #else
+        #define _COUNTOF_NS_USE_BUILTIN  (1)
+    #endif
+
         // Count of fixed size arrays, case: standard C++ array
     template<size_t A, size_t E, class T, size_t N>
     constexpr static size_t _countof_ns_aux(const T (&)[N]) noexcept {
@@ -223,16 +267,21 @@
         static_assert(0 == A, "Argument must be zero-length array");
         return 0;
     }
-    #if _COUNTOF_NS_WANT_VLA_BUILTIN
+    #if _COUNTOF_NS_USE_TEMPLATE
+            // C++ with ZLA extension only
+        #define _COUNTOF_NS_VLA_UNSUPPORTED  (1)
+        #define countof_ns(a)  (_countof_ns_aux<sizeof(a), sizeof(*(a))>(a))
+    #elif _COUNTOF_NS_USE_STUB
+        #warning "There is no correct implementation in pure C++ (wait C++26?)"
+        #define countof_ns(a)  (_countof_ns_unsafe(a))
+    #elif _COUNTOF_NS_USE_BUILTIN && !__SUNPRO_CC
             // C++ with VLA extension
         template<bool cnd>
         constexpr size_t _countof_ns_0_if_assert() noexcept {
             static_assert(cnd, "Must be array");
             return 0;
         }
-        #if __SUNPRO_CC
-            #error "Unimplemented, always __builtin_constant_p(sizeof(VLA)) == 1"
-        #elif __LCC__
+        #if __LCC__
             // #define _countof_ns_must_array(a)  (_countof_ns_0_if_assert< \
             //                 !__is_same(__typeof__(&*(a)), __typeof__(a))>())
             #define _countof_ns_must_array(a)  (_countof_ns_0_if_assert< \
@@ -244,30 +293,9 @@
             #define _vla_countof_ns(a)  (_countof_ns_unsafe(a) + \
                                          _countof_ns_must_array(a))
         #endif
-#if 0
-            // Clang/GNU/NHPC (pgcc Nvidia HPC) - work fine
 
-            // Internal VLA stub
-        template<size_t A, size_t E>
-        constexpr static size_t _countof_ns_aux(...) noexcept {
-            return 0;
-        }
-
-            // For VLA clip not constexpr argument to constexpr 0
-        #define _countof_ns_2cexp(a, v)  (__builtin_constant_p(sizeof(a)) \
-                                         ? (v) : 0)
-
-            // If sizeof(a) - compile-time constant, then count fixed size
-            // array , otherwise count VLA.
-        #define countof_ns(a)  (__builtin_constant_p(sizeof(a)) \
-                  ? _countof_ns_aux<_countof_ns_2cexp((a), sizeof(a)), \
-                                    _countof_ns_2cexp((a), sizeof(*(a)))>(a) \
-                  : _vla_countof_ns(a))
-#else
-            // But IntelLLVM sometimes considers:
-            // __builtin_constant_p(sizeof(VLA)) == 1
-
-            // Internal VLA stub
+            // Internal VLA stub, called only for case
+            // HAVE_STRANGE_BUILTIN_CONSTANT_P_CXX
         template<size_t A, size_t E>
         constexpr static size_t _countof_ns_aux(...) noexcept {
             return size_t(-1917); // A value that is incredible to encounter
@@ -277,21 +305,44 @@
         #define _countof_ns_2cexp(a, v)  (__builtin_constant_p(sizeof(a)) \
                                          ? (v) : 0)
 
+            // For VLA clip template arguments to constexpr 0
         #define _countof_ns_fix(a)  (_countof_ns_aux<\
-                                     _countof_ns_2cexp((a), sizeof(a)), \
-                                     _countof_ns_2cexp((a), sizeof(*(a)))>(a))
-        #define countof_ns(a)  (!__builtin_constant_p(sizeof(a)) \
-                    ? _vla_countof_ns(a) \
-                    : size_t(-1917) == _countof_ns_fix(a) ? _vla_countof_ns(a) \
-                                                          : _countof_ns_fix(a))
-#endif
-    #elif _COUNTOF_NS_WANT_VLA_CXX
-        #warning "There is no correct implementation in pure C++ (wait C++26?)"
-        #define countof_ns(a)  (_countof_ns_unsafe(a))
-    #else
-            // C++ with ZLA extension only
-        #define _COUNTOF_NS_VLA_UNSUPPORTED  (1)
-        #define countof_ns(a)  (_countof_ns_aux<sizeof(a), sizeof(*(a))>(a))
+                             _countof_ns_2cexp((a), sizeof(a)), \
+                             _countof_ns_2cexp((a), sizeof(*(a)))>(a))
+
+        #if 0   // !HAVE_STRANGE_BUILTIN_CONSTANT_P_CXX
+                // Clang/GNU/LCC/NHPC (pgcc Nvidia HPC) - work fine
+                //
+                // If sizeof(a) - compile-time constant, then count fixed size
+                // array , otherwise count VLA.
+            #define countof_ns(a)  (!__builtin_constant_p(sizeof(a)) \
+                                    ? _vla_countof_ns(a) \
+                                    : _countof_ns_fix(a))
+        #else   // HAVE_STRANGE_BUILTIN_CONSTANT_P_CXX
+                // But Intel and IntelLLVM compilers sometimes considers:
+                // __builtin_constant_p(sizeof(VLA)) == 1
+                //
+                // See: tests/autoconf/have_strange_builtin_constant_p_cxx.cpp
+            #define countof_ns(a)  (!__builtin_constant_p(sizeof(a)) \
+                                    ? _vla_countof_ns(a) \
+                                    : size_t(-1917) == _countof_ns_fix(a) \
+                                            ? _vla_countof_ns(a) \
+                                            : _countof_ns_fix(a))
+        #endif
+    #else  // _COUNTOF_NS_USE_BUILTIN && __SUNPRO_CC
+           // Advanced SunPro templates. SunPro prohibits arrays containing
+           // zero-length objects, particularly multidimensional ZLAs.
+        #include <type_traits>
+
+        template<class T, class U>
+        constexpr size_t _countof_ns_0_not_same() noexcept {
+            static_assert(!std::is_same<T, U>::value, "Must be array");
+            return 0;
+        }
+        #define _countof_ns_must_array(a)  \
+                    (_countof_ns_0_not_same<decltype(&*(a)), decltype(a)>())
+        #define countof_ns(a)  (_countof_ns_unsafe(a) + \
+                                _countof_ns_must_array(a))
     #endif
 #endif
 

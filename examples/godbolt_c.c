@@ -141,11 +141,14 @@ int main(void) {
         g_static_assert(0 == sizeof(zn0));
         countof_compare(1917 == countof(zn0));
         // Current countof_ns(zn0), can't resolve the uncertain zero-by-zero.
-        // For ZLA case, fail if resolve not true
         #if EXAMPLE_FAIL == 6
-            #if !__LCC__ && !__NVCOMPILER
-                (void)countof_ns(zn0);  // TODO pgcc
+            #if !__LCC__ && !__NVCOMPILER && !__INTEL_COMPILER
+                // if !HAVE_BROKEN_BUILTIN_TYPES_COMPATIBLE_P
+                // For ZLA case, fail if resolve not true
+                (void)countof_ns(zn0);
             #else
+                // if HAVE_BROKEN_BUILTIN_TYPES_COMPATIBLE_P
+                // return 0 as VLA case
                 g_static_assert(!(0 == countof_ns(zn0)));
             #endif
             printf("resolve the uncertain zero-by-zero for ZLA - Fail\n");

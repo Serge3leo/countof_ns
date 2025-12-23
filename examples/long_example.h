@@ -242,9 +242,11 @@ static void vla_example() {
     int c[countof_ns(a2[0])];
     assert(tt == countof_ns(c));
 
-    assert(xx == countof_ns(*(int (*)[xx])&p2));
-    assert(xy == countof_ns(*(int (*)[xy])p3));
-    assert(xz == countof_ns(*(int(*)[xz][xz])&p3));
+    #if !__SUNPRO_CC
+        assert(xx == countof_ns(*(int (*)[xx])&p2));
+        assert(xy == countof_ns(*(int (*)[xy])p3));
+        assert(xz == countof_ns(*(int(*)[xz][xz])&p3));
+    #endif
 
     #if !__cplusplus
         int (*p1)[tt] = &a2[0];

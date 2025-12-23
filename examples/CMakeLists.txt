@@ -105,28 +105,22 @@ if (COUNTOF_NS_EXAMPLES)
     endif ()
 
     if (HAVE___STDC_NO_VLA__)
-        example(godbolt_c.c "" "" "" 3)  # MSVC - 3, TODO: must fail
+        example(godbolt_c.c "" "" "" 3)  # MSVC - 3 (not VLA&ZLA)
     else ()
         set(opt_bltn ${countof_ns_builtin_options_${CMAKE_C_COMPILER_ID}})
-        if (CMAKE_C_COMPILER_ID STREQUAL Intel OR
-            CMAKE_C_COMPILER_ID STREQUAL LCC OR
-            CMAKE_C_COMPILER_ID STREQUAL NVHPC)  # TODO: must fail
-            example(godbolt_c.c "_bltn" opt_bltn
-                                "_COUNTOF_NS_VLA_UNSUPPORTED" 5)
-        elseif (CMAKE_C_COMPILER_ID STREQUAL SunPro)  # TODO: must fail
-            example(godbolt_c.c "_bltn" opt_bltn
-                                "_COUNTOF_NS_VLA_UNSUPPORTED" 3)
-        else ()
-            example(godbolt_c.c "_bltn" opt_bltn
-                                "_COUNTOF_NS_VLA_UNSUPPORTED" 6)
+        if (CMAKE_C_COMPILER_ID STREQUAL SunPro)
+            list(APPEND opt_bltn "-features=zla" "-DHAVE_ZLA")
         endif ()
+        example(godbolt_c.c "_bltn" opt_bltn "_COUNTOF_NS_VLA_UNSUPPORTED" 6)
     endif ()
     if (CXX_ENABLED)
-        if (NOT HAVE_VLA_CXX OR HAVE_BROKEN_VLA_CXX)
-            example(godbolt_cxx.cpp "" "" "" 3)  # MSVC - 3, TODO: must fail
-        elseif (HAVE_IS_SAME_CXX OR HAVE_HIDDEN_IS_SAME_CXX OR
-                HAVE_HIDDEN_IS_SAME_AS_CXX)
-            set(opt_cxx_bltn ${countof_ns_builtin_options_${CMAKE_C_COMPILER_ID}})
+        if (NOT HAVE_VLA_CXX)
+            example(godbolt_cxx.cpp "" "" "" 3)  # MSVC - 3 (not VLA&ZLA)
+        else ()
+            set(opt_cxx_bltn "")
+            if (CMAKE_C_COMPILER_ID STREQUAL SunPro)
+                list(APPEND opt_cxx_bltn "-features=zla" "-DHAVE_ZLA")
+            endif ()
             example(godbolt_cxx.cpp "_bltn" opt_cxx_bltn
                                     "_COUNTOF_NS_VLA_UNSUPPORTED" 5)
         endif ()

@@ -48,12 +48,12 @@ if (TAC_POSITIVE_WERROR)
     # Для всех остальных тестов и примеров это опционально
     set(TAC_WERROR "${TAC_AC_WERROR}")
 endif ()
-if (CMAKE_C_COMPILER_ID STREQUAL Intel)
-    # TODO: skip C++ for oldest Intel icpc, my local troubles XXX
-    set(CXX_ENABLED FALSE)
-else ()
+#if (CMAKE_C_COMPILER_ID STREQUAL Intel)
+#    # TODO: skip C++ for oldest Intel icpc, my local troubles XXX
+#    set(CXX_ENABLED FALSE)
+#else ()
     set(CXX_ENABLED TRUE)
-endif ()
+#endif ()
 if (MSVC)
     string(APPEND cmn_flags " -D_CRT_SECURE_NO_WARNINGS")
     if (MSVC_VERSION GREATER_EQUAL 1914)
