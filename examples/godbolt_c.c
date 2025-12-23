@@ -19,10 +19,6 @@
     #define HAVE_BROKEN_VLA  (1)
 #endif
 
-#if !__STDC_NO_VLA__ && \
-    !defined(_COUNTOF_NS_WANT_VLA_C11) && !defined(_COUNTOF_NS_WANT_VLA_BUILTIN)
-    #define _COUNTOF_NS_WANT_VLA_BUILTIN  (1)  // TODO: remove
-#endif
 #include "countof_ns.h"
 
 #include <stdio.h>

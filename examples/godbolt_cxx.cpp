@@ -16,10 +16,6 @@
     #define HAVE_ZLA  (1)
 #endif
 
-#if HAVE_VLA_CXX && \
-    !defined(_COUNTOF_NS_WANT_VLA_C11) && !defined(_COUNTOF_NS_WANT_VLA_BUILTIN)
-    #define _COUNTOF_NS_WANT_VLA_BUILTIN  (1)  // TODO: remove
-#endif
 #include "countof_ns.h"
 
 #include <stdio.h>  // clang-14 conflict with own libc++
