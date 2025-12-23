@@ -330,7 +330,7 @@
                                             : _countof_ns_fix(a))
         #endif
     #else  // _COUNTOF_NS_USE_BUILTIN && __SUNPRO_CC
-           // Advanced SunPro templates. SunPro prohibits arrays containing
+           // Advanced SunPro templates. SunPro C++ prohibits arrays containing
            // zero-length objects, particularly multidimensional ZLAs.
         #include <type_traits>
 
