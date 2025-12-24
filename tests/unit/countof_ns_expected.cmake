@@ -64,24 +64,30 @@ function (tu_countof_ns_expected expected pos_pos neg_pos)
             # array?  Is this a peculiarity of the C language extensions only
             # for NVHPC (pgcc) and the classic Intel (icc)? Or is it the result
             # of optimizations?
-        string(REGEX REPLACE "(pos_vla_(struct|zla)_00)\.build_fail" "\\1"
+        string(REGEX REPLACE "(pos_vla_(struct|zla)_00)\\.build_fail" "\\1"
                              pos_base "${pos_base}")
-        string(REGEX REPLACE "(pos_vla_(struct|zla)_n0)\.build_fail"
+        string(REGEX REPLACE "(pos_vla_(struct|zla)_n0)\\.build_fail"
                              "\\1.run_fail"
                              pos_base "${pos_base}")
     endif ()
     if (CMAKE_CXX_COMPILER_ID STREQUAL GNU AND
-        CMAKE_CXX_COMPILER_VERSION MATCHES "^1[1-5]\.")
-        string(REGEX REPLACE "(pos_vla_(alone|zla)_[0n]0_cxx(\.bltn|))"
+        CMAKE_CXX_COMPILER_VERSION MATCHES "^1[1-5]\\.")
+        string(REGEX REPLACE "(pos_vla_(alone|zla)_[0n]0_cxx(\\.bltn|))"
                              "\\1.compiler_bug"
                              pos_base "${pos_base}")
     endif ()
     if ((CMAKE_CXX_COMPILER_ID STREQUAL NVHPC AND
-         CMAKE_CXX_COMPILER_VERSION MATCHES "^25\.9\." ) OR
+         CMAKE_CXX_COMPILER_VERSION MATCHES "^25\\.9\\." ) OR
         (CMAKE_CXX_COMPILER_ID STREQUAL Intel AND
-         CMAKE_CXX_COMPILER_VERSION MATCHES "^2021\." ))
+         CMAKE_CXX_COMPILER_VERSION MATCHES "^2021\\." ))
         string(REGEX REPLACE "(pos_vla_cv_cxx.bltn)" "\\1.compiler_bug"
                              pos_base "${pos_base}")
+    endif ()
+    if (CMAKE_C_COMPILER_ID STREQUAL SunPro)
+            # TODO I don't understand. Why?
+        string(REGEX REPLACE "(neg_alone_ptr\\.c11)\\.build_unexpected"
+                             "\\1.build_fail"
+                             neg_base "${neg_base}")
     endif ()
 
     set(${expected} "${pos_base};${neg_base}" PARENT_SCOPE)

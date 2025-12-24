@@ -13,7 +13,7 @@
 
 #define zla_have_size(s)  sizeof(char [s])
 
-TAC_CHECK_FUNC(zla_foo) {
+TAC_CHECK_FUNC(zlazla_foo) {
     const size_t obviously = zla_have_size(1);
     (void)obviously;
     tac_static_assert(1 == zla_have_size(1), "Check return value");

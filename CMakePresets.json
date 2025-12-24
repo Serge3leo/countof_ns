@@ -9,10 +9,22 @@
       "name": "default",
       "displayName": "Default general",
       "cacheVariables": {
-	"CL_TAG": "default",
-        "COMPARISONS": "OFF",
+        "COUNTOF_NS_SHORT_EXAMPLE": "OFF",
+	"COUNTOF_NS_EXAMPLES": "ON",
+	"COUNTOF_NS_TESTS": "ON",
+	"COUNTOF_NS_COMPARISONS": "OFF",
+	"COUNTOF_NS_DOCTESTS": "ON",
         "TAC_ENABLE_WARNINGS": "OFF",
         "TAC_POSITIVE_WERROR": "OFF"
+      }
+    },
+    {
+      "name": "doc",
+      "displayName": "Docs check",
+      "inherits": "default",
+      "cacheVariables": {
+	"COUNTOF_NS_EXAMPLES": "OFF",
+	"COUNTOF_NS_TESTS": "OFF"
       }
     },
     {
@@ -20,7 +32,6 @@
       "displayName": "Debug checks",
       "inherits": "default",
       "cacheVariables": {
-	"CL_TAG": "debug",
 	"CMAKE_BUILD_TYPE": "Debug",
         "TAC_ENABLE_WARNINGS": "ON",
         "TAC_POSITIVE_WERROR": "ON"
@@ -31,7 +42,7 @@
       "displayName": "Comparisons number methods",
       "inherits": "default",
       "cacheVariables": {
-        "COMPARISONS": "ON"
+        "COUNTOF_NS_COMPARISONS": "ON"
       }
     },
     {
@@ -39,7 +50,6 @@
       "displayName": "Comparisons number methods",
       "inherits": "cmp",
       "cacheVariables": {
-	"CL_TAG": "verbose",
 	"CMAKE_BUILD_TYPE": "Debug",
         "TAC_ENABLE_WARNINGS": "ON"
       }

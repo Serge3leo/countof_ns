@@ -8,6 +8,8 @@ option(TAC_ENABLE_WARNINGS
        "Enable maximum warnings (for debug only)" OFF)
 option(TAC_POSITIVE_WERROR
        "Error positive test on warnings (for debug only)" OFF)
+option(TAC_VERBOSE
+       "Print autoconf compiler&run output" OFF)
 # TODO: option(TAC_ALL_AUTOCONF
 # TODO:        "Check all autoconf tests, including unused ones" OFF)
 
@@ -54,6 +56,11 @@ endif ()
 #else ()
     set(CXX_ENABLED TRUE)
 #endif ()
+if (CMAKE_C_COMPILER_ID MATCHES "SunPro")
+    string(APPEND cmn_flags " -features=extensions,zla")
+    string(APPEND CMAKE_C_FLAGS " -erroff=E_ZERO_SIZED_STRUCT_UNION"
+                                ",E_EMPTY_INITIALIZER")
+endif ()
 if (MSVC)
     string(APPEND cmn_flags " -D_CRT_SECURE_NO_WARNINGS")
     if (MSVC_VERSION GREATER_EQUAL 1914)
@@ -111,7 +118,6 @@ set(tac_checks        have_alone_flexible_array
                       no_have_broken_builtin_types_compatible_p
                       have_countof
                       have_countof_cxx
-                      have_empty_initializer
                       have_empty_structure
                       have_is_array_cxx
                       have_hidden_is_array_cxx
@@ -130,7 +136,10 @@ set(tac_checks        have_alone_flexible_array
                       have_vla_cxx
                       no_have_broken_vla_cxx
                       have_vla_zla
-                      have_zla)
+                      have_zla
+                      have_zla_empty_initializer
+                      have_zla_empty_initializer_cxx
+                      have_zla_zla)
 
 set(tac_error_checks  error_on_generic
                       error_on_negative_array_size
@@ -193,14 +202,30 @@ foreach (cchk IN ITEMS ${tac_checks} ${tac_error_checks})
             try_run(run_${chk} compile_${chk} "${CMAKE_CURRENT_BINARY_DIR}"
                     SOURCES "${src}"
                     COMPILE_DEFINITIONS "${df}"
+                    COMPILE_OUTPUT_VARIABLE cml_out
+                    RUN_OUTPUT_VARIABLE run_out
                     )
+            if (TAC_VERBOSE)
+                message("==== run_${chk}=${run_${chk}}"
+                        " compile_${chk}=${compile_${chk}}"
+                        " compile:\n${cml_out}"
+                        "---- run_${chk} run:\n${run_out}")
+            endif ()
             if ("${chk}" MATCHES "^have_" AND
                 (NOT "${run_${chk}}" EQUAL 0 OR NOT "${compile_${chk}}"))
                 try_run(run_warn_${chk} compile_warn_${chk}
                         "${CMAKE_CURRENT_BINARY_DIR}"
                         SOURCES "${src}"
                         COMPILE_DEFINITIONS "-DTAC_DONT_FAIL"
+                        COMPILE_OUTPUT_VARIABLE cml_warn_out
+                        RUN_OUTPUT_VARIABLE run_warn_out
                         )
+                if (TAC_VERBOSE)
+                    message("==== run_warn_${chk}=${run_warn_${chk}}"
+                            " compile_warn_${chk}=${compile_warn_${chk}}"
+                            " compile:\n${cml_warn_out}"
+                            "---- run_warn_${chk} run:\n${run_warn_out}")
+                endif ()
             endif ()
         endif ()
     endforeach ()
