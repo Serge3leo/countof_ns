@@ -282,7 +282,7 @@
             return 0;
         }
         #if __LCC__
-            // #define _countof_ns_must_array(a)  (_countof_ns_0_if_assert< \
+            // #define _countof_ns_must_array(a)  (_countof_ns_0_if_assert<
             //                 !__is_same(__typeof__(&*(a)), __typeof__(a))>())
             #define _countof_ns_must_array(a)  (_countof_ns_0_if_assert< \
                             !__is_same_as(decltype(&*(a)), decltype(a))>())
