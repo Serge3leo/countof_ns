@@ -69,7 +69,6 @@ jobs:
             platform: "linux"
           - c_compiler: lcc
             cpp_compiler: l++
-            mrognor_version: 0.1.1
             os: ubuntu-latest
             platform: "e2k"
         exclude:
@@ -85,12 +84,12 @@ jobs:
             c_compiler: cl
 
     steps:
-      - uses: actions/checkout@v4
+      - uses: actions/checkout@v6
 
       - name: Cache install oneAPI
         if: ${{ matrix.c_compiler == 'icx' }}
         id: cache-icx
-        uses: actions/cache@v4
+        uses: actions/cache@v5
         with:
           path: |
             /opt/intel/oneapi
@@ -110,23 +109,10 @@ jobs:
           source /opt/intel/oneapi/setvars.sh
           printenv >> $GITHUB_ENV
 
-      - name: Cache install LCC MCST Elbrus e2k
+      - name: Install LCC MCST Elbrus e2k (internal caching)
         if: ${{ matrix.c_compiler == 'lcc' }}
-        id: cache-lcc
-        uses: actions/cache@v4
-        with:
-          path: |
-            /opt/mcst
-            /usr/local/bin/e2k
-            /usr/local/bin/qemu-e2k
-            /usr/local/bin/lcc
-            /usr/local/bin/l++
-          key: cache-${{ matrix.mrognor_version }}-mrognor
-
-      - name: Non-cache install LCC MCST Elbrus e2k
-        if: ${{ matrix.c_compiler == 'lcc' &&
-                ! steps.cache-lcc.outputs.cache-hit }}
-        uses: mrognor/lcc-env-action@0.1.1  # TODO: matrix.mrognor_version
+        timeout-minutes: 10
+        uses: mrognor/lcc-env-action@207fb85ae36c2b48dabf276e5a347e2d608f0832
 
       - uses: actions/setup-python@v6
         with:
