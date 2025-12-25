@@ -69,7 +69,6 @@ jobs:
             platform: "linux"
           - c_compiler: lcc
             cpp_compiler: l++
-            mrognor_version: 207fb85ae36c2b48dabf276e5a347e2d608f0832
             os: ubuntu-latest
             platform: "e2k"
         exclude:
@@ -113,7 +112,7 @@ jobs:
       - name: Install LCC MCST Elbrus e2k (internal caching)
         if: ${{ matrix.c_compiler == 'lcc' }}
         timeout-minutes: 10
-        uses: mrognor/lcc-env-action@${{ matrix.mrognor_version }}
+        uses: mrognor/lcc-env-action@$207fb85ae36c2b48dabf276e5a347e2d608f0832
 
       - uses: actions/setup-python@v6
         with:
