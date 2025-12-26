@@ -22,9 +22,8 @@
 #ifndef countof_ns
     #define TU_C11_VLA  ("")
 #elif _COUNTOF_NS_VLA_UNSUPPORTED
-    #if (_COUNTOF_NS_WANT_VLA_BUILTIN || _COUNTOF_NS_WANT_VLA_C11) && \
-        !__cplusplus
-        #error "Wrong autoconf of VLA"
+    #if _COUNTOF_NS_WANT_VLA_BUILTIN || _COUNTOF_NS_WANT_VLA_C11
+        #error "Wrong VLA config"
     #endif
     #define TU_C11_VLA  (" _COUNTOF_NS_VLA_UNSUPPORTED")
 #elif _COUNTOF_NS_WANT_VLA_C11
@@ -32,8 +31,7 @@
 #elif _COUNTOF_NS_WANT_VLA_BUILTIN
     #define TU_C11_VLA  (" _COUNTOF_NS_WANT_VLA_BUILTIN")
 #else
-    #define TU_C11_VLA  (" _COUNTOF_NS_WANT_VLA_TODO_AUTOCONF")
-    //#error "Wrong autoconf of countof_ns"
+    #define TU_C11_VLA  (" _COUNTOF_NS_WANT_VLA_AUTOCONF")
 #endif
 #ifdef __cplusplus
     #define TU_LANG  ("C++")

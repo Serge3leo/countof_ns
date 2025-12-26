@@ -46,14 +46,19 @@ function (process_params params)
         add_executable(${tgt} ${src} ${base}.h
                               "${CMAKE_SOURCE_DIR}/include/${tu_countof_inc}")
         target_link_libraries(${tgt} PRIVATE CountofNS::CountofNS)
-        if (etgt MATCHES "[.]c11")
+        if (etgt MATCHES "\\.(gen|tmpl)")
+            target_compile_definitions(${tgt} PRIVATE ${inc}
+                                       "_COUNTOF_NS_REFUSE_VLA")
+            set(vla_fail_regex
+                "(_COUNTOF_NS_USE_SUBTRACTION|_COUNTOF_NS_USE_BUILTIN)")
+        elseif (etgt MATCHES "\\.c11")
             target_compile_definitions(${tgt} PRIVATE ${inc}
                                        "_COUNTOF_NS_WANT_VLA_C11")
             set(vla_fail_regex "_COUNTOF_NS_VLA_UNSUPPORTED")
-        elseif (etgt MATCHES "[.]bltn")
+        elseif (etgt MATCHES "\\.bltn")
             target_compile_definitions(${tgt} PRIVATE ${inc}
                                        "_COUNTOF_NS_WANT_VLA_BUILTIN")
-            if (base MATCHES "_cxx")
+            if (etgt MATCHES "_cxx($|\\.)")
                 target_compile_options(${tgt} PRIVATE
                     ${countof_ns_builtin_cxx_options_${CMAKE_CXX_COMPILER_ID}})
             else ()
@@ -75,7 +80,7 @@ function (process_params params)
         set(div0re "[Dd]ivision.*[Bb]y.*[Zz]ero")
         set(pass_regexp "(${nxre})")
         set(fail_regexp "(${exre}|${fpere}|${segvre}|${div0re}|${nxre})")
-        if (etgt MATCHES "[.]compiler_bug")
+        if (etgt MATCHES "\\.compiler_bug")
             set_target_properties(${tgt} PROPERTIES EXCLUDE_FROM_ALL TRUE)
             add_test(NAME ${tgt}
                      COMMAND ${CMAKE_COMMAND}
@@ -84,8 +89,8 @@ function (process_params params)
                         --config "${CMAKE_BUILD_TYPE}"
                      WORKING_DIRECTORY ${CMAKE_BINARY_DIR})
             set_tests_properties(${tgt} PROPERTIES WILL_FAIL TRUE)
-        elseif (etgt MATCHES "[.]build_.*")
-            if (etgt MATCHES "[.]build_.*[.]build_DIV0")
+        elseif (etgt MATCHES "\\.build_.*")
+            if (etgt MATCHES "\\.build_.*\\.build_DIV0")
                 string(REPLACE "${div0re}|" "" fail_regexp "${fail_regexp}")
                 string(REPLACE "${nxre}" "${div0re}|${nxre}"
                        pass_regexp "${pass_regexp}")
@@ -97,7 +102,7 @@ function (process_params params)
                         --target ${tgt}
                         --config "${CMAKE_BUILD_TYPE}"
                      WORKING_DIRECTORY ${CMAKE_BINARY_DIR})
-            if (etgt MATCHES "[.][^.]*_fail")
+            if (etgt MATCHES "\\.[^.]*_fail")
                 set_tests_properties(${tgt} PROPERTIES
                         WILL_FAIL TRUE
                             # Fail to WILL_FAIL test - pass
@@ -109,30 +114,30 @@ function (process_params params)
                         FAIL_REGULAR_EXPRESSION "${fail_regexp}")
                         #PASS_REGULAR_EXPRESSION "${pass_regexp}")
             endif ()
-        elseif (NOT etgt MATCHES "[.][^.]*_fail")
+        elseif (NOT etgt MATCHES "\\.[^.]*_fail")
             add_test(NAME ${tgt} COMMAND ${tgt})
             set_tests_properties(${tgt} PROPERTIES
                                 PASS_REGULAR_EXPRESSION "${tu_pos_pass_regexp}"
                                 FAIL_REGULAR_EXPRESSION "${fail_regexp}")
                                 #PASS_REGULAR_EXPRESSION "${pass_regexp}")
-            if (etgt MATCHES "[.]run_0_unexpected")
+            if (etgt MATCHES "\\.run_0_unexpected")
                 set_tests_properties(${tgt} PROPERTIES
                     PASS_REGULAR_EXPRESSION "${tu_neg_not_terrifying_regexp}")
             endif ()
         else ()  # run_fail
-            if (etgt MATCHES "[.]run_fail.*[.]run_FPE")
+            if (etgt MATCHES "\\.run_fail.*\\.run_FPE")
                 string(REPLACE "${exre}|" "" fail_regexp "${fail_regexp}")
                 string(REPLACE "${fpere}|" "" fail_regexp "${fail_regexp}")
                 string(REPLACE "${nxre}" "${exre}.*${fpere}|${nxre}"
                        pass_regexp "${pass_regexp}")
             endif ()
-            if (etgt MATCHES "[.]run_fail.*[.]run_SEGV")
+            if (etgt MATCHES "\\.run_fail.*\\.run_SEGV")
                 string(REPLACE "${exre}|" "" fail_regexp "${fail_regexp}")
                 string(REPLACE "${segvre}|" "" fail_regexp "${fail_regexp}")
                 string(REPLACE "${nxre}" "${exre}.*${segvre}|${nxre}"
                        pass_regexp "${pass_regexp}")
             endif ()
-            if (etgt MATCHES "[.]run_fail.*[.]run_DIV0")
+            if (etgt MATCHES "\\.run_fail.*\\.run_DIV0")
                 string(REPLACE "${div0re}|" "" fail_regexp "${fail_regexp}")
                 string(REPLACE "${nxre}" "${div0re}|${nxre}"
                        pass_regexp "${pass_regexp}")

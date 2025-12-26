@@ -256,6 +256,12 @@
         #define _COUNTOF_NS_USE_BUILTIN  (1)
     #endif
 
+        // Count std::span and other containers
+    template<size_t A, size_t E, class C>
+    constexpr static auto _countof_ns_aux(const C& c) -> decltype(c.size()) {
+        return c.size();
+    }
+
         // Count of fixed size arrays, case: standard C++ array
     template<size_t A, size_t E, class T, size_t N>
     constexpr static size_t _countof_ns_aux(const T (&)[N]) noexcept {
@@ -270,7 +276,7 @@
     #if _COUNTOF_NS_USE_TEMPLATE
             // C++ with ZLA extension only
         #define _COUNTOF_NS_VLA_UNSUPPORTED  (1)
-        #define countof_ns(a)  (_countof_ns_aux<sizeof(a), sizeof(*(a))>(a))
+        #define countof_ns(a)  (_countof_ns_aux<sizeof(a), sizeof((a)[0])>(a))
     #elif _COUNTOF_NS_USE_STUB
         #warning "There is no correct implementation in pure C++ (wait C++26?)"
         #define countof_ns(a)  (_countof_ns_unsafe(a))
@@ -308,7 +314,7 @@
             // For VLA clip template arguments to constexpr 0
         #define _countof_ns_fix(a)  (_countof_ns_aux<\
                              _countof_ns_2cexp((a), sizeof(a)), \
-                             _countof_ns_2cexp((a), sizeof(*(a)))>(a))
+                             _countof_ns_2cexp((a), sizeof((a)[0]))>(a))
 
         #if 0   // !HAVE_STRANGE_BUILTIN_CONSTANT_P_CXX
                 // Clang/GNU/LCC/NHPC (pgcc Nvidia HPC) - work fine
