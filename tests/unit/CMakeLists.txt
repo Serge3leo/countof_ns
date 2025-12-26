@@ -53,8 +53,13 @@ function (process_params params)
         elseif (etgt MATCHES "[.]bltn")
             target_compile_definitions(${tgt} PRIVATE ${inc}
                                        "_COUNTOF_NS_WANT_VLA_BUILTIN")
-            target_compile_options(${tgt} PRIVATE
-                    ${countof_ns_builtin_options_${CMAKE_C_COMPILER_ID}})
+            if (base MATCHES "_cxx")
+                target_compile_options(${tgt} PRIVATE
+                    ${countof_ns_builtin_cxx_options_${CMAKE_CXX_COMPILER_ID}})
+            else ()
+                target_compile_options(${tgt} PRIVATE
+                    ${countof_ns_builtin_c_options_${CMAKE_C_COMPILER_ID}})
+            endif ()
             set(vla_fail_regex "_COUNTOF_NS_VLA_UNSUPPORTED")
         else ()
             set(vla_fail_regex "_COUNTOF_NS_WANT_VLA_")

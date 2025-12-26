@@ -56,28 +56,28 @@
 //            tests/autoconf/no_have_broken_vla_cxx.cpp && ./a.out
 //
 
-#if !defined(HAVE_VLA) && !__STDC_NO_VLA__
-    #define HAVE_VLA  (1)
-#endif
-#if !defined(HAVE_BROKEN_VLA) && \
-    (defined(__NVCOMPILER) || defined(__POCC__))
-    #define HAVE_BROKEN_VLA  (1)
-#endif
-#if HAVE_VLA && HAVE_BROKEN_VLA
-    #undef HAVE_VLA
-#endif
-#if !defined(HAVE_VLA_CXX) && !_MSC_VER
-    #define HAVE_VLA_CXX  (1)
-#endif
-#if !defined(HAVE_BROKEN_VLA_CXX) && defined(__NVCOMPILER)
-    #define HAVE_BROKEN_VLA_CXX  (1)
-#endif
-#if HAVE_VLA_CXX && HAVE_BROKEN_VLA_CXX
-    #undef HAVE_VLA_CXX
-#endif
-
 #include "countof_ns.h"
 #include "short_example.h"
+
+#if __cplusplus
+    #if !defined(HAVE_BROKEN_VLA) && \
+        (defined(__NVCOMPILER) || defined(__POCC__))
+        #define HAVE_BROKEN_VLA  (1)
+    #endif
+    #if !__STDC_NO_VLA__ && !HAVE_BROKEN_VLA && !_COUNTOF_NS_VLA_UNSUPPORTED
+        #define EXAMPLE_VLA  (1)
+    #endif
+#else
+    #if !defined(HAVE_VLA_CXX) && !_MSC_VER
+        #define HAVE_VLA_CXX  (1)
+    #endif
+    #if !defined(HAVE_BROKEN_VLA_CXX) && defined(__NVCOMPILER)
+        #define HAVE_BROKEN_VLA_CXX  (1)
+    #endif
+    #if HAVE_VLA_CXX && !HAVE_BROKEN_VLA_CXX && !_COUNTOF_NS_VLA_UNSUPPORTED
+        #define EXAMPLE_VLA  (1)
+    #endif
+#endif
 
 static void zla_example(void) {
 #ifdef HAVE_ZLA
@@ -214,7 +214,7 @@ static void zla_example(void) {
 }
 
 static void vla_example() {
-#if (HAVE_VLA || HAVE_VLA_CXX) && !_COUNTOF_NS_VLA_UNSUPPORTED
+#if EXAMPLE_VLA
     size_t fail = 0;
     size_t ba = 42;
     size_t fa = 56;
@@ -341,7 +341,7 @@ static void countof_example() {
         static_assert(countof(z2) == countof_ns(z2));
         static_assert(countof(z3) == 5);  // But countof_ns() - compile error
 
-        #if (HAVE_VLA || HAVE_VLA_CXX) && !_COUNTOF_NS_VLA_UNSUPPORTED
+        #if EXAMPLE_VLA
             const size_t n = 0;
             const size_t f = 5;
             int vz1[n][n];
@@ -354,7 +354,7 @@ static void countof_example() {
             assert(0 == countof_ns(vz3));  // zero-by-zero indeterminate for VLA
         #endif
     #endif
-    #if (HAVE_VLA || HAVE_VLA_CXX) && !_COUNTOF_NS_VLA_UNSUPPORTED
+    #if EXAMPLE_VLA
         const size_t d = 2;
         int v[d];
 
