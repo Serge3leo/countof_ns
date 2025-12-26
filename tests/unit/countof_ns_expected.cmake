@@ -89,6 +89,20 @@ function (tu_countof_ns_expected expected pos_pos neg_pos)
                              neg_base "${neg_base}")
     endif ()
 
+    if (MSVC)
+        list(PREPEND pos_base "chk_countof_ns_default_gen"
+                              "chk_countof_ns_default_tmpl_cxx")
+    elseif (CMAKE_C_COMPILER_ID STREQUAL SunPro)
+        list(PREPEND pos_base "chk_countof_ns_default_gen"
+                              "chk_countof_ns_default_bltn_cxx")
+    elseif (CMAKE_C_COMPILER_ID STREQUAL Pelles)  # TODO: Not cmake module
+        list(PREPEND pos_base "chk_countof_ns_default_c11")
+    else ()
+        list(PREPEND pos_base "chk_countof_ns_default_bltn"
+                              "chk_countof_ns_default_bltn_cxx")
+    endif()
+
+
     set(${expected} "${pos_base};${neg_base}" PARENT_SCOPE)
 endfunction ()
 
