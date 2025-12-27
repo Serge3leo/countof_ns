@@ -143,6 +143,13 @@ class MdTable:
             self.add_keys(keys)
             prev = None
             for r in table:
+                # Skip empty rows
+                for c in r:
+                    if r[c].strip():
+                        break
+                else:
+                    continue
+                # Inherit empty keys from prevision row
                 for k in keys:
                     if k in r:
                         r[k] = r[k].strip()
