@@ -1,9 +1,15 @@
 // vim:set sw=4 ts=8 et fileencoding=utf8:
 #define N  (7)
 #if !__cplusplus
-    static size_t nf_foo(int a[static N]) {
-        return TU_COUNTOF(a);
-    }
+    #if !_MSC_VER
+        static size_t nf_foo(int a[static N]) {
+            return TU_COUNTOF(a);
+        }
+    #else
+        static size_t nf_foo(int a[N]) {
+            return TU_COUNTOF(a);
+        }
+    #endif
 #else
     static size_t nf_foo(int a[N]) {
         return TU_COUNTOF(a);
