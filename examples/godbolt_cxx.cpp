@@ -20,12 +20,9 @@
 
 #include <stdio.h>  // clang-14 conflict with own libc++
 
-#if HAVE_VLA_CXX
-    #include <assert.h>
-#endif
+#include <cassert>
+#include <vector>
 #if __cplusplus >= 201703L || __cpp_lib_nonmember_container_access >= 201411L
-    #include <vector>
-
     #define std_size_compare(e)  static_assert(e)
     #define std_size(a)  (std::size(a))
 #else
@@ -187,6 +184,8 @@ int main(void) {
 
         printf("VLA - Ok\n");
     #endif
+    std::vector<int> vec(1917);
+    assert(1917 == countof_ns(vec));
     #ifndef EXAMPLE_FAIL
         printf("Ok");
     #else

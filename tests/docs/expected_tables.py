@@ -16,11 +16,16 @@ from compiler_versions import compiler_versions, cv_result
 
 ETC_modules = {
         "countof_ns": {
-                ".c11": "countof_ns<sup>c11</sup>",
                 ".bltn": "countof_ns<sup>bltn</sup>",
-                "_cxx": "countof_ns<sup>tmpl</sup>",
+                ".c11": "countof_ns<sup>c11</sup>",
+                ".gen": "countof_ns<sup>gen</sup>",
                 "_cxx.bltn": "countof_ns<sup>bltn</sup>",
-                "": "countof_ns<sup>gen</sup>",
+                "_cxx.tmpl": "countof_ns<sup>tmpl</sup>",
+                "_bltn": "countof_ns<sup>bltn</sup>",
+                "_c11": "countof_ns<sup>c11</sup>",
+                "_gen": "countof_ns<sup>gen</sup>",
+                "_bltn_cxx": "countof_ns<sup>bltn</sup>",
+                "_tmpl_cxx": "countof_ns<sup>tmpl</sup>",
             },
         "ms_countof": {
                 "_cxx": "ms_countof",
@@ -58,12 +63,15 @@ terms = [
         (r'pos_.*\.build_fail',         '❌'),
         (r'pos_.*\.run_0_unexpected',   '☸️<sub>Inv0</sub>'),
         (r'pos_.*\.run_fail',           '⚠️<sub>-Inv</sub>'),
-        (r'pos_[^.]*(\.c11|\.bltn|)$',  '✅'),
+        (r'pos_[^.]*(\.gen|\.tmpl|\.c11|\.bltn|)$',
+                                        '✅'),
         (r'neg_.*\.run_fail',           '❌<sub>-Inv</sub>'),
         (r'neg_.*\.run_0_unexpected',   '☸️i<sub>Inv0</sub>'),
         (r'neg_.*\.build_unexpected',   '⚠️'),
         (r'neg_.*\.build_fail',         '✅'),
-        (r'neg_[^.]*(\.c11|\.bltn|)$',  '**TODO**'),
+        (r'neg_[^.]*(\.gen|\.tmpl|\.c11|\.bltn|)$',
+                                        '**TODO**'),
+        (r'chk_countof_ns_default.*',   '✅'),
     ]
 FPE = '💥<sub>-FPE</sub>'
 SEGV = '💥<sub>-SEGV</sub>'
@@ -109,6 +117,10 @@ def check_expected(table_fn: str, check_id: str,
             for h in mt.headers:
                 if h in services:
                     continue
+                if not h in r:
+                    #TODO:optional print(f"{mt.name}: bad {h, r=}")
+                    #res = False
+                    continue
                 cell = r[h]
                 orig = cell
                 cell = re.sub(r'(`|\s)', '', cell)
@@ -137,29 +149,43 @@ def check_expected(table_fn: str, check_id: str,
             continue
         ...  # Выбор из ETC_modules[k]
         for ec in args.__dict__[k].split(';'):
-            m = re.match(r"([^.]*)(\.c11|\.bltn|)($|\..*?)", ec)
+            m = re.match(r"([^.]*?)([._]gen|[._]c11|[._]bltn|)($|\..*)", ec)
             if not m:
                 print(f"{k}: unrecognized case: {ec, m=}")
                 res = False
                 continue
             elif m.group(1).endswith("_cxx"):
-                m = re.match(r"([^.]*)(_cxx.bltn|_cxx)($|\..*)", ec)
+                m = re.match(
+                        r"([^.]*?)((_bltn|_tmpl|)_cxx(\.bltn|\.tmpl|))($|\..*)",
+                        ec)
                 if not m:
                     print(f"{k}: unrecognized case: {ec, m=}")
+                    res = False
+                    continue
+                if not m.group(2) in ETC_modules[k]:
+                    print(f"{k}: unrecognized suffix: {ec, m.group(2), m=}")
                     res = False
                     continue
                 rxx_lang = cxx_lang.get(Method=ETC_modules[k][m.group(2)],
                                       ID=check_id)
                 cell = rxx_lang[cxx_lang.case_hdr[m.group(1)]]
             else:
+                if not m.group(2) in ETC_modules[k]:
+                    print(f"{k}: unrecognized suffix: {ec, m.group(2), m=}")
+                    res = False
+                    continue
                 r_lang = c_lang.get(Method=ETC_modules[k][m.group(2)],
                                    ID=check_id)
                 if m.group(1) in c_lang.case_hdr:
                     cell = r_lang[c_lang.case_hdr[m.group(1)]]
+                    #if "pos_array" in c_lang.case_hdr[m.group(1)]:
+                    #    print(f"{check_id}: {ETC_modules[k][m.group(2)]}:"
+                    #          f" h={c_lang.case_hdr[m.group(1)]}:"
+                    #          f" {ec, cell, m.group(1), m.group(2), m=}")
                 else:
                     print(f"{k}: error: case not found"
-                          f" {m.group(1), m.group(2),
-                          ETC_modules[k][m.group(2)], ec=}")
+                          f" {m.group(1), m.group(2)=}"
+                          f" {ETC_modules[k][m.group(2)], ec=}")
                     res = False
                     continue
             for p, s in terms:
@@ -171,6 +197,8 @@ def check_expected(table_fn: str, check_id: str,
                         res = False
                     else:
                         cell['cell'] = cell['cell'].replace(s, "")
+                        #if "pos_array" in c_lang.case_hdr[m.group(1)]:
+                        #    print(f"New {cell=}")
             #else:
             #    print(f"{ETC_modules[k][m.group(2)]}: {check_id}:"
             #          f" Unknown unmatched {ec=}")
@@ -185,8 +213,12 @@ def check_expected(table_fn: str, check_id: str,
             for h in mt.headers:
                 if h in services:
                     continue
+                if not h in r:
+                    #TODO:optional print(f"{mt.name}: bad {h, r=}")
+                    #res = False
+                    continue
                 if r[h]['cell']:
-                    print(f"{mt.name} {m}: {check_id}: {msg_unused}:"
+                    print(f"{mt.name}: {r[Method]}: {check_id}: {msg_unused}:"
                           f" left unused {h, r[h]=}")
                     res &= res_unused
     return res

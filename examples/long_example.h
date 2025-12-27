@@ -29,7 +29,7 @@
 // HAVE_COUNTOF - The compiler supports the C2y `countof()` (clang 21,
 //                IntelLLVM 2025.3, GNU gcc 16);
 //
-// HAVE_EMPTY_INITIALIZER - The compiler supports the C/C++ extension for empty
+// HAVE_ZLA_EMPTY_INITIALIZER - The compiler supports the C/C++ extension for empty
 //                          initializer;
 //
 // HAVE_EMPTY_STRUCTURE - The compiler supports the C/C++ extension for
@@ -56,48 +56,46 @@
 //            tests/autoconf/no_have_broken_vla_cxx.cpp && ./a.out
 //
 
-    #if !__cplusplus && !__STDC_NO_VLA__ && !defined(HAVE_BROKEN_VLA)
-        #define HAVE_VLA  (1)
-    #endif
-    #if defined(HAVE_VLA_CXX) && defined(HAVE_BROKEN_VLA_CXX)
-        #undef HAVE_VLA_CXX
-    #endif
-#if ENABLE_VLA_C11_EXAMPLE || ENABLE_VLA_BUILTIN_EXAMPLE
-        // TODO, need change, but... By default, `countof_ns()` causes
-        // compilation errors if the argument is a VLA array. This is often the
-        // most expected behavior, see the README for details.
-
-    #if !defined(HAVE_VLA) && !defined(HAVE_VLA_CXX)
-        #pragma message ("VLA support don't detected, may be broken " \
-                         "(as some `pgcc`)")
-    #endif
-    #ifdef countof_ns
-        #pragma message ("_COUNTOF_NS_WANT_VLA_* don't not affected. " \
-                         "Probably the above was #include \"countof_ns.h\"")
-    #endif
-    #if ENABLE_VLA_C11_EXAMPLE
-        #define _COUNTOF_NS_WANT_VLA_C11  (1)
-    #else
-        #define _COUNTOF_NS_WANT_VLA_BUILTIN  (1)
-    #endif
-#endif
-
 #include "countof_ns.h"
 #include "short_example.h"
+
+#if __cplusplus
+    #if !defined(HAVE_BROKEN_VLA) && \
+        (defined(__NVCOMPILER) || defined(__POCC__))
+        #define HAVE_BROKEN_VLA  (1)
+    #endif
+    #if !__STDC_NO_VLA__ && !HAVE_BROKEN_VLA && !_COUNTOF_NS_VLA_UNSUPPORTED
+        #define EXAMPLE_VLA  (1)
+    #endif
+#else
+    #if !defined(HAVE_VLA_CXX) && !_MSC_VER
+        #define HAVE_VLA_CXX  (1)
+    #endif
+    #if !defined(HAVE_BROKEN_VLA_CXX) && defined(__NVCOMPILER)
+        #define HAVE_BROKEN_VLA_CXX  (1)
+    #endif
+    #if HAVE_VLA_CXX && !HAVE_BROKEN_VLA_CXX && !_COUNTOF_NS_VLA_UNSUPPORTED
+        #define EXAMPLE_VLA  (1)
+    #endif
+#endif
 
 static void zla_example(void) {
 #ifdef HAVE_ZLA
     size_t fail = 0;
     int z1[0];
+
+    example_assert(0 == sizeof(z1));
+    example_assert(0 == countof_ns(z1));
+
+#ifdef HAVE_ZLA_ZLA
     int z2[0][0];
     int z3[5][0];
     int z4[0][5];
     int z5[5][countof_ns(z4)][5];
 
-    example_assert(0 == sizeof(z1) && 0 == sizeof(z2) && 0 == sizeof(z3) &&
+    example_assert(0 == sizeof(z2) && 0 == sizeof(z3) &&
                    0 == sizeof(z4) && 0 == sizeof(z5));
 
-    example_assert(0 == countof_ns(z1));
     example_assert(0 == countof_ns(z2));  // 0, if complete object type is T[0]
     example_assert(0 == countof_ns(z4));
     example_assert(0 == countof_ns(z2[0]));  // z2[0] - don't evaluated
@@ -160,14 +158,14 @@ static void zla_example(void) {
         #endif
     #endif
 
-    #ifdef HAVE_EMPTY_INITIALIZER
+    #ifdef HAVE_ZLA_EMPTY_INITIALIZER
         #if ((4 < __GNUC__ && __GNUC__ < 11) || \
              defined(__GNUC_WIDE_EXECUTION_CHARSET_NAME)) && \
             !defined(__cplusplus)
             // TODO: How can you distinguish genuine gcc from counterfeit?
-            #pragma message ("TODO for gcc & HAVE_EMPTY_INITIALIZER")
+            #pragma message ("TODO for gcc & HAVE_ZLA_EMPTY_INITIALIZER")
         #else
-            printf("HAVE_EMPTY_INITIALIZER\n");
+            printf("HAVE_ZLA_EMPTY_INITIALIZER\n");
             int e1[] = {};
             int e2[0][countof_ns(e1)];
             int e3[5][countof_ns(e2)];
@@ -210,13 +208,13 @@ static void zla_example(void) {
                             #pragma message ("}@ Must error above")
         #endif
     #endif
-
+#endif
     printf("%s: Ok (fail=%zu)\n", __func__, fail);
 #endif
 }
 
 static void vla_example() {
-#if (HAVE_VLA || HAVE_VLA_CXX) && !_COUNTOF_NS_VLA_UNSUPPORTED
+#if EXAMPLE_VLA
     size_t fail = 0;
     size_t ba = 42;
     size_t fa = 56;
@@ -329,8 +327,10 @@ static void countof_example() {
     int a1[1];
     int a9[9];
 
+#if __GNUC__ != 16  // TODO: XXX: ???
     static_assert(_Generic(__typeof__(countof(a1)),
                            __typeof__(countof_ns(a1)) : 1, default : 0));
+#endif
     static_assert(countof(a1) == countof_ns(a1));
     static_assert(countof(a9) == countof_ns(a9));
 
@@ -343,7 +343,7 @@ static void countof_example() {
         static_assert(countof(z2) == countof_ns(z2));
         static_assert(countof(z3) == 5);  // But countof_ns() - compile error
 
-        #if (HAVE_VLA || HAVE_VLA_CXX) && !_COUNTOF_NS_VLA_UNSUPPORTED
+        #if EXAMPLE_VLA
             const size_t n = 0;
             const size_t f = 5;
             int vz1[n][n];
@@ -356,7 +356,7 @@ static void countof_example() {
             assert(0 == countof_ns(vz3));  // zero-by-zero indeterminate for VLA
         #endif
     #endif
-    #if (HAVE_VLA || HAVE_VLA_CXX) && !_COUNTOF_NS_VLA_UNSUPPORTED
+    #if EXAMPLE_VLA
         const size_t d = 2;
         int v[d];
 

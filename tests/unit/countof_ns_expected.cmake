@@ -6,25 +6,22 @@ function (tu_countof_ns_expected expected pos_pos neg_pos)
     set(pos_base "")
     foreach (b IN ITEMS ${pos_pos})
         if (b MATCHES "vla")
-            set(ints ${b}.build_fail ${b}.c11 ${b}.bltn ${b}_cxx.build_fail)
-            if (HAVE_IS_SAME_CXX OR HAVE_HIDDEN_IS_SAME_CXX)
-                list(APPEND ints ${b}_cxx.bltn)
-            endif ()
+            set(ints ${b}.gen.build_fail ${b}.c11 ${b}.bltn
+                     ${b}_cxx.tmpl.build_fail ${b}_cxx.bltn)
         elseif (NOT HAVE___STDC_NO_VLA__)
-            set(ints ${b} ${b}.c11 ${b}.bltn ${b}_cxx)
-            if (HAVE_IS_SAME_CXX OR HAVE_HIDDEN_IS_SAME_CXX)
-                list(APPEND ints ${b}_cxx.bltn)
-            endif ()
+            set(ints ${b}.gen ${b}.c11 ${b}.bltn
+                     ${b}_cxx.tmpl ${b}_cxx.bltn)
         else ()
-            set(ints ${b} ${b}_cxx)
+            # TODO: MSVC
+            set(ints ${b}.gen ${b}_cxx.tmpl)
         endif ()
         foreach (i IN ITEMS ${ints})
             if (i MATCHES "struct_n0_cxx")
                 list(APPEND pos_base ${i})
-            elseif (i MATCHES "_vla.*_n0" AND NOT i MATCHES "[.]build_fail")
+            elseif (i MATCHES "_vla.*_n0" AND NOT i MATCHES "\\.build_fail")
                 list(APPEND pos_base ${i}.run_0_unexpected)
             elseif (i MATCHES "_n0" AND NOT i MATCHES "_cxx" AND
-                    NOT i MATCHES "[.]build_fail")
+                    NOT i MATCHES "\\.build_fail")
                 list(APPEND pos_base ${i}.build_fail)
             else ()
                 list(APPEND pos_base ${i})
@@ -35,19 +32,18 @@ function (tu_countof_ns_expected expected pos_pos neg_pos)
     set(neg_base "")
     foreach (b IN ITEMS ${neg_pos})
         if (NOT HAVE___STDC_NO_VLA__)
-            set(ints ${b}.build_fail ${b}.c11.build_fail ${b}.bltn.build_fail
-                     ${b}_cxx.build_fail)
-            if (HAVE_IS_SAME_CXX OR HAVE_HIDDEN_IS_SAME_CXX)
-                list(APPEND ints ${b}_cxx.bltn.build_fail)
-            endif ()
+            set(ints ${b}.gen.build_fail ${b}.c11.build_fail
+                     ${b}.bltn.build_fail
+                     ${b}_cxx.tmpl.build_fail ${b}_cxx.bltn.build_fail)
         else ()
-            set(ints ${b}.build_fail ${b}_cxx.build_fail)
+            # TODO: MSVC
+            set(ints ${b}.gen.build_fail ${b}_cxx.tmpl.build_fail)
         endif ()
         if (NOT NO_ERROR_ON_SIZEOF_POINTER_SUBTRACTION)
             list(APPEND neg_base ${ints})
         else ()
             foreach (i IN ITEMS ${ints})
-                if (i MATCHES "[.]c11" AND
+                if (i MATCHES "\\.c11" AND
                     NOT i MATCHES "__selftest|_other")
                     list(APPEND neg_base ${b}.c11.build_unexpected
                                          ${b}.c11.run_fail)
@@ -57,32 +53,63 @@ function (tu_countof_ns_expected expected pos_pos neg_pos)
             endforeach ()
         endif ()
     endforeach ()
-    if (CMAKE_C_COMPILER_ID STREQUAL NVHPC OR
-        CMAKE_C_COMPILER_ID STREQUAL Intel OR
-        CMAKE_C_COMPILER_ID STREQUAL LCC)
+    if (CMAKE_CXX_COMPILER_ID STREQUAL GNU AND
+        CMAKE_CXX_COMPILER_VERSION MATCHES "^1[1-6]\\.")  # TODO: bug report
+        string(REGEX REPLACE "(pos_vla_(alone|zla)_[0n]0_cxx(\\.bltn|\\.tmpl))"
+                             "\\1.compiler_bug.disable"
+                             pos_base "${pos_base}")
+    endif ()
+    if ((CMAKE_CXX_COMPILER_ID STREQUAL Intel AND
+         CMAKE_CXX_COMPILER_VERSION MATCHES "^2021\\." ) OR
+        (CMAKE_CXX_COMPILER_ID STREQUAL LCC AND
+         CMAKE_CXX_COMPILER_VERSION MATCHES "^1\\.27\\.") OR
+        (CMAKE_CXX_COMPILER_ID STREQUAL NVHPC AND
+         CMAKE_CXX_COMPILER_VERSION MATCHES "^25\\.9\\." ))
+        string(REGEX REPLACE "(pos_vla_cv_cxx.bltn)" "\\1.compiler_bug"
+                             pos_base "${pos_base}")
+    endif ()
+    if (CMAKE_C_COMPILER_ID STREQUAL Intel OR
+        CMAKE_C_COMPILER_ID STREQUAL LCC OR
+        CMAKE_C_COMPILER_ID STREQUAL NVHPC)
             # TODO I don't understand. Why doesn't `_Generic()` reject a VLA
             # array?  Is this a peculiarity of the C language extensions only
             # for NVHPC (pgcc) and the classic Intel (icc)? Or is it the result
             # of optimizations?
-        string(REGEX REPLACE "(pos_vla_(struct|zla)_00)\.build_fail" "\\1"
+        string(REGEX REPLACE "(pos_vla_(struct|zla)_00\\.gen)\\.build_fail"
+                             "\\1"
                              pos_base "${pos_base}")
-        string(REGEX REPLACE "(pos_vla_(struct|zla)_n0)\.build_fail"
+        string(REGEX REPLACE "(pos_vla_(struct|zla)_n0\\.gen)\\.build_fail"
                              "\\1.run_fail"
                              pos_base "${pos_base}")
     endif ()
-    if (CMAKE_CXX_COMPILER_ID STREQUAL GNU AND
-        CMAKE_CXX_COMPILER_VERSION MATCHES "^1[1-5]\.")
-        string(REGEX REPLACE "(pos_vla_(alone|zla)_[0n]0_cxx(\.bltn|))"
+    if (CMAKE_C_COMPILER_ID STREQUAL NVHPC AND HAVE_BROKEN_VLA)
+        string(REGEX REPLACE "(pos_vla_func2d(\\.c11|\\.bltn|_cxx\\.bltn))"
+                             "\\1.run_fail.compiler_bug"
+                             pos_base "${pos_base}")
+    endif ()
+    if (CMAKE_C_COMPILER_ID STREQUAL SunPro)
+            # TODO I don't understand. Why?
+        string(REGEX REPLACE "(neg_alone_ptr\\.c11)\\.build_unexpected"
+                             "\\1.build_fail"
+                             neg_base "${neg_base}")
+        string(REGEX REPLACE "(pos_vla_func(|2d)_cxx\\.bltn)"
                              "\\1.compiler_bug"
                              pos_base "${pos_base}")
     endif ()
-    if ((CMAKE_CXX_COMPILER_ID STREQUAL NVHPC AND
-         CMAKE_CXX_COMPILER_VERSION MATCHES "^25\.9\." ) OR
-        (CMAKE_CXX_COMPILER_ID STREQUAL Intel AND
-         CMAKE_CXX_COMPILER_VERSION MATCHES "^2021\." ))
-        string(REGEX REPLACE "(pos_vla_cv_cxx.bltn)" "\\1.compiler_bug"
-                             pos_base "${pos_base}")
-    endif ()
+
+    if (MSVC)
+        list(PREPEND pos_base "chk_countof_ns_default_gen"
+                              "chk_countof_ns_default_tmpl_cxx")
+    elseif (CMAKE_C_COMPILER_ID STREQUAL SunPro)
+        list(PREPEND pos_base "chk_countof_ns_default_gen"
+                              "chk_countof_ns_default_bltn_cxx")
+    elseif (CMAKE_C_COMPILER_ID STREQUAL Pelles)  # TODO: Not cmake module
+        list(PREPEND pos_base "chk_countof_ns_default_c11")
+    else ()
+        list(PREPEND pos_base "chk_countof_ns_default_bltn"
+                              "chk_countof_ns_default_bltn_cxx")
+    endif()
+
 
     set(${expected} "${pos_base};${neg_base}" PARENT_SCOPE)
 endfunction ()
