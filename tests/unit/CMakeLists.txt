@@ -80,7 +80,11 @@ function (process_params params)
         set(div0re "[Dd]ivision.*[Bb]y.*[Zz]ero")
         set(pass_regexp "(${nxre})")
         set(fail_regexp "(${exre}|${fpere}|${segvre}|${div0re}|${nxre})")
-        if (etgt MATCHES "\\.compiler_bug")
+        if (etgt MATCHES "\\.disable")
+            set_target_properties(${tgt} PROPERTIES EXCLUDE_FROM_ALL TRUE)
+            add_test(NAME ${tgt} COMMAND ${tgt})
+            set_tests_properties(${tgt} PROPERTIES DISABLED TRUE)
+        elseif (etgt MATCHES "\\.compiler_bug")
             set_target_properties(${tgt} PROPERTIES EXCLUDE_FROM_ALL TRUE)
             add_test(NAME ${tgt}
                      COMMAND ${CMAKE_COMMAND}

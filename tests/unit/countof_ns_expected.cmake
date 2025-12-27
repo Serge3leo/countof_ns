@@ -56,7 +56,7 @@ function (tu_countof_ns_expected expected pos_pos neg_pos)
     if (CMAKE_CXX_COMPILER_ID STREQUAL GNU AND
         CMAKE_CXX_COMPILER_VERSION MATCHES "^1[1-6]\\.")  # TODO: bug report
         string(REGEX REPLACE "(pos_vla_(alone|zla)_[0n]0_cxx(\\.bltn|\\.tmpl))"
-                             "\\1.compiler_bug"
+                             "\\1.compiler_bug.disable"
                              pos_base "${pos_base}")
     endif ()
     if ((CMAKE_CXX_COMPILER_ID STREQUAL Intel AND

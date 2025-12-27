@@ -184,8 +184,8 @@ def check_expected(table_fn: str, check_id: str,
                     #          f" {ec, cell, m.group(1), m.group(2), m=}")
                 else:
                     print(f"{k}: error: case not found"
-                          f" {m.group(1), m.group(2),
-                          ETC_modules[k][m.group(2)], ec=}")
+                          f" {m.group(1), m.group(2)=}"
+                          f" {ETC_modules[k][m.group(2)], ec=}")
                     res = False
                     continue
             for p, s in terms:
