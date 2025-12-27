@@ -88,7 +88,12 @@ function (process_params params)
                         --target ${tgt}
                         --config "${CMAKE_BUILD_TYPE}"
                      WORKING_DIRECTORY ${CMAKE_BINARY_DIR})
-            set_tests_properties(${tgt} PROPERTIES WILL_FAIL TRUE)
+            set_tests_properties(${tgt} PROPERTIES
+                        WILL_FAIL TRUE
+                            # Fail to WILL_FAIL test - pass
+                        FAIL_REGULAR_EXPRESSION "${pass_regexp}"
+                            # Pass to WILL_FAIL test - fail
+                        PASS_REGULAR_EXPRESSION "${fail_regexp}")
         elseif (etgt MATCHES "\\.build_.*")
             if (etgt MATCHES "\\.build_.*\\.build_DIV0")
                 string(REPLACE "${div0re}|" "" fail_regexp "${fail_regexp}")

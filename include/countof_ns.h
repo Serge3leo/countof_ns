@@ -144,8 +144,13 @@
 #include <stddef.h>
 
     // Avoid uncertain zero-by-zero divide and warnings
-#define _countof_ns_unsafe(a)  (0 == sizeof(*(a)) ? 0 \
-            : sizeof(a)/( sizeof(*(a)) ? sizeof(*(a)) : (size_t)-1 ))
+#if __SUNPRO_C  // TODO: C/C++ or SunPro/others... ?
+    #define _countof_ns_unsafe(a)  (0 == sizeof(*(a)) ? 0 \
+                : sizeof(a)/( sizeof(*(a)) ? sizeof(*(a)) : (size_t)-1 ))
+#else
+    #define _countof_ns_unsafe(a)  (0 == sizeof((a)[0]) ? 0 \
+                : sizeof(a)/( sizeof((a)[0]) ? sizeof((a)[0]) : (size_t)-1 ))
+#endif
 
 #if !__cplusplus
     #if _COUNTOF_NS_REFUSE_VLA || __STDC_NO_VLA__
@@ -256,23 +261,26 @@
         #define _COUNTOF_NS_USE_BUILTIN  (1)
     #endif
 
-        // Count std::span and other containers
-    template<size_t A, size_t E, class C>
-    constexpr static auto _countof_ns_aux(const C& c) -> decltype(c.size()) {
-        return c.size();
-    }
-
         // Count of fixed size arrays, case: standard C++ array
     template<size_t A, size_t E, class T, size_t N>
     constexpr static size_t _countof_ns_aux(const T (&)[N]) noexcept {
         return N;
     }
-        // Count of fixed size arrays, case: extensions ZLA C++ array
-    template<size_t A, size_t E, class T>
-    constexpr static size_t _countof_ns_aux(const T (&)) noexcept {
-        static_assert(0 == A, "Argument must be zero-length array");
+        // Count of fixed size arrays, cases: container or C++ extensions ZLA
+    template<size_t A, size_t E, class C>
+    constexpr static size_t _countof_ns_aux(const C &c) {
+        if constexpr (A > 0) {  // TODO: C++ 17, convert to class
+            return c.size();
+        }
         return 0;
     }
+
+    template<bool Assert>
+    constexpr static size_t _countof_ns_0_if_assert() noexcept {
+        static_assert(Assert, "Must be array");
+        return 0;
+    }
+
     #if _COUNTOF_NS_USE_TEMPLATE
             // C++ with ZLA extension only
         #define _COUNTOF_NS_VLA_UNSUPPORTED  (1)
@@ -282,20 +290,15 @@
         #define countof_ns(a)  (_countof_ns_unsafe(a))
     #elif _COUNTOF_NS_USE_BUILTIN && !__SUNPRO_CC
             // C++ with VLA extension
-        template<bool cnd>
-        constexpr size_t _countof_ns_0_if_assert() noexcept {
-            static_assert(cnd, "Must be array");
-            return 0;
-        }
         #if __LCC__
             // #define _countof_ns_must_array(a)  (_countof_ns_0_if_assert<
             //                 !__is_same(__typeof__(&*(a)), __typeof__(a))>())
             #define _countof_ns_must_array(a)  (_countof_ns_0_if_assert< \
-                            !__is_same_as(decltype(&*(a)), decltype(a))>())
+                            !__is_same_as(decltype(&(a)[0]), decltype(a))>())
             #define _vla_countof_ns(a)  (_countof_ns_unsafe(a))
         #else
             #define _countof_ns_must_array(a)  (_countof_ns_0_if_assert< \
-                                !__is_same(decltype(&*(a)), decltype(a))>())
+                                !__is_same(decltype(&(a)[0]), decltype(a))>())
             #define _vla_countof_ns(a)  (_countof_ns_unsafe(a) + \
                                          _countof_ns_must_array(a))
         #endif
@@ -340,15 +343,18 @@
            // zero-length objects, particularly multidimensional ZLAs.
         #include <type_traits>
 
-        template<class T, class U>
-        constexpr size_t _countof_ns_0_not_same() noexcept {
-            static_assert(!std::is_same<T, U>::value, "Must be array");
-            return 0;
-        }
-        #define _countof_ns_must_array(a)  \
-                    (_countof_ns_0_not_same<decltype(&*(a)), decltype(a)>())
-        #define countof_ns(a)  (_countof_ns_unsafe(a) + \
-                                _countof_ns_must_array(a))
+        #define _countof_ns_must_array(a)  (_countof_ns_0_if_assert< \
+                    !std::is_same<decltype(&(a)[0]), decltype(a)>::value>())
+
+        template <
+            typename C,
+            typename std::enable_if<std::is_class<C>::value, bool>::type = true>
+        constexpr static auto _countof_ns_csize(const C& c) { return c.size(); }
+        constexpr static size_t _countof_ns_csize(...) { return 0; }
+
+        #define countof_ns(a)  (std::is_class<decltype(a)>::value \
+                    ? _countof_ns_csize(a) \
+                    : _countof_ns_unsafe(a) + _countof_ns_must_array(a))
     #endif
 #endif
 

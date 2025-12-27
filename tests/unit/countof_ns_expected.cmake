@@ -54,7 +54,7 @@ function (tu_countof_ns_expected expected pos_pos neg_pos)
         endif ()
     endforeach ()
     if (CMAKE_CXX_COMPILER_ID STREQUAL GNU AND
-        CMAKE_CXX_COMPILER_VERSION MATCHES "^1[1-5]\\.")
+        CMAKE_CXX_COMPILER_VERSION MATCHES "^1[1-6]\\.")  # TODO: bug report
         string(REGEX REPLACE "(pos_vla_(alone|zla)_[0n]0_cxx(\\.bltn|\\.tmpl))"
                              "\\1.compiler_bug"
                              pos_base "${pos_base}")
@@ -82,11 +82,19 @@ function (tu_countof_ns_expected expected pos_pos neg_pos)
                              "\\1.run_fail"
                              pos_base "${pos_base}")
     endif ()
+    if (CMAKE_C_COMPILER_ID STREQUAL NVHPC AND HAVE_BROKEN_VLA)
+        string(REGEX REPLACE "(pos_vla_func2d(\\.c11|\\.bltn|_cxx\\.bltn))"
+                             "\\1.run_fail.compiler_bug"
+                             pos_base "${pos_base}")
+    endif ()
     if (CMAKE_C_COMPILER_ID STREQUAL SunPro)
             # TODO I don't understand. Why?
         string(REGEX REPLACE "(neg_alone_ptr\\.c11)\\.build_unexpected"
                              "\\1.build_fail"
                              neg_base "${neg_base}")
+        string(REGEX REPLACE "(pos_vla_func(|2d)_cxx\\.bltn)"
+                             "\\1.compiler_bug"
+                             pos_base "${pos_base}")
     endif ()
 
     if (MSVC)

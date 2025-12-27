@@ -61,8 +61,8 @@
 #define _TU_STR1(S)  #S
 #define _TU_STR(S)  _TU_STR1(S)
 #define TU_REPORT()  do { \
-            printf("%s:%s:%s for %s:%s()%s, %s %s\n", \
-                    __FILE__, TU_UNIT_INC, _TU_STR(TU_UNIT), \
+            printf("%s:%d:%s:%s for %s:%s()%s, %s %s\n", \
+                    __FILE__, __LINE__, TU_UNIT_INC, _TU_STR(TU_UNIT), \
                     TU_COUNTOF_INC, _TU_STR(TU_COUNTOF_FUNC), \
                     TU_C11_VLA, TU_LANG, _TU_STR(TU_LVER)); \
         } while(0)
@@ -87,11 +87,13 @@
 // Positive tests
 
 #define _TU_ASSERT_AND_RETURN(method, desired, computed)  do { \
-            if ((desired) == (computed)) { \
+            size_t _d_ = (desired); \
+            size_t _c_ = (computed); \
+            if (_d_ == _c_) { \
                 /* clang/icx */ \
                 /* For UB (divide zero, etc) won't choose this branch. */ \
                 printf("Ok %zu %s(%s=%zu, ...) ", \
-                       (computed), (method), (#desired), (size_t)(desired)); \
+                       _c_, (method), (#desired), _d_); \
                 TU_REPORT(); \
                 exit(EXIT_SUCCESS); \
             } \
