@@ -53,6 +53,38 @@ function (tu_countof_ns_expected expected pos_pos neg_pos)
             endforeach ()
         endif ()
     endforeach ()
+
+    # Check defaults by _COUNTOF_NS_VLA_UNSUPPORTED/_COUNTOF_NS_USE_GENERIC/...
+
+    if (MSVC)
+        list(PREPEND pos_base "countof_ns_chk_default_gen"
+                              "countof_ns_chk_default_tmpl_cxx")
+    elseif (CMAKE_C_COMPILER_ID STREQUAL SunPro)
+        list(PREPEND pos_base "countof_ns_chk_default_gen"
+                              "countof_ns_chk_default_bltn_cxx")
+    elseif (CMAKE_C_COMPILER_ID STREQUAL Pelles)  # TODO: Not cmake module
+        list(PREPEND pos_base "countof_ns_chk_default_c11")
+    else ()
+        list(PREPEND pos_base "countof_ns_chk_default_bltn"
+                              "countof_ns_chk_default_bltn_cxx")
+    endif()
+
+    # Check internal or example user defined _countof_ns_ptr_compatible_type()
+
+    file(GLOB pct_hdr RELATIVE "${CMAKE_CURRENT_LIST_DIR}"
+         "${CMAKE_CURRENT_LIST_DIR}/countof_ns_*_ptr_compatible_type.h")
+
+    foreach (cc IN ITEMS ${pct_hdr})
+        get_filename_component(c ${cc} NAME_WLE)
+        if ("${c}" MATCHES "_pos_")
+            list(PREPEND pos_base "${c}.bltn")
+        else ()
+            list(PREPEND neg_base "${c}.bltn.run_fail")
+        endif ()
+    endforeach ()
+
+    # Compilers bug and other features
+
     if (CMAKE_CXX_COMPILER_ID STREQUAL GNU AND
         CMAKE_CXX_COMPILER_VERSION MATCHES "^1[1-6]\\.")  # TODO: bug report
         string(REGEX REPLACE "(pos_vla_(alone|zla)_[0n]0_cxx(\\.bltn|\\.tmpl))"
@@ -96,20 +128,6 @@ function (tu_countof_ns_expected expected pos_pos neg_pos)
                              "\\1.compiler_bug"
                              pos_base "${pos_base}")
     endif ()
-
-    if (MSVC)
-        list(PREPEND pos_base "chk_countof_ns_default_gen"
-                              "chk_countof_ns_default_tmpl_cxx")
-    elseif (CMAKE_C_COMPILER_ID STREQUAL SunPro)
-        list(PREPEND pos_base "chk_countof_ns_default_gen"
-                              "chk_countof_ns_default_bltn_cxx")
-    elseif (CMAKE_C_COMPILER_ID STREQUAL Pelles)  # TODO: Not cmake module
-        list(PREPEND pos_base "chk_countof_ns_default_c11")
-    else ()
-        list(PREPEND pos_base "chk_countof_ns_default_bltn"
-                              "chk_countof_ns_default_bltn_cxx")
-    endif()
-
 
     set(${expected} "${pos_base};${neg_base}" PARENT_SCOPE)
 endfunction ()

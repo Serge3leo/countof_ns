@@ -43,7 +43,7 @@ These tables are a visualization of the expected results of unit tests:
 ### `countof_ns()`
 <!-- span: "c" keys: "Method", "ID" -->
 
-| Method                    | ID        | `chk_countof_ns_default`     | `pos_array`     | `pos_cv_array`       | `neg_ptr`          | `neg_cv_ptr`       | `neg_other`     | `pos_vla`     | `pos_vla_cv`          | `neg_vla_ptr`      | `pos_func`     | `neg_func`         | `pos_vla_func`     | `pos_vla_func2d`     | `neg_vla_func`     | ID        | `pos__selftest`     | `neg__selftest`     |
+| Method                    | ID        | `countof_ns_chk_default`     | `pos_array`     | `pos_cv_array`       | `neg_ptr`          | `neg_cv_ptr`       | `neg_other`     | `pos_vla`     | `pos_vla_cv`          | `neg_vla_ptr`      | `pos_func`     | `neg_func`         | `pos_vla_func`     | `pos_vla_func2d`     | `neg_vla_func`     | ID        | `pos__selftest`     | `neg__selftest`     |
 | ------------------------- | --------- | ---------------------------- | --------------- | -------------------- | ------------------ | ------------------ | --------------- | ------------- | --------------------- | ------------------ | -------------- | ------------------ | ------------------ | -------------------- | ------------------ | --------- | ------------------- | ------------------- |
 | &nbsp;                    | e.g.:     |                              | `array[N]`      | `const array[N]`<br> | `*ptr`             | `const *ptr`<br>   | other<br>       | `VLA[n]`<br>  | `volatile VLA[n]`<br> | `(*VLA)[n]`<br>    |                |                    |                    |                      |                    | &nbsp;    |                     |                     |
 |                           |           |                              |                 |                      |                    |                    |                 |               |                       |                    |                |                    |                    |                      |                    |           |                     |                     |
@@ -79,7 +79,7 @@ These tables are a visualization of the expected results of unit tests:
 |                           | Pelles    |                              |                 |                      |                    |                    |                 |               |                       |                    |                |                    |                    |                      |                    | PellesC   |                     |                     |
 |                           | PGI       |                              |                 |                      |                    |                    |                 |               |                       |                    |                |                    |                    |                      |                    | PGI       |                     |                     |
 |                           | SunPro    | ✅⚠️<sub>TODO</sub>           | ✅               | ✅                    | ✅                  | ✅                  | ✅               | ❌             | ❌                     | ✅                  | ✅              | ✅                  | ❌                  | ❌                    | ✅                  | SunPro    | ✅                   | ✅                   |
-| &nbsp;                    | **Hdrs:** | **`chk_countof_ns_default`** | **`pos_array`** | **`pos_cv_array`**   | **`neg_ptr`**      | **`neg_cv_ptr`**   | **`neg_other`** | **`pos_vla`** | **`pos_vla_cv`**      | **`neg_vla_ptr`**  | **`pos_func`** | **`neg_func`**     | **`pos_vla_func`** | **`pos_vla_func2d`** | **`neg_vla_func`** | &nbsp;    | **`pos__selftest`** | **`neg__selftest`** |
+| &nbsp;                    | **Hdrs:** | **`countof_ns_chk_default`** | **`pos_array`** | **`pos_cv_array`**   | **`neg_ptr`**      | **`neg_cv_ptr`**   | **`neg_other`** | **`pos_vla`** | **`pos_vla_cv`**      | **`neg_vla_ptr`**  | **`pos_func`** | **`neg_func`**     | **`pos_vla_func`** | **`pos_vla_func2d`** | **`neg_vla_func`** | &nbsp;    | **`pos__selftest`** | **`neg__selftest`** |
 <!-- endspan: "c" -->
 ### Comparisons
 <!-- span: "c" keys: "Method", "ID" -->
@@ -207,7 +207,7 @@ These tables are a visualization of the expected results of unit tests:
 ### `countof_ns()`
 <!-- span: "c++" keys: "Method", "ID" -->
 
-| Method                    | ID        | `chk_countof_ns_default`     | `pos_array`     | `pos_cv_array`       | `neg_ptr`     | `neg_cv_ptr`     | `neg_other`     | `pos_func`     | `neg_func`     |           | `pos__selftest`     | `neg__selftest`     |
+| Method                    | ID        | `countof_ns_chk_default`     | `pos_array`     | `pos_cv_array`       | `neg_ptr`     | `neg_cv_ptr`     | `neg_other`     | `pos_func`     | `neg_func`     |           | `pos__selftest`     | `neg__selftest`     |
 | ------------------------- | --------- | ---------------------------- | --------------- | -------------------- | ------------- | ---------------- | --------------- | -------------- | -------------- | --------- | ------------------- | ------------------- |
 | &nbsp;                    | e.g.:     |                              | `array[N]`      | `const array[N]`<br> | `*ptr`        | `const *ptr`<br> | other<br>       |                |                |           |                     |                     |
 |                           |           |                              |                 |                      |               |                  |                 |                |                |           |                     |                     |
@@ -230,7 +230,7 @@ These tables are a visualization of the expected results of unit tests:
 |                           | NVHPC     |                              | ✅               | ✅                    | ✅             | ✅                | ✅               | ✅              | ✅              | NVHPC     | ✅                   | ✅                   |
 |                           | PGI       |                              |                 |                      |               |                  |                 |                |                | PGI       |                     |                     |
 |                           | SunPro    |                              | ✅               | ✅                    | ✅             | ✅                | ✅               | ✅              | ✅              | SunPro    | ✅                   | ✅                   |
-| &nbsp;                    | **Hdrs:** | **`chk_countof_ns_default`** | **`pos_array`** | **`pos_cv_array`**   | **`neg_ptr`** | **`neg_cv_ptr`** | **`neg_other`** | **`pos_func`** | **`neg_func`** |           | **`pos__selftest`** | **`neg__selftest`** |
+| &nbsp;                    | **Hdrs:** | **`countof_ns_chk_default`** | **`pos_array`** | **`pos_cv_array`**   | **`neg_ptr`** | **`neg_cv_ptr`** | **`neg_other`** | **`pos_func`** | **`neg_func`** |           | **`pos__selftest`** | **`neg__selftest`** |
 <!-- endspan: "c++" -->
 ### Comparisons
 <!-- span: "c++" keys: "Method", "ID" -->
