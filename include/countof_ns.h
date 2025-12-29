@@ -153,16 +153,19 @@
 #endif
 
 #if !__cplusplus
-    #if _COUNTOF_NS_REFUSE_VLA || __STDC_NO_VLA__
-        #define _COUNTOF_NS_USE_GENERIC  (1)
-    #elif _COUNTOF_NS_WANT_VLA_C11 || _COUNTOF_NS_WANT_STDC
+    #if _COUNTOF_NS_WANT_VLA_C11 || _COUNTOF_NS_WANT_STDC
         #define _COUNTOF_NS_USE_SUBTRACTION  (1)
-    #elif _COUNTOF_NS_WANT_VLA_BUILTIN || \
-          defined(_countof_ns_ptr_compatible_type)
+    #elif _COUNTOF_NS_WANT_VLA_BUILTIN
         #define _COUNTOF_NS_USE_BUILTIN  (1)
-    #elif __SUNPRO_C
-        #warning "For SunPro, you must define either _COUNTOF_NS_REFUSE_VLA or _countof_ns_ptr_compatible_type(p, type)"
+    #elif _COUNTOF_NS_REFUSE_VLA || __STDC_NO_VLA__
         #define _COUNTOF_NS_USE_GENERIC  (1)
+    #elif __SUNPRO_C
+        #ifdef _countof_ns_ptr_compatible_type
+            #define _COUNTOF_NS_USE_BUILTIN  (1)
+        #else
+            #define _COUNTOF_NS_USE_GENERIC  (1)
+            #warning "For SunPro, you must define either _COUNTOF_NS_REFUSE_VLA or _countof_ns_ptr_compatible_type(p, type)"
+        #endif
     #elif __POCC__
         #define _COUNTOF_NS_USE_SUBTRACTION  (1)
     #else

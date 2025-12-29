@@ -71,7 +71,7 @@ terms = [
         (r'neg_.*\.build_fail',         '✅'),
         (r'neg_[^.]*(\.gen|\.tmpl|\.c11|\.bltn|)$',
                                         '**TODO**'),
-        (r'chk_countof_ns_default.*',   '✅'),
+        (r'cntfn_dflt_.*',              '✅'),
     ]
 FPE = '💥<sub>-FPE</sub>'
 SEGV = '💥<sub>-SEGV</sub>'
@@ -179,7 +179,8 @@ def check_expected(table_fn: str, check_id: str,
                 if m.group(1) in c_lang.case_hdr:
                     cell = r_lang[c_lang.case_hdr[m.group(1)]]
                     #if "pos_array" in c_lang.case_hdr[m.group(1)]:
-                    #    print(f"{check_id}: {ETC_modules[k][m.group(2)]}:"
+                    #if "cntfn_dflt" in ec:
+                    #    print(f"Found {check_id}: {ETC_modules[k][m.group(2)]}:"
                     #          f" h={c_lang.case_hdr[m.group(1)]}:"
                     #          f" {ec, cell, m.group(1), m.group(2), m=}")
                 else:
@@ -198,6 +199,7 @@ def check_expected(table_fn: str, check_id: str,
                     else:
                         cell['cell'] = cell['cell'].replace(s, "")
                         #if "pos_array" in c_lang.case_hdr[m.group(1)]:
+                        #if "cntfn_dflt" in ec:
                         #    print(f"New {cell=}")
             #else:
             #    print(f"{ETC_modules[k][m.group(2)]}: {check_id}:"

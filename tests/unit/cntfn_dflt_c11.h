@@ -5,6 +5,9 @@ size_t TU_UNIT(void) {
     #ifndef _COUNTOF_NS_USE_SUBTRACTION
         #error "_COUNTOF_NS_USE_SUBTRACTION don't default"
         assert(0);
+    #elif defined(_COUNTOF_NS_VLA_UNSUPPORTED)
+        #error "Defined _COUNTOF_NS_VLA_UNSUPPORTED"
+        assert(0);
     #else
         TU_STATIC_ASSERT_AND_RETURN(1, sizeof(char));
     #endif

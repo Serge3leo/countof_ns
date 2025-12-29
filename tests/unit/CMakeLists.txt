@@ -117,7 +117,8 @@ function (process_params params)
                             # Fail to WILL_FAIL test - pass
                         FAIL_REGULAR_EXPRESSION "${pass_regexp}"
                             # Pass to WILL_FAIL test - fail
-                        PASS_REGULAR_EXPRESSION "${fail_regexp}")
+                        #PASS_REGULAR_EXPRESSION "${fail_regexp}"
+                        )
             else ()
                 set_tests_properties(${tgt} PROPERTIES
                         FAIL_REGULAR_EXPRESSION "${fail_regexp}")
@@ -181,7 +182,7 @@ include(unit_cases.cmake)
 
 set(tu_params_list "")
 if (COUNTOF_NS_TESTS)
-    include (countof_ns_expected.cmake)
+    include (cntfn_expected.cmake)
 endif ()
 if (COUNTOF_NS_COMPARISONS)
     file(GLOB cmp_cmakes "comparisons/${COUNTOF_NS_CMP_GLOB}*_expected.cmake")

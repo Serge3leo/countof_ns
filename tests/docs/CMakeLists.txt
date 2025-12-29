@@ -31,7 +31,7 @@ add_test(NAME compiler_versions
 include(../unit/unit_cases.cmake)
 
 set(tu_params_list "")
-include (../unit/countof_ns_expected.cmake)
+include (../unit/cntfn_expected.cmake)
 include (../unit/comparisons/ms_countof_expected.cmake)
 include (../unit/comparisons/stdc_countof_expected.cmake)
 include (../unit/comparisons/std_size_expected.cmake)
@@ -50,7 +50,7 @@ add_test(NAME expected_tables
                  -v
                  --id ${CMAKE_C_COMPILER_ID}
                  --version ${CMAKE_C_COMPILER_VERSION}
-                 --countof_ns "${${countof_ns_available}}"
+                 --countof_ns "${${cntfn_available}}"
                  --ms_countof "${${ms_countof_available}}"
                  --stdc_countof "${${stdc_countof_available}}"
                  --std_size "${${std_size_available}}"

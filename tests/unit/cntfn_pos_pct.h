@@ -2,10 +2,8 @@
 // SPDX-License-Identifier: BSD-2-Clause
 // SPDX-FileCopyrightText: 2025 Сергей Леонтьев (leo@sai.msu.ru)
 size_t TU_UNIT(void) {
-    #ifndef _COUNTOF_NS_USE_GENERIC
-        #error "_COUNTOF_NS_USE_GENERIC don't default"
-        assert(0);
-    #else
-        TU_STATIC_ASSERT_AND_RETURN(1, sizeof(char));
-    #endif
+    typedef int a_t[1917];
+    a_t *pa;
+    TU_STATIC_ASSERT_AND_RETURN(1, (size_t)(
+                0 != _countof_ns_ptr_compatible_type(&pa, a_t **)));
 }

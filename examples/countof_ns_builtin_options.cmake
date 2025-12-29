@@ -2,14 +2,27 @@
 # SPDX-License-Identifier: BSD-2-Clause
 # SPDX-FileCopyrightText: 2025 Сергей Леонтьев (leo@sai.msu.ru)
 
-if (FALSE)
+set(countof_ns_builtin_c_options_MSVC
+    "/std:clatest" "/wd4116" "/we4047" "/we4048"
+    "/FI_countof_ns_ptr_compatible_type_msvc.h")
+
+set(countof_ns_builtin_c_options_SunPro
+    "-errwarn=E_BAD_POINTER_SUBTRACTION"
+    "-D_countof_ns_ptr_compatible_type(p,t)=(0==0*sizeof((p)-(t)(p)))")
+
+# For _COUNTOF_NS_BROKEN_BUILTIN_TYPES_COMPATIBLE_P, with check sizes
+if (TAC_EXTRA_USER_BUILTINS)
 
 set(countof_ns_builtin_options_Intel
     "-diag-error=1121"
     "-D_countof_ns_ptr_compatible_type(p,t)=(0==0*sizeof((p)-(t)(p)))"
-#     "-D_countof_ns_ptr_compatible_type(p,t)=__builtin_types_compatible_p(__typeof__(p),t)"
     )
 
+set(countof_ns_builtin_options_NVHPC
+    "--diag_error=nonstandard_ptr_minus_ptr"
+    "-D_countof_ns_ptr_compatible_type(p,t)=(0==0*sizeof((p)-(t)(p)))")
+
+if (FALSE)
 set(countof_ns_builtin_options_LCC
 # TODO "-Werror-????"
 #      "-D_countof_ns_ptr_compatible_type(p,t)=(0==0*sizeof((p)-(t)(p)))"
@@ -18,17 +31,5 @@ set(countof_ns_builtin_options_LCC
 # TODO Workaround hack
 "-D_countof_ns_ptr_compatible_type(ppa,t)=(!__builtin_types_compatible_p(__typeof__(&*(**(ppa))), __typeof__(**(ppa))))"
    )
-
-#set(countof_ns_builtin_options_NVHPC
-#    "--diag_error=nonstandard_ptr_minus_ptr"
-#    "-D_countof_ns_ptr_compatible_type(p,t)=(0==0*sizeof((p)-(t)(p)))")
-
 endif ()
-
-set(countof_ns_builtin_c_options_MSVC
-    "/std:clatest" "/wd4116" "/we4047"
-    "/FI_countof_ns_ptr_compatible_type_msvc.h")
-
-set(countof_ns_builtin_c_options_SunPro
-    "-errwarn=E_BAD_POINTER_SUBTRACTION"
-    "-D_countof_ns_ptr_compatible_type(p,t)=(0==0*sizeof((p)-(t)(p)))")
+endif ()
