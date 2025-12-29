@@ -83,6 +83,9 @@ elif [ -z "$cxx_cmp_arg" ] ; then
      suncc)
         try=sunCC
         ;;
+     xlc)
+        try=xlc++
+        ;;
      *clang*)
         try=`echo "$bcc" | sed 's/clang/clang++/'`
         ;;
@@ -148,6 +151,8 @@ Xcode_args() {
 Xcode_cmpl() {
     open *.xcodeproj
 }
+AIX_args() { true; }
+AIX_cmpl() { default_cmpl; }
 Darwin_args() { true; }
 Darwin_cmpl() { default_cmpl; }
 FreeBSD_args() { true; }

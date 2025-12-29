@@ -10,6 +10,10 @@ set(countof_ns_builtin_c_options_SunPro
     "-errwarn=E_BAD_POINTER_SUBTRACTION"
     "-D_countof_ns_ptr_compatible_type(p,t)=(0==0*sizeof((p)-(t)(p)))")
 
+set(countof_ns_builtin_c_options_XL
+    "-qlanglvl=extc1x" "-qhaltonmsg=1506-068"
+    "-qinclude=_countof_ns_ptr_compatible_type_xl.h")
+
 # For _COUNTOF_NS_BROKEN_BUILTIN_TYPES_COMPATIBLE_P, with check sizes
 if (TAC_EXTRA_USER_BUILTINS)
 

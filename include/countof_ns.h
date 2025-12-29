@@ -159,12 +159,12 @@
         #define _COUNTOF_NS_USE_BUILTIN  (1)
     #elif _COUNTOF_NS_REFUSE_VLA || __STDC_NO_VLA__
         #define _COUNTOF_NS_USE_GENERIC  (1)
-    #elif __SUNPRO_C
+    #elif __SUNPRO_C || __IBMC__
         #ifdef _countof_ns_ptr_compatible_type
             #define _COUNTOF_NS_USE_BUILTIN  (1)
         #else
             #define _COUNTOF_NS_USE_GENERIC  (1)
-            #warning "For SunPro, you must define either _COUNTOF_NS_REFUSE_VLA or _countof_ns_ptr_compatible_type(p, type)"
+            #warning "For SunPro/IBM XL, you must define either _COUNTOF_NS_REFUSE_VLA or _countof_ns_ptr_compatible_type(p, type)"
         #endif
     #elif __POCC__
         #define _COUNTOF_NS_USE_SUBTRACTION  (1)
@@ -190,7 +190,8 @@
             #if defined(__has_builtin)
                 #if __has_builtin(__builtin_types_compatible_p) && \
                     !__NVCOMPILER && \
-                    !_COUNTOF_NS_BROKEN_BUILTIN_TYPES_COMPATIBLE_P
+                    !_COUNTOF_NS_BROKEN_BUILTIN_TYPES_COMPATIBLE_P || \
+                    __ibmxl__
                     #define _countof_ns_ptr_compatible_type(p, type)  \
                                 __builtin_types_compatible_p( \
                                     _countof_ns_typeof(p), type)
