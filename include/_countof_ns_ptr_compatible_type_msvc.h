@@ -4,9 +4,10 @@
 //
 // Implementation _countof_ns_ptr_compatible_type for MSVC
 //
-// Usage
+// Usage:
 //     > cl /std:clatest /wd4116 /we4047 ^
 //         /FI_countof_ns_ptr_compatible_type_msvc.h ^
+//         /D_COUNTOF_NS_WANT_VLA_BUILTIN ...
 
 #ifndef _COUNTOF_NS_PTR_COMPATIBLE_TYPE_MSVC_H_1210
 #define _COUNTOF_NS_PTR_COMPATIBLE_TYPE_MSVC_H_1210

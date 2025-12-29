@@ -9,7 +9,7 @@
                             // 5 - on T (*)[n]  (VLA)
                             // 6 - resolve the uncertain zero-by-zero for ZLA
 #if !defined(HAVE_ZLA) && !defined(_MSC_VER) && !defined(__POCC__) && \
-    !defined(__SUNPRO_C)
+    !defined(__SUNPRO_C) && !defined(__IBMC__)
     // To enable ZLA for SunPro, use: -features=zla -DHAVE_ZLA=1
     #define HAVE_ZLA  (1)
 #endif
