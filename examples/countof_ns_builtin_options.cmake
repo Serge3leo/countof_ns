@@ -3,7 +3,7 @@
 # SPDX-FileCopyrightText: 2025 Сергей Леонтьев (leo@sai.msu.ru)
 
 set(countof_ns_builtin_c_options_MSVC
-    "/std:clatest" "/wd4116" "/we4047"
+    "/std:clatest" "/wd4116" "/we4047" "/we4048"
     "/FI_countof_ns_ptr_compatible_type_msvc.h")
 
 set(countof_ns_builtin_c_options_SunPro

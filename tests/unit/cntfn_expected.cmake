@@ -2,10 +2,16 @@
 # SPDX-License-Identifier: BSD-2-Clause
 # SPDX-FileCopyrightText: 2025 Сергей Леонтьев (leo@sai.msu.ru)
 
-function (tu_countof_ns_expected expected pos_pos neg_pos)
+function (tu_cntfn_expected expected pos_pos neg_pos)
     set(pos_base "")
     foreach (b IN ITEMS ${pos_pos})
-        if (b MATCHES "vla")
+        if (b MATCHES "pos_vla_func$" AND
+                NOT CMAKE_CXX_COMPILER_ID STREQUAL Intel AND
+            NOT CMAKE_CXX_COMPILER_ID STREQUAL LCC AND
+            NOT CMAKE_CXX_COMPILER_ID STREQUAL SunPro)  # TODO HAVE_SPAN
+            set(ints ${b}.gen.build_fail ${b}.c11 ${b}.bltn
+                     ${b}_cxx.tmpl ${b}_cxx.bltn)
+        elseif (b MATCHES "vla")
             set(ints ${b}.gen.build_fail ${b}.c11 ${b}.bltn
                      ${b}_cxx.tmpl.build_fail ${b}_cxx.bltn)
         elseif (NOT HAVE___STDC_NO_VLA__)
@@ -57,29 +63,29 @@ function (tu_countof_ns_expected expected pos_pos neg_pos)
     # Check defaults by _COUNTOF_NS_VLA_UNSUPPORTED/_COUNTOF_NS_USE_GENERIC/...
 
     if (MSVC)
-        list(PREPEND pos_base "countof_ns_chk_default_gen"
-                              "countof_ns_chk_default_tmpl_cxx")
+        list(PREPEND pos_base "cntfn_dflt_gen"
+                              "cntfn_dflt_tmpl_cxx")
     elseif (CMAKE_C_COMPILER_ID STREQUAL SunPro)
-        list(PREPEND pos_base "countof_ns_chk_default_gen"
-                              "countof_ns_chk_default_bltn_cxx")
+        list(PREPEND pos_base "cntfn_dflt_gen"
+                              "cntfn_dflt_bltn_cxx")
     elseif (CMAKE_C_COMPILER_ID STREQUAL Pelles)  # TODO: Not cmake module
-        list(PREPEND pos_base "countof_ns_chk_default_c11")
+        list(PREPEND pos_base "cntfn_dflt_c11")
     else ()
-        list(PREPEND pos_base "countof_ns_chk_default_bltn"
-                              "countof_ns_chk_default_bltn_cxx")
+        list(PREPEND pos_base "cntfn_dflt_bltn"
+                              "cntfn_dflt_bltn_cxx")
     endif()
 
     # Check internal or example user defined _countof_ns_ptr_compatible_type()
 
     file(GLOB pct_hdr RELATIVE "${CMAKE_CURRENT_LIST_DIR}"
-         "${CMAKE_CURRENT_LIST_DIR}/countof_ns_*_ptr_compatible_type.h")
+         "${CMAKE_CURRENT_LIST_DIR}/cntfn_*_pct.h")
 
     foreach (cc IN ITEMS ${pct_hdr})
         get_filename_component(c ${cc} NAME_WLE)
         if ("${c}" MATCHES "_pos_")
             list(PREPEND pos_base "${c}.bltn")
         else ()
-            list(PREPEND neg_base "${c}.bltn.run_fail")
+            list(PREPEND neg_base "${c}.bltn.build_fail")
         endif ()
     endforeach ()
 
@@ -113,6 +119,10 @@ function (tu_countof_ns_expected expected pos_pos neg_pos)
         string(REGEX REPLACE "(pos_vla_(struct|zla)_n0\\.gen)\\.build_fail"
                              "\\1.run_fail"
                              pos_base "${pos_base}")
+            # HAVE_BROKEN_BUILTIN_TYPES_COMPATIBLE_P
+        string(REGEX REPLACE "(cntfn_neg_size_pct.bltn)\\.build_fail"
+                             "\\1.build_unexpected"
+                             neg_base "${neg_base}")
     endif ()
     if (CMAKE_C_COMPILER_ID STREQUAL NVHPC AND HAVE_BROKEN_VLA)
         string(REGEX REPLACE "(pos_vla_func2d(\\.c11|\\.bltn|_cxx\\.bltn))"
@@ -132,7 +142,7 @@ function (tu_countof_ns_expected expected pos_pos neg_pos)
     set(${expected} "${pos_base};${neg_base}" PARENT_SCOPE)
 endfunction ()
 
-tu_countof_ns_expected(tu_countof_ns_available "${tu_pos_pos}" "${tu_neg_pos}")
-set(tu_countof_ns_params TRUE "countof_ns" "countof_ns.h"
-                         tu_countof_ns_available)
-list(APPEND tu_params_list tu_countof_ns_params)
+tu_cntfn_expected(tu_cntfn_available "${tu_pos_pos}" "${tu_neg_pos}")
+set(tu_cntfn_params TRUE "countof_ns" "countof_ns.h"
+                         tu_cntfn_available)
+list(APPEND tu_params_list tu_cntfn_params)

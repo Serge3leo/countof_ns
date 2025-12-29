@@ -6,6 +6,6 @@ size_t TU_UNIT(void) {
     typedef int b_t[10];
     a_t *pa;
     // A compilation error is also allowed instead of returning 0.
-    TU_STATIC_ASSERT_AND_RETURN(0, (size_t)(
-                0 == _countof_ns_ptr_compatible_type(&pa, b_t **)));
+    TU_STATIC_ASSERT_AND_RETURN(1, (size_t)(
+                0 != _countof_ns_ptr_compatible_type(&pa, b_t **)));
 }
