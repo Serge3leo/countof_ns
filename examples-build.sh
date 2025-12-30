@@ -5,6 +5,8 @@
 
 set -e
 
+PRESET=${PRESET:-default}
+
 cc_cmp_arg=
 # TODO remove? ctest_args='-L default'
 ctest_args=
@@ -146,7 +148,7 @@ default_cmpl() {
     exit $rc
 }
 Xcode_args() {
-    cmake_args="--preset default $cmake_args -G Xcode"
+    cmake_args="--preset "$PRESET" $cmake_args -G Xcode"
 }
 Xcode_cmpl() {
     open *.xcodeproj
@@ -204,15 +206,15 @@ else
     "${platform}_args"
     if [ -z "$cc" ] ; then
         if "$verbose" ; then
-            echo "cmake --preset default $cmake_args $* ../.."
+            echo "cmake --preset $PRESET $cmake_args $* ../.."
         fi
-        cmake --preset default $cmake_args "$@" ../..
+        cmake --preset "$PRESET" $cmake_args "$@" ../..
     else
         if "$verbose" ; then
-            echo "cmake --preset default -DCMAKE_C_COMPILER=\"$cc\"" \
+            echo "cmake --preset $PRESET -DCMAKE_C_COMPILER=\"$cc\"" \
                         "-DCMAKE_CXX_COMPILER=\"$cxx\" $cmake_args $* ../.."
         fi
-        cmake --preset default -DCMAKE_C_COMPILER="$cc" \
+        cmake --preset "$PRESET" -DCMAKE_C_COMPILER="$cc" \
               -DCMAKE_CXX_COMPILER="$cxx" $cmake_args "$@" ../..
     fi
     "${platform}_cmpl"

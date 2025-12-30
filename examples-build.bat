@@ -21,16 +21,21 @@ if "%1"=="nmake" (
     echo     Without argument - use default generator for Visual Studio
     exit /b 1
 )
+if "%PRESET%"=="" (
+    set prst=default
+) else (
+    set prst=%PRESET%
+)
 md build\%platform%
 cd build\%platform%
 set build_type=Release
 if %generator%=="NMake Makefiles" (
-    cmake --preset default -G %generator% ..\.. %2 %3 %4 %5 %6 %7 %8 %9
-    cmake --output-on-failure --build .
-    ctest
+    cmake --preset %prst% -G %generator% ..\.. %2 %3 %4 %5 %6 %7 %8 %9
+    cmake --build .
+    ctest --output-on-failure
 ) else (
     cmake -B . -DCMAKE_CXX_COMPILER=cl -DCMAKE_C_COMPILER=cl ^
-          -DCMAKE_BUILD_TYPE=%build_type% -S ..\.. --preset default %2 %3 %4 %5 %6 %7 %8 %9
+          -DCMAKE_BUILD_TYPE=%build_type% -S ..\.. --preset %prst% %2 %3 %4 %5 %6 %7 %8 %9
     cmake --build . --config %build_type%
     ctest --output-on-failure --build-config %build_type%
 )

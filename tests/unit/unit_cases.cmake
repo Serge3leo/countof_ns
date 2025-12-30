@@ -29,7 +29,8 @@ function(tu_filter_have possible cases)
             ("${c}" MATCHES "_struct" AND NOT HAVE_EMPTY_STRUCTURE) OR
             ("${c}" MATCHES "_alone" AND NOT HAVE_ALONE_FLEXIBLE_ARRAY) OR
             ("${c}" MATCHES "_(zla|alone|struct).*[0n][0n]" AND
-             NOT HAVE_ZLA_ZLA))
+             NOT HAVE_ZLA_ZLA) OR
+            ("${c}" MATCHES "_vla_func2d" AND HAVE_BROKEN_VLA))
             continue ()
         endif ()
         list(APPEND p ${c})
