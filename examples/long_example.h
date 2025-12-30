@@ -327,10 +327,25 @@ static void countof_example() {
     int a1[1];
     int a9[9];
 
-#if __GNUC__ != 16  // TODO: XXX: ???
-    static_assert(_Generic(__typeof__(countof(a1)),
-                           __typeof__(countof_ns(a1)) : 1, default : 0));
+
+#if __GNUC__ == 16 && __GNUC_MINOR__ == 0 && __GNUC_PATCHLEVEL__ == 0  // TODO
+    int i = _Generic(countof_ns(a1), __typeof__(sizeof(a1)) : 1);
+    int j = _Generic(countof(a1), __typeof__(countof(a1)) : 1);
+    j &= _Generic(sizeof(a1), __typeof__(sizeof(a1)) : 1);
+    // j &= _Generic(countof(a1), __typeof__(sizeof(a1)) : 1);
+    // j &= _Generic(countof(a1), size_t : 1);
+    // j &= _Generic(sizeof(a1), __typeof__(countof(a1)) : 1);
+    // From GCC-16: /usr/local/lib/gcc16/gcc/x86_64-portbld-freebsd14.3/...
+    // 16.0.0/include/stddef.h:
+    //     typedef long unsigned int size_t;
+    j &= _Generic(sizeof(a1), unsigned long int : 1);
+    int k = (sizeof(countof_ns(a1)) == sizeof(countof(a1)));
+#else
+    int i = _Generic(countof_ns(a1), __typeof__(countof(a1)) : 1);
+    int j = _Generic(countof(a1), __typeof__(countof_ns(a1)) : 1);
+    int k = _Generic(countof(a1), __typeof__(sizeof(a1)) : 1);
 #endif
+    assert(i && j && k);
     static_assert(countof(a1) == countof_ns(a1));
     static_assert(countof(a9) == countof_ns(a9));
 
