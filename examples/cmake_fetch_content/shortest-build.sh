@@ -25,7 +25,7 @@ while getopts rvp:c:h-'?' flag ; do
         echo '  -c C-compiler - If not exist, use cmake defaults;'
         echo ''
         echo 'Examples:'
-        echo '  ./shortest-build.sh -v -c clang-mp-21 -- --preset debug'
+        echo '  ./shortest-build.sh -v -c clang-mp-21'
         echo '  ./shortest-build.sh -p Xcode'
         exit 2
     esac
@@ -54,13 +54,13 @@ if [ -r CMakeLists.txt -a -r "$b" -a -d build ] && cmp -s "$0" "$b" ; then
 else
     ([ -r ../../CMakeLists.txt -a -r ../../"$b" -a -d ../../build ] &&
      cmp -s "$0" ../../"$b") || {
-        echo "$0: Must be launch either from the build directory, " \
-                  "either from the source directory" 1>&2
+        echo "$0: Must be launch either from the build directory," \
+             " either from the source directory" 1>&2
         exit 2
     }
     [ -z "$platform_arg" -a -z "$c_cmp_arg" -a -z "$cxx_cmp_arg"] || {
         echo "$0: Options [-p/с/C platform/C/C++-compiler]" \
-                  " must be ommited" 1>&2
+             " must be ommited" 1>&2
         exit 2
     }
     bdir=$(basename `pwd`)
@@ -69,8 +69,7 @@ else
     src_dir=false
 fi
 if "$verbose" ; then
-    printf "src_dir=%s platform=%s bdir=%s\n" \
-           "$src_dir" "$platform" "$bdir"
+    printf "src_dir=%s platform=%s bdir=%s\n" "$src_dir" "$platform" "$bdir"
 fi
 if "$src_dir" ; then
     mkdir -p "build/$bdir"
@@ -84,21 +83,19 @@ if "$rm_arg" ; then
     rm -rf "../../build/$bdir"/*
 else
     if [ "$platform" == "Xcode" ] ; then
-        cmake --preset default $cmake_args -G Xcode ../..
+        cmake $cmake_args -G Xcode ../..
         open *.xcodeproj
     else
         if [ -z "$cc" ] ; then
             if "$verbose" ; then
-                echo "cmake --preset default $cmake_args $* ../.."
+                echo "cmake $cmake_args $* ../.."
             fi
-            cmake --preset default $cmake_args "$@" ../..
+            cmake $cmake_args "$@" ../..
         else
             if "$verbose" ; then
-                echo "cmake --preset default -DCMAKE_C_COMPILER=\"$cc\"" \
-                            "$cmake_args $* ../.."
+                echo "cmake -DCMAKE_C_COMPILER=\"$cc\"" "$cmake_args $* ../.."
             fi
-            cmake --preset default -DCMAKE_C_COMPILER="$cc" \
-                  $cmake_args "$@" ../..
+            cmake -DCMAKE_C_COMPILER="$cc" $cmake_args "$@" ../..
         fi
         cmake --build .
         ctest
