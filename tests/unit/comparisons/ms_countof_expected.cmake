@@ -39,6 +39,14 @@ function (tu_ms_countof_expected expected pos_pos neg_pos)
         string(REGEX REPLACE "_00.run_fail" "_00.run_0_unexpected"
                              pos_base "${pos_base}")
     endif ()
+    if (CMAKE_C_COMPILER_ID STREQUAL SunPro)
+        string(REGEX REPLACE "(neg_zla_ptr)\\.build_unexpected"
+                             "\\1.build_fail.build_DIV0"
+                             neg_base "${neg_base}")
+        string(REGEX REPLACE "(neg_zla_ptr)\\.run_fail($|;)"
+                             ""
+                             neg_base "${neg_base}")
+    endif ()
     set(build_div0_Clang pos_alone_n0 pos_zla_00 pos_zla_alone_00 pos_zla_n0
                          pos_zla_struct_00 neg_alone_ptr neg_zla_ptr)
     set(run_div0_Clang pos_vla_alone_00 pos_vla_alone_n0
@@ -81,7 +89,7 @@ function (tu_ms_countof_expected expected pos_pos neg_pos)
                    pos_vla_zla_00 pos_vla_zla_n0
                    neg_zla_ptr)
     set(run_fpe_NVHPC pos_vla_00 pos_vla_0n pos_vla_n0)
-    set(run_fpe_SunPro pos_vla_00 pos_vla_n0)
+    set(run_fpe_SunPro pos_vla_00 pos_vla_n0 neg_vla_zla_ptr neg_zla_vla_ptr)
     foreach (base IN ITEMS pos_base neg_base)
         foreach (b IN LISTS build_div0_${CMAKE_C_COMPILER_ID})
             string(REPLACE "${b}.build_fail" "${b}.build_fail.build_DIV0"

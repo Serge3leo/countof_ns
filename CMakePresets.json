@@ -9,11 +9,11 @@
       "name": "default",
       "displayName": "Default general",
       "cacheVariables": {
-        "COUNTOF_NS_SHORT_EXAMPLE": "OFF",
-	"COUNTOF_NS_EXAMPLES": "ON",
-	"COUNTOF_NS_TESTS": "ON",
-	"COUNTOF_NS_COMPARISONS": "OFF",
-	"COUNTOF_NS_DOCTESTS": "ON",
+        "COUNTOF_NS_SHORT_EXAMPLE": "ON",
+        "COUNTOF_NS_EXAMPLES": "OFF",
+        "COUNTOF_NS_TESTS": "OFF",
+        "COUNTOF_NS_COMPARISONS": "OFF",
+        "COUNTOF_NS_DOCTESTS": "OFF",
         "TAC_ENABLE_WARNINGS": "OFF",
         "TAC_POSITIVE_WERROR": "OFF"
       }
@@ -23,18 +23,8 @@
       "displayName": "Docs check",
       "inherits": "default",
       "cacheVariables": {
-	"COUNTOF_NS_EXAMPLES": "OFF",
-	"COUNTOF_NS_TESTS": "OFF"
-      }
-    },
-    {
-      "name": "debug",
-      "displayName": "Debug checks",
-      "inherits": "default",
-      "cacheVariables": {
-	"CMAKE_BUILD_TYPE": "Debug",
-        "TAC_ENABLE_WARNINGS": "ON",
-        "TAC_POSITIVE_WERROR": "ON"
+        "COUNTOF_NS_SHORT_EXAMPLE": "OFF",
+        "COUNTOF_NS_DOCTESTS": "ON"
       }
     },
     {
@@ -42,7 +32,29 @@
       "displayName": "Comparisons number methods",
       "inherits": "default",
       "cacheVariables": {
+        "COUNTOF_NS_SHORT_EXAMPLE": "OFF",
         "COUNTOF_NS_COMPARISONS": "ON"
+      }
+    },
+    {
+      "name": "all",
+      "displayName": "All tests",
+      "inherits": "default",
+      "cacheVariables": {
+        "COUNTOF_NS_EXAMPLES": "ON",
+        "COUNTOF_NS_TESTS": "ON",
+        "COUNTOF_NS_COMPARISONS": "ON",
+        "COUNTOF_NS_DOCTESTS": "ON"
+      }
+    },
+    {
+      "name": "debug",
+      "displayName": "Debug checks",
+      "inherits": "default",
+      "cacheVariables": {
+        "CMAKE_BUILD_TYPE": "Debug",
+        "TAC_ENABLE_WARNINGS": "ON",
+        "TAC_POSITIVE_WERROR": "ON"
       }
     },
     {
@@ -50,7 +62,7 @@
       "displayName": "Comparisons number methods",
       "inherits": "cmp",
       "cacheVariables": {
-	"CMAKE_BUILD_TYPE": "Debug",
+        "CMAKE_BUILD_TYPE": "Debug",
         "TAC_ENABLE_WARNINGS": "ON"
       }
     }

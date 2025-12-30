@@ -124,11 +124,6 @@ function (tu_cntfn_expected expected pos_pos neg_pos)
                              "\\1.build_unexpected"
                              neg_base "${neg_base}")
     endif ()
-    if (CMAKE_C_COMPILER_ID STREQUAL NVHPC AND HAVE_BROKEN_VLA)
-        string(REGEX REPLACE "(pos_vla_func2d(\\.c11|\\.bltn|_cxx\\.bltn))"
-                             "\\1.run_fail.compiler_bug"
-                             pos_base "${pos_base}")
-    endif ()
     if (CMAKE_C_COMPILER_ID STREQUAL SunPro)
             # TODO I don't understand. Why?
         string(REGEX REPLACE "(neg_alone_ptr\\.c11)\\.build_unexpected"
