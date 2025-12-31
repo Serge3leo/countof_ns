@@ -189,7 +189,7 @@
         #if !defined(_countof_ns_ptr_compatible_type)
             #if defined(__has_builtin)
                 #if __has_builtin(__builtin_types_compatible_p) && \
-                    !__NVCOMPILER && \
+                    !__NVCOMPILER && !__LCC__ && \
                     !_COUNTOF_NS_BROKEN_BUILTIN_TYPES_COMPATIBLE_P || \
                     __ibmxl__
                     #define _countof_ns_ptr_compatible_type(p, type)  \

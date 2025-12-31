@@ -6,8 +6,8 @@ function (tu_cntfn_expected expected pos_pos neg_pos)
     set(pos_base "")
     foreach (b IN ITEMS ${pos_pos})
         if (b MATCHES "pos_vla_func$" AND
-                NOT CMAKE_CXX_COMPILER_ID STREQUAL Intel AND
-            NOT CMAKE_CXX_COMPILER_ID STREQUAL LCC AND
+            NOT CMAKE_CXX_COMPILER_ID STREQUAL Intel AND
+            #NOT CMAKE_CXX_COMPILER_ID STREQUAL LCC AND
             NOT CMAKE_CXX_COMPILER_ID STREQUAL SunPro)  # TODO HAVE_SPAN
             set(ints ${b}.gen.build_fail ${b}.c11 ${b}.bltn
                      ${b}_cxx.tmpl ${b}_cxx.bltn)
@@ -100,7 +100,7 @@ function (tu_cntfn_expected expected pos_pos neg_pos)
     if ((CMAKE_CXX_COMPILER_ID STREQUAL Intel AND
          CMAKE_CXX_COMPILER_VERSION MATCHES "^2021\\." ) OR
         (CMAKE_CXX_COMPILER_ID STREQUAL LCC AND
-         CMAKE_CXX_COMPILER_VERSION MATCHES "^1\\.27\\.") OR
+         CMAKE_CXX_COMPILER_VERSION MATCHES "^1\\.2[79]\\.") OR
         (CMAKE_CXX_COMPILER_ID STREQUAL NVHPC AND
          CMAKE_CXX_COMPILER_VERSION MATCHES "^25\\.9\\." ))
         string(REGEX REPLACE "(pos_vla_cv_cxx.bltn)" "\\1.compiler_bug"
