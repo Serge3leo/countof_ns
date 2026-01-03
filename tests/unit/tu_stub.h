@@ -87,8 +87,8 @@
 // Positive tests
 
 #define _TU_ASSERT_AND_RETURN(method, desired, computed)  do { \
-            size_t _d_ = (desired); \
-            size_t _c_ = (computed); \
+            volatile size_t _d_ = (desired); \
+            volatile size_t _c_ = (computed); \
             if (_d_ == _c_) { \
                 /* clang/icx */ \
                 /* For UB (divide zero, etc) won't choose this branch. */ \
