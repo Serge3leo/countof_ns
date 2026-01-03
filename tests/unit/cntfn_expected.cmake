@@ -98,11 +98,11 @@ function (tu_cntfn_expected expected pos_pos neg_pos)
                              pos_base "${pos_base}")
     endif ()
     if ((CMAKE_CXX_COMPILER_ID STREQUAL Intel AND
-         CMAKE_CXX_COMPILER_VERSION MATCHES "^2021\\." ) OR
+         CMAKE_CXX_COMPILER_VERSION MATCHES "^2021\\.") OR
         (CMAKE_CXX_COMPILER_ID STREQUAL LCC AND
          CMAKE_CXX_COMPILER_VERSION MATCHES "^1\\.2[79]\\.") OR
         (CMAKE_CXX_COMPILER_ID STREQUAL NVHPC AND
-         CMAKE_CXX_COMPILER_VERSION MATCHES "^25\\.9\\." ))
+         CMAKE_CXX_COMPILER_VERSION MATCHES "^25\\."))
         string(REGEX REPLACE "(pos_vla_cv_cxx.bltn)" "\\1.compiler_bug"
                              pos_base "${pos_base}")
     endif ()
