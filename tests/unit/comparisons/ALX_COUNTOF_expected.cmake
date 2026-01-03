@@ -64,6 +64,9 @@ function (tu_alx_countof_expected expected pos_pos neg_pos)
     set(run_div0_IntelLLVM pos_vla_alone_00 pos_vla_alone_n0
                            pos_vla_struct_00 pos_vla_struct_n0
                            pos_vla_zla_00 pos_vla_zla_n0)
+    set(run_fpe_LCC pos_vla_00 pos_vla_n0
+                    pos_vla_struct_00 pos_vla_struct_n0
+                    pos_vla_zla_00 pos_vla_zla_n0)
     set(build_div0_NVHPC pos_struct_n0 pos_zla_00 pos_zla_n0
                          pos_zla_struct_00 neg_zla_ptr)
     set(run_div0_NVHPC pos_vla_struct_00 pos_vla_struct_n0

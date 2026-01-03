@@ -18,6 +18,9 @@ class cv_result(enum.IntEnum):
     last_extensions = 2
     last_version = 3
 
+def versiontuple(v):
+    return tuple(map(int, (v.split("."))))
+
 def compiler_versions(table_fn: str, check_id: str, check_version: str,
                       check_extensions: list[str], verbose: bool) -> cv_result:
     res = cv_result.good
@@ -32,32 +35,25 @@ def compiler_versions(table_fn: str, check_id: str, check_version: str,
                     for e in t.split('<br>'))
         if '' in s[mm]:
             s[mm].remove('')
-    if not (s['min'] <= s['max']):
-        print(f"error: table extensions corrupt {s['min'], s['max']=}")
-        res = cv_result.fail
     for mm in 'Min', 'Max':
         r[mm] = r[mm].strip()
     if '' == r['Min'] or not s['min']:
         r['Min'] = r['Max']
         s['min'] = s['max']
-    if not (r['Min'] <= r['Max']):
+    if not (versiontuple(r['Min']) <= versiontuple(r['Max'])):
         print(f"error: table versions corrupt {r['Min'], r['Max']=}")
         res = cv_result.fail
-    if not (r['Min'] <= check_version):
+    if not (versiontuple(r['Min']) <= versiontuple(check_version)):
         print(f"error: version too low {r['Min'], check_version=}")
         res = cv_result.fail
-    if not (r['Max'] >= check_version):
+    if not (versiontuple(r['Max']) >= versiontuple(check_version)):
         print(f"error: version too high {r['Max'], check_version=}")
         res = cv_result.fail
     sext = set(re.sub(r'(`|\s)', '', e)
                for l in check_extensions for e in l.split())
-    if not (s['min'] <= sext):
-        print(f"error: too few extensions"
-              f" {s['min']-sext, sext-s['min'], s['min'], sext=}")
-        res = cv_result.fail
-    if not (s['max'] >= sext):
+    if not (sext <= (s['min']|s['max'])):
         print(f"error: too more extensions"
-              f" {s['max']-sext, sext-s['max'], s['max'], sext=}")
+              f" {sext-(s['min']|s['max']), (s['min']|s['max'])-sext, sext=}")
         res = cv_result.fail
     if s['max'] == sext and cv_result.fail != res:
         res = cv_result.last_extensions
