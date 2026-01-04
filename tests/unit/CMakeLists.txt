@@ -111,7 +111,9 @@ function (process_params params)
                         --target ${tgt}
                         --config "${CMAKE_BUILD_TYPE}"
                      WORKING_DIRECTORY ${CMAKE_BINARY_DIR})
-            if (etgt MATCHES "\\.[^.]*_fail")
+            if (etgt MATCHES "\\.[^.]*_fail" OR
+                (etgt MATCHES "\\.gen\\.build_c2y" AND
+                 NOT HAVE_GENERIC_C2Y))
                 set_tests_properties(${tgt} PROPERTIES
                         WILL_FAIL TRUE
                             # Fail to WILL_FAIL test - pass
