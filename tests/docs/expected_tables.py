@@ -63,6 +63,7 @@ terms = [
         (r'pos_.*\.build_fail',         '❌'),
         (r'pos_.*\.run_0_unexpected',   '☸️<sub>Inv0</sub>'),
         (r'pos_.*\.run_fail',           '⚠️<sub>-Inv</sub>'),
+        (r'pos_[^.]*\.gen\.build_c2y',  '⚠️<sub>C2Y</sub>'),
         (r'pos_[^.]*(\.gen|\.tmpl|\.c11|\.bltn|)$',
                                         '✅'),
         (r'neg_.*\.run_fail',           '❌<sub>-Inv</sub>'),

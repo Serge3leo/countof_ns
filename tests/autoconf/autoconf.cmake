@@ -120,8 +120,10 @@ set(tac_checks        have_typeof
                       have_builtin_types_compatible_p
                       have_hidden_builtin_types_compatible_p
                       no_have_broken_builtin_types_compatible_p
+                      have_constexpr_statement_expression
                       have_countof
                       have_countof_cxx
+                      have_generic_c2y
                       have_empty_structure
                       have_is_array_cxx
                       have_hidden_is_array_cxx
@@ -138,6 +140,8 @@ set(tac_checks        have_typeof
                       have_vla_cxx
                       no_have_broken_vla_cxx
                       have_vla_zla
+                      no_have_broken_sizeof
+                      no_have_sizeof_vla_not_evaluate_cxx
                       have_zla
                       have_zla_empty_initializer
                       have_zla_empty_initializer_cxx

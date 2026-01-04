@@ -9,10 +9,10 @@ function (tu_cntfn_expected expected pos_pos neg_pos)
             NOT CMAKE_CXX_COMPILER_ID STREQUAL Intel AND
             #NOT CMAKE_CXX_COMPILER_ID STREQUAL LCC AND
             NOT CMAKE_CXX_COMPILER_ID STREQUAL SunPro)  # TODO HAVE_SPAN
-            set(ints ${b}.gen.build_fail ${b}.c11 ${b}.bltn
+            set(ints ${b}.gen.build_c2y ${b}.c11 ${b}.bltn
                      ${b}_cxx.tmpl ${b}_cxx.bltn)
         elseif (b MATCHES "vla")
-            set(ints ${b}.gen.build_fail ${b}.c11 ${b}.bltn
+            set(ints ${b}.gen.build_c2y ${b}.c11 ${b}.bltn
                      ${b}_cxx.tmpl.build_fail ${b}_cxx.bltn)
         elseif (NOT HAVE___STDC_NO_VLA__)
             set(ints ${b}.gen ${b}.c11 ${b}.bltn
@@ -113,10 +113,10 @@ function (tu_cntfn_expected expected pos_pos neg_pos)
             # array?  Is this a peculiarity of the C language extensions only
             # for NVHPC (pgcc) and the classic Intel (icc)? Or is it the result
             # of optimizations?
-        string(REGEX REPLACE "(pos_vla_(struct|zla)_00\\.gen)\\.build_fail"
+        string(REGEX REPLACE "(pos_vla_(struct|zla)_00\\.gen)\\.build_c2y"
                              "\\1"
                              pos_base "${pos_base}")
-        string(REGEX REPLACE "(pos_vla_(struct|zla)_n0\\.gen)\\.build_fail"
+        string(REGEX REPLACE "(pos_vla_(struct|zla)_n0\\.gen)\\.build_c2y"
                              "\\1.run_fail"
                              pos_base "${pos_base}")
             # HAVE_BROKEN_BUILTIN_TYPES_COMPATIBLE_P
