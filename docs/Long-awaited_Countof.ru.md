@@ -14,7 +14,7 @@
 В заголовочном файле `<stdcountof.h>` определяется макрос `countof`, который определяется как `_Countof`.
 ### Этимология названия
 В первоначальном предложении [N3369: The `_Lengthof` Operator](https://www.open-std.org/JTC1/SC22/WG14/www/docs/n3369.pdf), предлагалось дать этому оператору имя: `_Lengthof` (правда, после ряда метаний по кругу `_Lengthof => elementsof => nelementsof => neltsof => _Lengthof`). Однако, результаты опроса [N3469: Big Array Size Survey](https://www.open-std.org/JTC1/SC22/WG14/www/docs/n3469.htm):
-![[big_array_size_survey_map.png]]
+![big_array_size_survey_map.png](big_array_size_survey_map.png)
 убедительно показали, что наиболее предпочтительные варианты, либо просто `countof`, либо  `_Countof` с заголовочным файлом `<stdcountof.h>` и макросом `countof`, который и вошёл в проект C2y.
 
 К сожалению, распределение голосов по странам и языкам дано только в виде картинки.
