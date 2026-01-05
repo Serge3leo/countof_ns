@@ -5,6 +5,6 @@ size_t TU_UNIT(void) {
     #if !__cplusplus
         tu_static_assert(0 == sizeof(a[0]));
     #endif
-    assert(d7*sizeof(a[0]) == sizeof(a));
+    tu_assert(d7*sizeof(a[0]) == sizeof(a));
     TU_ASSERT_AND_RETURN(d7, TU_COUNTOF(a));
 }

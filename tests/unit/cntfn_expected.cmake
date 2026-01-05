@@ -9,10 +9,61 @@ function (tu_cntfn_expected expected pos_pos neg_pos)
             NOT CMAKE_CXX_COMPILER_ID STREQUAL Intel AND
             #NOT CMAKE_CXX_COMPILER_ID STREQUAL LCC AND
             NOT CMAKE_CXX_COMPILER_ID STREQUAL SunPro)  # TODO HAVE_SPAN
-            set(ints ${b}.gen.build_c2y ${b}.c11 ${b}.bltn
+            set(ints ${b}.gen.run_c2y ${b}.c11 ${b}.bltn
                      ${b}_cxx.tmpl ${b}_cxx.bltn)
+        elseif (b MATCHES "pos_eval")
+            if (HAVE___STDC_NO_VLA__)  # TODO: MSVC
+                set(ints ${b}.gen ${b}_cxx.tmpl.run_eval_1)
+            else ()
+                set(ints ${b}.gen ${b}.c11 ${b}.bltn ${b}_cxx.tmpl.run_eval_1)
+                if (CMAKE_CXX_COMPILER_ID STREQUAL SunPro)
+                    list(APPEND ints ${b}_cxx.bltn)
+                else ()
+                    list(APPEND ints ${b}_cxx.bltn.run_eval_2)
+                endif ()
+            endif ()
+        elseif (b MATCHES "pos_vla_eval$")
+            set(ints ${b}.gen.run_c2y.run_eval_1)
+            if (CMAKE_C_COMPILER_ID STREQUAL SunPro)
+                list(APPEND ints ${b}.c11.run_eval_1 ${b}.bltn.run_eval_1)
+            else ()
+                list(APPEND ints ${b}.c11 ${b}.bltn)
+            endif ()
+            list(APPEND ints ${b}_cxx.tmpl.build_fail)
+            if (CMAKE_CXX_COMPILER_ID STREQUAL Clang OR
+                CMAKE_CXX_COMPILER_ID STREQUAL LCC)
+                list(APPEND ints ${b}_cxx.bltn.run_eval_1)
+            elseif (CMAKE_CXX_COMPILER_ID STREQUAL GNU OR
+                    CMAKE_CXX_COMPILER_ID STREQUAL SunPro)
+                list(APPEND ints ${b}_cxx.bltn.run_eval_-1)
+            elseif (CMAKE_CXX_COMPILER_ID STREQUAL Intel OR
+                    CMAKE_CXX_COMPILER_ID STREQUAL IntelLLVM)
+                list(APPEND ints ${b}_cxx.bltn.run_eval_2)
+            else ()
+                list(APPEND ints ${b}_cxx.bltn)
+            endif ()
+        elseif (b MATCHES "pos_vla_eval2d")
+            set(ints ${b}.gen.run_c2y.run_eval_7)
+            if (CMAKE_C_COMPILER_ID STREQUAL SunPro)
+                list(APPEND ints ${b}.c11.run_eval_7 ${b}.bltn.run_eval_7)
+            else ()
+                list(APPEND ints ${b}.c11.run_eval_3 ${b}.bltn.run_eval_3)
+            endif ()
+            list(APPEND ints ${b}_cxx.tmpl.build_fail)
+            if (CMAKE_CXX_COMPILER_ID STREQUAL Clang OR
+                CMAKE_CXX_COMPILER_ID STREQUAL LCC)
+                list(APPEND ints ${b}_cxx.bltn.run_eval_4)
+            elseif (CMAKE_CXX_COMPILER_ID STREQUAL GNU OR
+                    CMAKE_CXX_COMPILER_ID STREQUAL SunPro)
+                list(APPEND ints ${b}_cxx.bltn.run_eval_-1)
+            elseif (CMAKE_CXX_COMPILER_ID STREQUAL Intel OR
+                    CMAKE_CXX_COMPILER_ID STREQUAL IntelLLVM)
+                list(APPEND ints ${b}_cxx.bltn.run_eval_5)
+            else ()
+                list(APPEND ints ${b}_cxx.bltn)
+            endif ()
         elseif (b MATCHES "vla")
-            set(ints ${b}.gen.build_c2y ${b}.c11 ${b}.bltn
+            set(ints ${b}.gen.run_c2y ${b}.c11 ${b}.bltn
                      ${b}_cxx.tmpl.build_fail ${b}_cxx.bltn)
         elseif (NOT HAVE___STDC_NO_VLA__)
             set(ints ${b}.gen ${b}.c11 ${b}.bltn
@@ -113,10 +164,10 @@ function (tu_cntfn_expected expected pos_pos neg_pos)
             # array?  Is this a peculiarity of the C language extensions only
             # for NVHPC (pgcc) and the classic Intel (icc)? Or is it the result
             # of optimizations?
-        string(REGEX REPLACE "(pos_vla_(struct|zla)_00\\.gen)\\.build_c2y"
+        string(REGEX REPLACE "(pos_vla_(struct|zla)_00\\.gen)\\.run_c2y"
                              "\\1"
                              pos_base "${pos_base}")
-        string(REGEX REPLACE "(pos_vla_(struct|zla)_n0\\.gen)\\.build_c2y"
+        string(REGEX REPLACE "(pos_vla_(struct|zla)_n0\\.gen)\\.run_c2y"
                              "\\1.run_fail"
                              pos_base "${pos_base}")
             # HAVE_BROKEN_BUILTIN_TYPES_COMPATIBLE_P
@@ -132,6 +183,16 @@ function (tu_cntfn_expected expected pos_pos neg_pos)
         string(REGEX REPLACE "(pos_vla_func(|2d)_cxx\\.bltn)"
                              "\\1.compiler_bug"
                              pos_base "${pos_base}")
+    endif ()
+    if (CMAKE_C_COMPILER_ID STREQUAL NVHPC AND HAVE_BROKEN_VLA)
+        string(REGEX REPLACE
+            "(pos_vla_eval[_.][^_;]*)(\\.(run_eval_[-0-9]+|build_fail))*(;|$)"
+            "\\1.compiler_bug\\4"
+            pos_base "${pos_base}")
+        string(REGEX REPLACE
+            "(pos_vla_eval2d[_.][^_;]*)(\\.(run_eval_[-0-9]+|build_fail))*(;|$)"
+            "\\1.compiler_bug\\4"
+            pos_base "${pos_base}")
     endif ()
 
     set(${expected} "${pos_base};${neg_base}" PARENT_SCOPE)

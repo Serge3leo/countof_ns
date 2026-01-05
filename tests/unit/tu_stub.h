@@ -8,6 +8,7 @@
 #define TU_0_FAIL          (1)
 #define TU_LE_DESIRED_FAIL (2)
 #define TU_GT_DESIRED_FAIL (3)
+#define TU_ASSERT_FAIL     (4)
 
 #ifndef TU_COUNTOF_INC
     #define TU_COUNTOF_INC  "countof_ns.h"
@@ -41,9 +42,14 @@
     #define TU_LVER  __STDC_VERSION__
 #endif
 
-#include <assert.h>
 #include <stdlib.h>
 #include <stdio.h>
+
+#define tu_assert(e)  \
+            ((void)((e) ? (void)0 : _tu_assert(#e, __FILE__, __LINE__)))
+#define _tu_assert(se, f, l)  \
+            ((void)printf("Fail assertion %s:%d: '%s'\n", f, l, se), \
+             exit(TU_ASSERT_FAIL))
 
 #if defined(__cplusplus) && __cplusplus < 201103L
     #error "Require C++11 or above"
@@ -53,7 +59,7 @@
 #elif __STDC_VERSION__ >= 201112L
     #define tu_static_assert(e)  _Static_assert((e), #e)
 #else
-    #define tu_static_assert(e)  assert(e)
+    #define tu_static_assert(e)  tu_assert(e)
 #endif
 
 // Report on the test source

@@ -13,7 +13,7 @@ size_t TU_UNIT(void) {
     #ifndef TU_SELFTEST_FAIL
         TU_STATIC_ASSERT_AND_RETURN(1, sizeof(char));
     #else
-        assert(0);
+        tu_assert(0);
         return 42;
     #endif
 }

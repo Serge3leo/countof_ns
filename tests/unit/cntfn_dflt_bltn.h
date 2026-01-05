@@ -4,10 +4,10 @@
 size_t TU_UNIT(void) {
     #ifndef _COUNTOF_NS_USE_BUILTIN
         #error "_COUNTOF_NS_USE_BUILTIN don't default"
-        assert(0);
+        tu_assert(0);
     #elif defined(_COUNTOF_NS_VLA_UNSUPPORTED)
         #error "Defined _COUNTOF_NS_VLA_UNSUPPORTED"
-        assert(0);
+        tu_assert(0);
     #else
         TU_STATIC_ASSERT_AND_RETURN(1, sizeof(char));
     #endif

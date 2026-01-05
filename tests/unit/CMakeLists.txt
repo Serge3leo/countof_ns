@@ -75,7 +75,7 @@ function (process_params params)
         endif ()
         set(nxre "~=_ Non-existent regular expression _=~")
         set(exre "[Ee]xception")
-        set(fpere "[Ff]loating-point|qemu: exception")
+        set(fpere "[Ff]loating-point|qemu: [e]xception")
         set(segvre "[Ss]egmentation")
         set(div0re "[Dd]ivision.*[Bb]y.*[Zz]ero")
         set(pass_regexp "(${nxre})")
@@ -111,9 +111,7 @@ function (process_params params)
                         --target ${tgt}
                         --config "${CMAKE_BUILD_TYPE}"
                      WORKING_DIRECTORY ${CMAKE_BINARY_DIR})
-            if (etgt MATCHES "\\.[^.]*_fail" OR
-                (etgt MATCHES "\\.gen\\.build_c2y" AND
-                 NOT HAVE_GENERIC_C2Y))
+            if (etgt MATCHES "\\.[^.]*_fail")
                 set_tests_properties(${tgt} PROPERTIES
                         WILL_FAIL TRUE
                             # Fail to WILL_FAIL test - pass
@@ -126,7 +124,14 @@ function (process_params params)
                         FAIL_REGULAR_EXPRESSION "${fail_regexp}")
                         #PASS_REGULAR_EXPRESSION "${pass_regexp}")
             endif ()
-        elseif (NOT etgt MATCHES "\\.[^.]*_fail")
+        elseif (NOT etgt MATCHES "\\.[^.]*_fail" AND
+                (NOT etgt MATCHES "\\.gen\\.run_c2y" OR HAVE_GENERIC_C2Y))
+            string(REGEX REPLACE "^.*\\.run_eval_([-0-9]+)([^-0-9].*)*$" "\\1"
+                                 add_eval_cnt "${etgt}")
+            if ("${add_eval_cnt}" MATCHES "^[-0-9]+$")
+                target_compile_definitions(${tgt} PRIVATE
+                                           "ADD_EVAL_CNT=${add_eval_cnt}")
+            endif ()
             add_test(NAME ${tgt} COMMAND ${tgt})
             set_tests_properties(${tgt} PROPERTIES
                                 PASS_REGULAR_EXPRESSION "${tu_pos_pass_regexp}"
