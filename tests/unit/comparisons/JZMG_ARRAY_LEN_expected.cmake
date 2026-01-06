@@ -16,6 +16,8 @@ function (tu_jzmg_array_len_expected expected pos_pos neg_pos)
             list(APPEND pos_base ${b}.run_fail)
         elseif (b MATCHES "_[n0]0")
             list(APPEND pos_base ${b}.build_fail ${b}_cxx.build_fail)
+        elseif (b MATCHES "_vla_eval2d")
+            list(APPEND pos_base ${b}.run_eval_1)
         elseif (b MATCHES "_vla")
             list(APPEND pos_base ${b})
         else ()
@@ -33,7 +35,13 @@ function (tu_jzmg_array_len_expected expected pos_pos neg_pos)
         endif ()
     endforeach ()
     if (CMAKE_C_COMPILER_ID STREQUAL NVHPC AND HAVE_BROKEN_VLA)
-        string(REGEX REPLACE "pos_vla_0n" "pos_vla_0n.run_fail"
+        string(REGEX REPLACE "pos_vla_0n(;|$)" "pos_vla_0n.compiler_bug\\1"
+                             pos_base "${pos_base}")
+        string(REGEX REPLACE "pos_vla_eval(;|$)"
+                             "pos_vla_eval.compiler_bug\\1"
+                             pos_base "${pos_base}")
+        string(REGEX REPLACE "pos_vla_eval2d\\.run_eval_1"
+                             "pos_vla_eval2d.compiler_bug"
                              pos_base "${pos_base}")
     endif ()
     if (CMAKE_C_COMPILER_ID STREQUAL Intel)
@@ -49,6 +57,12 @@ function (tu_jzmg_array_len_expected expected pos_pos neg_pos)
         string(REGEX REPLACE "(neg_(alone|zla)_ptr)\\.run_fail($|;)"
                              ""
                              neg_base "${neg_base}")
+        string(REGEX REPLACE "pos_vla_eval(;|$)"
+                             "pos_vla_eval.run_eval_1\\1"
+                             pos_base "${pos_base}")
+        string(REGEX REPLACE "pos_vla_eval2d\\.run_eval_1"
+                             "pos_vla_eval2d.run_eval_3"
+                             pos_base "${pos_base}")
     endif ()
     set(build_div0_Clang pos_alone_n0 pos_zla_n0 neg_alone_ptr neg_zla_ptr)
     set(run_div0_Clang pos_vla_alone_00 pos_vla_alone_n0

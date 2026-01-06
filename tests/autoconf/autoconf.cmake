@@ -139,6 +139,7 @@ set(tac_checks        have_typeof
                       have_vla0_cxx
                       have_vla_cxx
                       no_have_broken_vla_cxx
+                      have_vla_std_size_cxx
                       have_vla_zla
                       no_have_broken_sizeof
                       no_have_sizeof_vla_not_evaluate_cxx

@@ -3,9 +3,9 @@
 #define N_  (1917)
 #if !__cplusplus
     static size_t pvf2_foo(size_t m, size_t n, int (*a)[m][n]) {
-        assert(M_ == m);
-        assert(N_ == n);
-        assert(N_ == TU_COUNTOF((*a)[0]));
+        tu_assert(M_ == m);
+        tu_assert(N_ == n);
+        tu_assert(N_ == TU_COUNTOF((*a)[0]));
         TU_ASSERT_AND_RETURN(M_, TU_COUNTOF(*a));
     }
     static size_t TU_UNIT(void) {
@@ -23,24 +23,24 @@
     #endif
     #if HAVE_MDSPAN
         static size_t pvf2_foo(std::mdspan<int, std::dims<2>> a_) {
-            assert(M_ == a_.extent(0));
-            assert(N_ == a_.extent(1));
+            tu_assert(M_ == a_.extent(0));
+            tu_assert(N_ == a_.extent(1));
 
             typedef decltype(a_)::element_type a_t[a_.extent(0)][a_.extent(1)];
             a_t &a = *(a_t *)(a_.data_handle());
 
-            assert(N_ == TU_COUNTOF(a[0]));
+            tu_assert(N_ == TU_COUNTOF(a[0]));
             TU_ASSERT_AND_RETURN(M_, TU_COUNTOF(a));
         }
     #else
         static size_t pvf2_foo(size_t m, size_t n, int *a_) {
-            assert(M_ == m);
-            assert(N_ == n);
+            tu_assert(M_ == m);
+            tu_assert(N_ == n);
 
             typedef int a_t[m][n];
             a_t &a = *(a_t *)a_;
 
-            assert(N_ == TU_COUNTOF(a[0]));
+            tu_assert(N_ == TU_COUNTOF(a[0]));
             TU_ASSERT_AND_RETURN(M_, TU_COUNTOF(a));
         }
     #endif

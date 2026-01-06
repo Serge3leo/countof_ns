@@ -5,6 +5,6 @@ size_t TU_UNIT(void) {
         int flex[];
     } a[d1];
     tu_static_assert(0 == sizeof(a[0]));
-    assert(0 == sizeof(a));
+    tu_assert(0 == sizeof(a));
     TU_ASSERT_AND_RETURN(d1, TU_COUNTOF(a));
 }
