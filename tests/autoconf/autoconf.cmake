@@ -46,10 +46,6 @@ if (MSVC)
 else ()
     set(TAC_AC_WERROR -Werror)
 endif ()
-if (TAC_POSITIVE_WERROR)
-    # Для всех остальных тестов и примеров это опционально
-    set(TAC_WERROR "${TAC_AC_WERROR}")
-endif ()
 #if (CMAKE_C_COMPILER_ID STREQUAL Intel)
 #    # TODO: skip C++ for oldest Intel icpc, my local troubles XXX
 #    set(CXX_ENABLED FALSE)
@@ -69,12 +65,8 @@ if (MSVC)
     endif ()
 endif ()
 if (TAC_ENABLE_WARNINGS)
-    if (MSVC)
-        string(APPEND cmn_flags " /W4 /wd4127 ")
-    elseif (CMAKE_C_COMPILER_ID STREQUAL "GNU")
-        string(APPEND cmn_flags " -Wall -Wextra -Wno-vla")
-    elseif (CMAKE_C_COMPILER_ID MATCHES "Clang$" OR
-            CMAKE_C_COMPILER_ID MATCHES "IntelLLVM")
+    if (CMAKE_C_COMPILER_ID MATCHES "Clang$" OR
+        CMAKE_C_COMPILER_ID MATCHES "IntelLLVM")
         string(APPEND cmn_flags " -Wall -Wextra -pedantic"
                                 " -Wno-unknown-warning-option"
                                 " -Wno-c23-extensions"  # TODO
@@ -85,20 +77,39 @@ if (TAC_ENABLE_WARNINGS)
                                 " -Wno-gnu-empty-initializer"
                                 " -Wno-gnu-empty-struct"
                                 " -Wno-gnu-flexible-array-union-member"
+                                " -Wno-gnu-folding-constant"
+                                " -Wno-gnu-statement-expression-from-macro-expansion"
                                 " -Wno-vla-cxx-extension"
+                                " -Wno-vla-extension"
                                 " -Wno-zero-length-array"
                                 " -ferror-limit=9999")
+    elseif (CMAKE_C_COMPILER_ID STREQUAL "GNU")
+        string(APPEND cmn_flags " -Wall -Wextra -Wno-vla")
+    # elseif (CMAKE_C_COMPILER_ID MATCHES "Intel")
+    #     # HAVE_BROKEN___TYPEOF__
+    elseif (CMAKE_C_COMPILER_ID MATCHES "LCC")
+        # TODO: How enable/disable?
+        # error #618: struct or union declares no named members [-Werror=pedantic]
+        # warning #993: subtraction of pointer types "int (**)[<expression>]" and "volatile int (**)[d1]" is nonstandard
+        # warning #42: operand types are incompatible ("int (**)[<expression>]" and "volatile int (**)[d1]")
+        string(APPEND cmn_flags " -Wall -Wextra")
+    elseif (CMAKE_C_COMPILER_ID MATCHES "NVHPC")
+        string(APPEND cmn_flags " -Wall -Wextra -pedantic"
+                                " --diag_suppress warning_directive"
+                                " --diag_suppress no_named_fields")
+    elseif (MSVC)
+        # Compiler Warning (level 4)
+        # C4127 - conditional expression is constant
+        # C4702 - unreachable code
+        string(APPEND cmn_flags " /W4 /wd4127")
     elseif (CMAKE_C_COMPILER_ID MATCHES "SunPro")
-        string(APPEND cmn_flags " -Wall -Wextra -pedantic -errtags")
+        # string(APPEND TAC_AC_WERROR " -pedantic")
+        string(APPEND cmn_flags " -Wall -Wextra -errtags")
         string(APPEND CMAKE_C_FLAGS " -errtags"
                                     " -erroff=E_KW_IS_AN_EXTENSION_OF_ANSI"
                                             ",E_NONPORTABLE_BIT_FIELD_TYPE"
                                             ",E_END_OF_LOOP_CODE_NOT_REACHED"
                                             ",E_STATEMENT_NOT_REACHED")
-    elseif (CMAKE_C_COMPILER_ID MATCHES "NVHPC")
-        string(APPEND cmn_flags " -Wall -Wextra -pedantic"
-                                " --diag_suppress warning_directive"
-                                " --diag_suppress no_named_fields")
     else ()
         string(APPEND cmn_flags " -Wall -Wextra -pedantic")
     endif ()
@@ -279,4 +290,8 @@ endif ()
 if (HAVE_BROKEN___TYPEOF__)
     message("TODO: ADD -D_COUNTOF_NS_BROKEN_TYPEOF")
     string(APPEND CMAKE_C_FLAGS " -D_COUNTOF_NS_BROKEN_TYPEOF")  # TODO XXX
+endif ()
+if (TAC_POSITIVE_WERROR AND NOT HAVE_BROKEN___TYPEOF__)
+    # Для всех остальных тестов и примеров это опционально
+    set(TAC_WERROR "${TAC_AC_WERROR}")
 endif ()

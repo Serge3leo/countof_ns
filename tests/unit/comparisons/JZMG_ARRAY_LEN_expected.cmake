@@ -44,7 +44,8 @@ function (tu_jzmg_array_len_expected expected pos_pos neg_pos)
                              "pos_vla_eval2d.compiler_bug"
                              pos_base "${pos_base}")
     endif ()
-    if (CMAKE_C_COMPILER_ID STREQUAL Intel)
+    if (CMAKE_C_COMPILER_ID STREQUAL Intel AND
+        NOT CMAKE_BUILD_TYPE MATCHES "Debug")
             # Zero is result of zero-by-zero division on old Intel.
         string(REGEX REPLACE "(struct|zla)_00.run_fail"
                              "\\1_00.run_0_unexpected"
@@ -85,10 +86,21 @@ function (tu_jzmg_array_len_expected expected pos_pos neg_pos)
     set(run_div0_Intel pos_vla_struct_n0 pos_vla_zla_n0 neg_zla_ptr)
     set(run_fpe_Intel pos_vla_00
                       neg_zla_ptr neg_vla_zla_ptr neg_zla_vla_ptr)
+    if (CMAKE_BUILD_TYPE MATCHES "Debug")
+        list(APPEND run_fpe_Intel pos_vla_n0
+                                  pos_vla_zla_00 pos_vla_zla_n0)
+    endif ()
     set(build_div0_IntelLLVM pos_alone_n0 pos_zla_n0 neg_alone_ptr neg_zla_ptr)
     set(run_div0_IntelLLVM pos_vla_alone_00 pos_vla_alone_n0
                            pos_vla_struct_00 pos_vla_struct_n0
                            pos_vla_zla_00 pos_vla_zla_n0)
+    if (CMAKE_BUILD_TYPE MATCHES "Debug")
+        list(APPEND run_fpe_IntelLLVM
+                        pos_vla_00 pos_vla_n0
+                        pos_vla_alone_00 pos_vla_alone_n0
+                        pos_vla_struct_00 pos_vla_struct_n0
+                        pos_vla_zla_00 pos_vla_zla_n0)
+    endif ()
     set(build_div0_LCC pos_zla_n0)
     set(run_fpe_LCC pos_vla_00 pos_vla_n0
                     pos_vla_struct_00 pos_vla_struct_n0
@@ -98,6 +110,13 @@ function (tu_jzmg_array_len_expected expected pos_pos neg_pos)
     set(run_div0_NVHPC pos_vla_struct_00 pos_vla_struct_n0
                        pos_vla_zla_00 pos_vla_zla_n0)
     set(run_fpe_NVHPC pos_vla_00 pos_vla_0n pos_vla_n0)
+    if (CMAKE_BUILD_TYPE MATCHES "Debug")
+        list(APPEND run_fpe_NVHPC pos_vla_struct_00 pos_vla_struct_n0
+                                  pos_vla_zla_00 pos_vla_zla_n0
+                                  neg_vla_zla_ptr
+                                  neg_zla_ptr
+                                  neg_zla_vla_ptr)
+    endif ()
     set(run_fpe_SunPro pos_vla_00 pos_vla_n0 neg_vla_zla_ptr neg_zla_vla_ptr)
     foreach (base IN ITEMS pos_base neg_base)
         foreach (b IN LISTS build_div0_${CMAKE_C_COMPILER_ID})
