@@ -271,6 +271,12 @@
                             ? _countof_ns(a) \
                             : ({ __typeof__(&(a)) _countof_ns_a; \
                                  _countof_ns(*_countof_ns_a); }))
+            #elif 13 <= __GNUC__ && (__GNUC__*100+__GNUC_MINOR__) < 1403
+                #define countof_ns(a)  (__builtin_constant_p(sizeof(a)) \
+                            ? _countof_ns(a) \
+                            : ({ __typeof__(&(a)) _countof_ns_a; \
+                                 (void)sizeof(a); \
+                                 _countof_ns(*_countof_ns_a); }))
             #else
                 #define countof_ns(a)  (__builtin_constant_p(sizeof(a)) \
                             ? _countof_ns(a) \
