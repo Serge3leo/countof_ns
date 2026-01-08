@@ -47,11 +47,15 @@ function (tu_cntfn_expected expected pos_pos neg_pos)
                 list(APPEND ints ${b}_cxx.bltn)
             endif ()
         elseif (b MATCHES "pos_vla_eval2d")
-            set(ints ${b}.gen.run_c2y.run_eval_5)
+            set(ints ${b}.gen.run_c2y.run_eval_3)
             if (CMAKE_C_COMPILER_ID STREQUAL SunPro)
                 list(APPEND ints ${b}.c11.run_eval_5 ${b}.bltn.run_eval_5)
-            else ()
+            elseif (CMAKE_C_COMPILER_ID STREQUAL Intel OR
+                    CMAKE_C_COMPILER_ID STREQUAL LCC OR
+                    CMAKE_C_COMPILER_ID STREQUAL NVHPC)
                 list(APPEND ints ${b}.c11.run_eval_2 ${b}.bltn.run_eval_2)
+            else ()
+                list(APPEND ints ${b}.c11 ${b}.bltn)
             endif ()
             list(APPEND ints ${b}_cxx.tmpl.build_fail)
             if (CMAKE_CXX_COMPILER_ID STREQUAL Clang OR
@@ -138,7 +142,7 @@ function (tu_cntfn_expected expected pos_pos neg_pos)
             list(PREPEND pos_base "cntfn_dflt_gen"
                                   "cntfn_dflt_bltn_cxx")
         endif ()
-    elseif (CMAKE_C_COMPILER_ID STREQUAL Pelles)  # TODO: Not cmake module
+    elseif (CMAKE_C_COMPILER_ID STREQUAL PellesC)  # TODO: Not cmake module
         list(PREPEND pos_base "cntfn_dflt_c11")
     else ()
         list(PREPEND pos_base "cntfn_dflt_bltn"

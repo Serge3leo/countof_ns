@@ -13,9 +13,9 @@ option(TAC_VERBOSE
 # TODO: option(TAC_ALL_AUTOCONF
 # TODO:        "Check all autoconf tests, including unused ones" OFF)
 
-if (CMAKE_C_COMPILER_ID STREQUAL "") # TODO Pelles XXX Remove or?
+if (CMAKE_C_COMPILER_ID STREQUAL "") # TODO PellesC XXX Remove or?
     set(CXX_ENABLED FALSE)
-    set(CMAKE_C_COMPILER_ID Pelles)
+    set(CMAKE_C_COMPILER_ID PellesC)
     #set(CMAKE_C_COMPILER_FRONTEND_VARIANT "MSVC")
     set(CMAKE_C_COMPILER_ID "${CMAKE_C_COMPILER_ID}")
     set(CMAKE_C_COMPILER_FRONTEND_VARIANT
@@ -115,7 +115,7 @@ if (TAC_ENABLE_WARNINGS)
 endif ()
 string(APPEND CMAKE_C_FLAGS " ${cmn_flags}")
 string(APPEND CMAKE_CXX_FLAGS " ${cmn_flags}")
-endif () # TODO Pelles XXX Remove or?
+endif () # TODO PellesC XXX Remove or?
 
 set(tac_checks        have_typeof
                       have___typeof__
