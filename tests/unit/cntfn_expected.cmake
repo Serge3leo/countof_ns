@@ -47,32 +47,38 @@ function (tu_cntfn_expected expected pos_pos neg_pos)
                 list(APPEND ints ${b}_cxx.bltn)
             endif ()
         elseif (b MATCHES "pos_vla_eval2d")
-            set(ints ${b}.gen.run_c2y.run_eval_7)
+            set(ints ${b}.gen.run_c2y.run_eval_5)
             if (CMAKE_C_COMPILER_ID STREQUAL SunPro)
-                list(APPEND ints ${b}.c11.run_eval_7 ${b}.bltn.run_eval_7)
+                list(APPEND ints ${b}.c11.run_eval_5 ${b}.bltn.run_eval_5)
             else ()
-                list(APPEND ints ${b}.c11.run_eval_3 ${b}.bltn.run_eval_3)
+                list(APPEND ints ${b}.c11.run_eval_2 ${b}.bltn.run_eval_2)
             endif ()
             list(APPEND ints ${b}_cxx.tmpl.build_fail)
             if (CMAKE_CXX_COMPILER_ID STREQUAL Clang OR
                 CMAKE_CXX_COMPILER_ID STREQUAL LCC)
-                list(APPEND ints ${b}_cxx.bltn.run_eval_4)
+                list(APPEND ints ${b}_cxx.bltn.run_eval_3)
             elseif (CMAKE_CXX_COMPILER_ID STREQUAL GNU OR
                     CMAKE_CXX_COMPILER_ID STREQUAL SunPro)
                 list(APPEND ints ${b}_cxx.bltn.run_eval_-1)
             elseif (CMAKE_CXX_COMPILER_ID STREQUAL Intel OR
                     CMAKE_CXX_COMPILER_ID STREQUAL IntelLLVM)
                 if (CMAKE_BUILD_TYPE MATCHES "Debug")
-                    list(APPEND ints ${b}_cxx.bltn.run_eval_4)
+                    list(APPEND ints ${b}_cxx.bltn.run_eval_3)
                 else ()
-                    list(APPEND ints ${b}_cxx.bltn.run_eval_5)
+                    list(APPEND ints ${b}_cxx.bltn.run_eval_4)
                 endif ()
             else ()
                 list(APPEND ints ${b}_cxx.bltn)
             endif ()
         elseif (b MATCHES "vla")
-            set(ints ${b}.gen.run_c2y ${b}.c11 ${b}.bltn
-                     ${b}_cxx.tmpl.build_fail ${b}_cxx.bltn)
+            if (CMAKE_C_COMPILER_ID STREQUAL Clang OR
+                CMAKE_C_COMPILER_ID STREQUAL IntelLLVM)
+                set(ints ${b}.gen.run_c2y.disable ${b}.c11 ${b}.bltn
+                         ${b}_cxx.tmpl.build_fail ${b}_cxx.bltn)
+            else ()
+                set(ints ${b}.gen.run_c2y ${b}.c11 ${b}.bltn
+                         ${b}_cxx.tmpl.build_fail ${b}_cxx.bltn)
+            endif ()
         elseif (NOT HAVE___STDC_NO_VLA__)
             set(ints ${b}.gen ${b}.c11 ${b}.bltn
                      ${b}_cxx.tmpl ${b}_cxx.bltn)
@@ -125,8 +131,13 @@ function (tu_cntfn_expected expected pos_pos neg_pos)
         list(PREPEND pos_base "cntfn_dflt_gen"
                               "cntfn_dflt_tmpl_cxx")
     elseif (CMAKE_C_COMPILER_ID STREQUAL SunPro)
-        list(PREPEND pos_base "cntfn_dflt_gen"
-                              "cntfn_dflt_bltn_cxx")
+        if (TAC_POSITIVE_WERROR)
+            list(PREPEND pos_base "cntfn_dflt_gen.gen"
+                                  "cntfn_dflt_bltn_cxx")
+        else ()
+            list(PREPEND pos_base "cntfn_dflt_gen"
+                                  "cntfn_dflt_bltn_cxx")
+        endif ()
     elseif (CMAKE_C_COMPILER_ID STREQUAL Pelles)  # TODO: Not cmake module
         list(PREPEND pos_base "cntfn_dflt_c11")
     else ()

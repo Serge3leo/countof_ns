@@ -143,13 +143,22 @@
 
 #include <stddef.h>
 
-    // Avoid uncertain zero-by-zero divide and warnings
-#if __SUNPRO_C  // TODO: C/C++ or SunPro/others... ?
-    #define _countof_ns_unsafe(a)  (0 == sizeof(*(a)) ? 0 \
-                : sizeof(a)/( sizeof(*(a)) ? sizeof(*(a)) : (size_t)-1 ))
-#else
+    // Avoid uncertain zero-by-zero divide
+#if __NVCOMPILER
+        // Probably NVHPC (pgcc) bug (HAVE_BROKEN_VLA et all?)
     #define _countof_ns_unsafe(a)  (0 == sizeof((a)[0]) ? 0 \
                 : sizeof(a)/( sizeof((a)[0]) ? sizeof((a)[0]) : (size_t)-1 ))
+#elif __SUNPRO_C
+        // TODO: C/C++ or SunPro/others... ?
+        // - SunPro ZLA extension limited: can't sizeof((ZLA)[0]);
+        // - C++ containers implement only `[]` operator;
+    #define _countof_ns_unsafe(a)  \
+                (0 == sizeof(*(a)) ? 0 : sizeof(a)/sizeof(*(a)))
+#else
+        // Strange zero division warning from Clang (clang) and InteLLVM (icx),
+        // only if it is accompanied by any other compilation errors
+    #define _countof_ns_unsafe(a)  \
+                (0 == sizeof((a)[0]) ? 0 : sizeof(a)/sizeof((a)[0]))
 #endif
 
 #if !__cplusplus

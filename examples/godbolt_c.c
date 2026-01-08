@@ -110,7 +110,7 @@ int main(void) {
 
     #if EXAMPLE_FAIL == 1
         int *p1 = &a1[0];
-
+        (void)p1;
         (void)stdc_countof(p1);
         (void)countof_ns(p1);
         printf("int * - Fail\n");
@@ -123,7 +123,7 @@ int main(void) {
 
     #if EXAMPLE_FAIL == 3
         int (*p2)[10] = &a2[0];
-
+        (void)p2;
         (void)stdc_countof(p2);
         (void)countof_ns(p2);
         printf("int (*)[N] - Fail\n");
@@ -165,7 +165,7 @@ int main(void) {
 
         #if EXAMPLE_FAIL == 4
             int (*zp)[0] = &zn0[0];
-
+            (void)zp;
             (void)countof_ns(zp);
             printf("int (*)[0] - Fail\n");
         #endif
@@ -200,7 +200,7 @@ int main(void) {
 
             #if EXAMPLE_FAIL == 5
                 int (*vp)[n] = &vn0[0];
-
+                (void)vp;
                 (void)countof_ns(vp);  // Compile-time constraint violation
                 printf("int (*)[n] - Fail\n");
             #endif

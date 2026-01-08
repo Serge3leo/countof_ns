@@ -72,12 +72,11 @@ if (TAC_ENABLE_WARNINGS)
                                 " -Wno-c23-extensions"  # TODO
                                 " -Wno-c2y-extensions"  # countof()
                                 " -Wno-c99-extensions"  # C++ flexible array members
-                                " -Wno-division-by-zero"  # TODO
                                 " -Wno-flexible-array-extensions"
                                 " -Wno-gnu-empty-initializer"
                                 " -Wno-gnu-empty-struct"
                                 " -Wno-gnu-flexible-array-union-member"
-                                " -Wno-gnu-folding-constant"
+                                " -Wno-gnu-folding-constant"  # TODO XXX
                                 " -Wno-gnu-statement-expression-from-macro-expansion"
                                 " -Wno-vla-cxx-extension"
                                 " -Wno-vla-extension"
