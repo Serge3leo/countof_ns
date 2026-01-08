@@ -4,7 +4,7 @@
 
 #include "tu_stub.h"
 
-int main() {
+int main(void) {
     size_t negative = TU_UNIT();
     TU_FAIL("main", 0, negative);
     return TU_GT_DESIRED_FAIL;

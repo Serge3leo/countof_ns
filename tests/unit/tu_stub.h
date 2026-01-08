@@ -78,13 +78,15 @@
 #define _TU_TODO_MAGIC (0x390da063)
 
 #define TU_FAIL(method, desired, computed)  do { \
-            if(_TU_TODO_MAGIC != (computed)) { \
+            volatile size_t _tuf_d_ = (desired); \
+            volatile size_t _tuf_c_ = (computed); \
+            if(_TU_TODO_MAGIC != _tuf_c_) { \
                 printf("Fail %zu desired=%zu %s(%s, ...) ", \
-                       (computed), (size_t)(desired), (method), (#desired)); \
+                       _tuf_c_, _tuf_d_, (method), (#desired)); \
                 TU_REPORT(); \
-                if (0 == (computed)) { \
+                if (0 == _tuf_c_) { \
                     exit(TU_0_FAIL); \
-                } else if ((long long)(computed) <= (long long)(desired)) { \
+                } else if (_tuf_c_ <= _tuf_d_) { \
                     exit(TU_LE_DESIRED_FAIL); \
                 } \
             } \
@@ -93,17 +95,17 @@
 // Positive tests
 
 #define _TU_ASSERT_AND_RETURN(method, desired, computed)  do { \
-            volatile size_t _d_ = (desired); \
-            volatile size_t _c_ = (computed); \
-            if (_d_ == _c_) { \
+            volatile size_t _tuar_d_ = (desired); \
+            volatile size_t _tuar_c_ = (computed); \
+            if (_tuar_d_ == _tuar_c_) { \
                 /* clang/icx */ \
                 /* For UB (divide zero, etc) won't choose this branch. */ \
                 printf("Ok %zu %s(%s=%zu, ...) ", \
-                       _c_, (method), (#desired), _d_); \
+                       _tuar_c_, (method), (#desired), _tuar_d_); \
                 TU_REPORT(); \
                 exit(EXIT_SUCCESS); \
             } \
-            TU_FAIL((method), (desired), (computed)); \
+            TU_FAIL((method), (desired), _tuar_c_); \
             return _TU_TODO_MAGIC; \
         } while(0)
 

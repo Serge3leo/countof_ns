@@ -72,6 +72,13 @@ function (tu_alx_countof_expected expected pos_pos neg_pos)
     set(run_div0_IntelLLVM pos_vla_alone_00 pos_vla_alone_n0
                            pos_vla_struct_00 pos_vla_struct_n0
                            pos_vla_zla_00 pos_vla_zla_n0)
+    if (CMAKE_BUILD_TYPE MATCHES "Debug")
+        list(APPEND run_fpe_IntelLLVM
+                        pos_vla_00 pos_vla_n0
+                        pos_vla_alone_00 pos_vla_alone_n0
+                        pos_vla_struct_00 pos_vla_struct_n0
+                        pos_vla_zla_00 pos_vla_zla_n0)
+    endif ()
     set(run_fpe_LCC pos_vla_00 pos_vla_n0
                     pos_vla_struct_00 pos_vla_struct_n0
                     pos_vla_zla_00 pos_vla_zla_n0)
@@ -80,6 +87,10 @@ function (tu_alx_countof_expected expected pos_pos neg_pos)
     set(run_div0_NVHPC pos_vla_struct_00 pos_vla_struct_n0
                        pos_vla_zla_00 pos_vla_zla_n0)
     set(run_fpe_NVHPC pos_vla_00 pos_vla_0n pos_vla_n0)
+    if (CMAKE_BUILD_TYPE MATCHES "Debug")
+        list(APPEND run_fpe_NVHPC pos_vla_struct_00 pos_vla_struct_n0
+                                  pos_vla_zla_00 pos_vla_zla_n0)
+    endif ()
     foreach (base IN ITEMS pos_base neg_base)
         foreach (b IN LISTS build_div0_${CMAKE_C_COMPILER_ID})
             string(REPLACE "${b}.build_fail" "${b}.build_fail.build_DIV0"

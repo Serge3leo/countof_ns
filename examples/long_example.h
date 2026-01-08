@@ -52,7 +52,7 @@
 // HAVE_BROKEN_VLA_CXX - C++ VLA extension don't support two-dimensional
 //                       VLA. "tests/autoconf/have_vla.h". Check:
 //
-//     ${CXX} -std=c++14 -DHAVE_VLA_CXX \
+//     ${CXX} -std=c++14 -DHAVE_VLA_CXX
 //            tests/autoconf/no_have_broken_vla_cxx.cpp && ./a.out
 //
 
