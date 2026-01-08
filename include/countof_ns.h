@@ -260,7 +260,29 @@
                     (_countof_ns_typeof(a) *)&(a), \
                     _countof_ns_typeof(*(a))(*)[_countof_ns_unsafe(a)]: 0))
     #endif
-    #define countof_ns(a)  (_countof_ns_unsafe(a) + _countof_ns_must_array(a))
+    #define _countof_ns(a)  (_countof_ns_unsafe(a) + _countof_ns_must_array(a))
+    #if __STDC_NO_VLA__ || \
+        __NVCOMPILER || __SUNPRO_C || __LCC__ || __INTEL_COMPILER
+        #define countof_ns(a)  (_countof_ns(a))
+    #elif defined(__has_builtin)
+        #if __has_builtin(__builtin_constant_p)
+            #if __clang__
+                #define countof_ns(a)  (__builtin_constant_p(a) \
+                            ? _countof_ns(a) \
+                            : ({ __typeof__(&(a)) _countof_ns_a; \
+                                 _countof_ns(*_countof_ns_a); }))
+            #else
+                #define countof_ns(a)  (__builtin_constant_p(sizeof(a)) \
+                            ? _countof_ns(a) \
+                            : ({ __typeof__(&(a)) _countof_ns_a; \
+                                 _countof_ns(*_countof_ns_a); }))
+            #endif
+        #endif
+    #endif
+    #ifndef countof_ns
+        #define countof_ns(a)  ({ __typeof__(&(a)) _countof_ns_a; \
+                                  _countof_ns(*_countof_ns_a); })
+    #endif
 #else
     #if _COUNTOF_NS_REFUSE_VLA || _MSC_VER
             // _MSC_VER is the only compiler without support for the C++
