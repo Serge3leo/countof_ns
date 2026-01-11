@@ -46,7 +46,7 @@ function (tu_cntfn_expected expected pos_pos neg_pos)
             else ()
                 list(APPEND ints ${b}_cxx.bltn)
             endif ()
-        elseif (b MATCHES "pos_vla_eval2d")
+        elseif (b MATCHES "pos_vla_vla_eval")
             set(ints ${b}.gen.run_c2y.run_eval_3)
             if (CMAKE_C_COMPILER_ID STREQUAL SunPro)
                 list(APPEND ints ${b}.c11.run_eval_5 ${b}.bltn.run_eval_5)
@@ -64,6 +64,34 @@ function (tu_cntfn_expected expected pos_pos neg_pos)
             elseif (CMAKE_CXX_COMPILER_ID STREQUAL GNU OR
                     CMAKE_CXX_COMPILER_ID STREQUAL SunPro)
                 list(APPEND ints ${b}_cxx.bltn.run_eval_-1)
+            elseif (CMAKE_CXX_COMPILER_ID STREQUAL Intel OR
+                    CMAKE_CXX_COMPILER_ID STREQUAL IntelLLVM)
+                if (CMAKE_BUILD_TYPE MATCHES "Debug")
+                    list(APPEND ints ${b}_cxx.bltn.run_eval_3)
+                else ()
+                    list(APPEND ints ${b}_cxx.bltn.run_eval_4)
+                endif ()
+            else ()
+                list(APPEND ints ${b}_cxx.bltn)
+            endif ()
+        elseif (b MATCHES "pos_fix_vla_eval")
+            set(ints ${b}.gen.run_c2y.run_eval_4)
+            if (CMAKE_C_COMPILER_ID STREQUAL SunPro)
+                list(APPEND ints ${b}.c11.run_eval_4 ${b}.bltn.run_eval_4)
+            elseif (CMAKE_C_COMPILER_ID STREQUAL Intel OR
+                    CMAKE_C_COMPILER_ID STREQUAL LCC OR
+                    CMAKE_C_COMPILER_ID STREQUAL NVHPC)
+                list(APPEND ints ${b}.c11.run_eval_3 ${b}.bltn.run_eval_3)
+            else ()
+                list(APPEND ints ${b}.c11.run_eval_1 ${b}.bltn.run_eval_1)
+            endif ()
+            list(APPEND ints ${b}_cxx.tmpl.build_fail)
+            if (CMAKE_CXX_COMPILER_ID STREQUAL Clang OR
+                CMAKE_CXX_COMPILER_ID STREQUAL LCC)
+                list(APPEND ints ${b}_cxx.bltn.run_eval_4)
+            elseif (CMAKE_CXX_COMPILER_ID STREQUAL GNU OR
+                    CMAKE_CXX_COMPILER_ID STREQUAL SunPro)
+                list(APPEND ints ${b}_cxx.bltn)
             elseif (CMAKE_CXX_COMPILER_ID STREQUAL Intel OR
                     CMAKE_CXX_COMPILER_ID STREQUAL IntelLLVM)
                 if (CMAKE_BUILD_TYPE MATCHES "Debug")
@@ -209,11 +237,7 @@ function (tu_cntfn_expected expected pos_pos neg_pos)
     endif ()
     if (CMAKE_C_COMPILER_ID STREQUAL NVHPC AND HAVE_BROKEN_VLA)
         string(REGEX REPLACE
-            "(pos_vla_eval[_.][^_;]*)(\\.(run_eval_[-0-9]+|build_fail))*(;|$)"
-            "\\1.compiler_bug\\4"
-            pos_base "${pos_base}")
-        string(REGEX REPLACE
-            "(pos_vla_eval2d[_.][^_;]*)(\\.(run_eval_[-0-9]+|build_fail))*(;|$)"
+            "(pos_[^.]*vla_eval[^_.]*[_.][^_;]*)(\\.(run_eval_[-0-9]+|build_fail))*(;|$)"
             "\\1.compiler_bug\\4"
             pos_base "${pos_base}")
     endif ()

@@ -3,20 +3,20 @@
     #define ADD_EVAL_CNT  (0)
 #endif
 static size_t TU_UNIT(void) {
-    size_t l = 1917;
+    size_t l = 17;
     size_t m = 10;
     size_t n = 25;
     int v[l][m][n];
     size_t i = 0;
-    tu_assert(10*25*sizeof(int) == sizeof(v[i++]));
+    tu_assert(m*n*sizeof(int) == sizeof(v[i++]));
     #if !__cplusplus
         tu_assert(1 == i);
     #endif
-    tu_assert(25*sizeof(int) == sizeof(v[i++][0]));
+    tu_assert(n*sizeof(int) == sizeof(v[i++][0]));
     #if !__cplusplus
         tu_assert(2 == i);
     #endif
     i = 0;
-    tu_assert(10 == TU_COUNTOF(v[i++]));
+    tu_assert(m == TU_COUNTOF(v[i++]));
     TU_ASSERT_AND_RETURN(1 + ADD_EVAL_CNT, i);
 }

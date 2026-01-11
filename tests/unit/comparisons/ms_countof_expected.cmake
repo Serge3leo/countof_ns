@@ -15,8 +15,10 @@ function (tu_ms_countof_expected expected pos_pos neg_pos)
             list(APPEND pos_base ${b}.build_fail ${b}_cxx.build_fail)
         elseif (b MATCHES "_0n")
             list(APPEND pos_base ${b} ${b}_cxx.build_fail)
-        elseif (b MATCHES "_vla_eval2d")
+        elseif (b MATCHES "_vla_vla_eval")
             list(APPEND pos_base ${b}.run_eval_1)
+        elseif (b MATCHES "_fix_vla_eval")
+            list(APPEND pos_base ${b}.run_eval_2)
         elseif (b MATCHES "_vla")
             list(APPEND pos_base ${b})
         else ()
@@ -35,11 +37,14 @@ function (tu_ms_countof_expected expected pos_pos neg_pos)
     if (CMAKE_C_COMPILER_ID STREQUAL NVHPC AND HAVE_BROKEN_VLA)
         string(REGEX REPLACE "pos_vla_0n(;|$)" "pos_vla_0n.compiler_bug\\1"
                              pos_base "${pos_base}")
-        string(REGEX REPLACE "pos_vla_eval(;|$)"
-                             "pos_vla_eval.compiler_bug\\1"
+        string(REGEX REPLACE "(pos_[^.;]*vla_eval[^.;]*)(|\\.run_eval_[0-9]*)(;|$)"
+                             "\\1.compiler_bug\\3"
                              pos_base "${pos_base}")
-        string(REGEX REPLACE "pos_vla_eval2d\\.run_eval_1"
-                             "pos_vla_eval2d.compiler_bug"
+    endif ()
+    if (CMAKE_C_COMPILER_ID STREQUAL SunPro)
+        # TODO Compiler bug or?
+        string(REGEX REPLACE "pos_fix_vla_eval.run_eval_2"
+                             "pos_fix_vla_eval.run_eval_1"
                              pos_base "${pos_base}")
     endif ()
     if (CMAKE_C_COMPILER_ID STREQUAL Intel AND
