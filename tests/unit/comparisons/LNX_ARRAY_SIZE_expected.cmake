@@ -14,8 +14,10 @@ function (tu_lnx_array_size_expected expected pos_pos neg_pos)
             list(APPEND pos_base ${b}.run_fail)
         elseif (b MATCHES "_[n0]0")
             list(APPEND pos_base ${b}.build_fail)
-        elseif (b MATCHES "_vla_eval2d")
+        elseif (b MATCHES "_vla_vla_eval")
             list(APPEND pos_base ${b}.run_eval_1)
+        elseif (b MATCHES "_fix_vla_eval")
+            list(APPEND pos_base ${b}.run_eval_2)
         else ()
             list(APPEND pos_base ${b})
         endif ()
@@ -27,11 +29,8 @@ function (tu_lnx_array_size_expected expected pos_pos neg_pos)
     if (CMAKE_C_COMPILER_ID STREQUAL NVHPC AND HAVE_BROKEN_VLA)
         string(REGEX REPLACE "pos_vla_0n(;|$)" "pos_vla_0n.compiler_bug\\1"
                              pos_base "${pos_base}")
-        string(REGEX REPLACE "pos_vla_eval(;|$)"
-                             "pos_vla_eval.compiler_bug\\1"
-                             pos_base "${pos_base}")
-        string(REGEX REPLACE "pos_vla_eval2d\\.run_eval_1"
-                             "pos_vla_eval2d.compiler_bug"
+        string(REGEX REPLACE "(pos_[^.;]*vla_eval[^.;]*)(|\\.run_eval_[0-9]*)(;|$)"
+                             "\\1.compiler_bug\\3"
                              pos_base "${pos_base}")
     endif ()
     set(build_div0_Clang pos_alone_n0 pos_struct_n0 pos_zla_n0

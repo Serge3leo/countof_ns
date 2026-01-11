@@ -2,32 +2,22 @@
 # SPDX-License-Identifier: BSD-2-Clause
 # SPDX-FileCopyrightText: 2025 Сергей Леонтьев (leo@sai.msu.ru)
 
-if (NOT (HAVE_BUILTIN_TYPES_COMPATIBLE_P AND HAVE_TYPEOF))
+if (NOT ((HAVE_BUILTIN_TYPES_COMPATIBLE_P OR
+          HAVE_HIDDEN_BUILTIN_TYPES_COMPATIBLE_P) AND HAVE_TYPEOF))
     return ()
 endif ()
 
-try_compile(HAVE_ALX_COUNTOF
-                SOURCE_FROM_CONTENT builtin_types_compatible_p.c [=[
-            #include <assert.h>
-            #if __has_builtin(__builtin_types_compatible_p)
-                // ALX_COUNTOF() use `static_assert()`, not `_Static_assert()`
-                static_assert(1);
-                int main(void) {}
-            #endif
-            ]=])
-if (NOT HAVE_ALX_COUNTOF)
-    message("Don't HAVE_ALX_COUNTOF")
-endif ()
-
-function (tu_alx_countof_expected expected pos_pos neg_pos)
+function (tu_n3369_nitems_expected expected pos_pos neg_pos)
     set(pos_base "")
     foreach (b IN ITEMS ${pos_pos})
         if (b MATCHES "_vla.*_[n0]0")
             list(APPEND pos_base ${b}.run_fail)
         elseif (b MATCHES "_[n0]0")
             list(APPEND pos_base ${b}.build_fail)
-        elseif (b MATCHES "_vla_eval2d")
+        elseif (b MATCHES "_vla_vla_eval")
             list(APPEND pos_base ${b}.run_eval_1)
+        elseif (b MATCHES "_fix_vla_eval")
+            list(APPEND pos_base ${b}.run_eval_2)
         else ()
             list(APPEND pos_base ${b})
         endif ()
@@ -39,11 +29,8 @@ function (tu_alx_countof_expected expected pos_pos neg_pos)
     if (CMAKE_C_COMPILER_ID STREQUAL NVHPC AND HAVE_BROKEN_VLA)
         string(REGEX REPLACE "pos_vla_0n(;|$)" "pos_vla_0n.compiler_bug\\1"
                              pos_base "${pos_base}")
-        string(REGEX REPLACE "pos_vla_eval(;|$)"
-                             "pos_vla_eval.compiler_bug\\1"
-                             pos_base "${pos_base}")
-        string(REGEX REPLACE "pos_vla_eval2d\\.run_eval_1"
-                             "pos_vla_eval2d.compiler_bug"
+        string(REGEX REPLACE "(pos_[^.;]*vla_eval[^.;]*)(|\\.run_eval_[0-9]*)(;|$)"
+                             "\\1.compiler_bug\\3"
                              pos_base "${pos_base}")
     endif ()
     set(build_div0_Clang pos_alone_n0 pos_struct_n0 pos_zla_n0
@@ -66,6 +53,9 @@ function (tu_alx_countof_expected expected pos_pos neg_pos)
                     pos_vla_alone_00 pos_vla_alone_n0
                     pos_vla_struct_00 pos_vla_struct_n0
                     pos_vla_zla_00 pos_vla_zla_n0)
+    set(run_fpe_Intel pos_vla_00)
+    set(run_div0_Intel pos_vla_struct_00 pos_vla_struct_n0
+                       pos_vla_zla_00 pos_vla_zla_n0)
     set(build_div0_IntelLLVM pos_alone_n0 pos_struct_n0 pos_zla_n0
                              pos_zla_00 pos_zla_alone_00 pos_zla_struct_00
                              neg_alone_ptr neg_zla_ptr)
@@ -112,9 +102,9 @@ function (tu_alx_countof_expected expected pos_pos neg_pos)
     set(${expected} "${pos_base};${neg_base}" PARENT_SCOPE)
 endfunction ()
 
-tu_alx_countof_expected(tu_alx_countof_available
-                           "${tu_pos_pos}" "${tu_neg_pos}")
-set(tu_alx_countof_params FALSE
-                          "ALX_COUNTOF" "_comparisons/ALX_COUNTOF.h"
-                          tu_alx_countof_available)
-list(APPEND tu_params_list tu_alx_countof_params)
+tu_n3369_nitems_expected(tu_n3369_nitems_available
+                         "${tu_pos_pos}" "${tu_neg_pos}")
+set(tu_n3369_nitems_params FALSE
+                          "N3369_NITEMS" "_comparisons/N3369_NITEMS.h"
+                          tu_n3369_nitems_available)
+list(APPEND tu_params_list tu_n3369_nitems_params)

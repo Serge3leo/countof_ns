@@ -37,8 +37,8 @@ ETC_modules = {
         "stdc_countof": {
                 "": "countof",
             },
-        "alx_countof": {
-                "": "ALX_COUNTOF",
+        "n3369_nitems": {
+                "": "N3369_NITEMS",
             },
         "jzmg_array_len": {
                 "_cxx": "JZMG_ARRAY_LEN",

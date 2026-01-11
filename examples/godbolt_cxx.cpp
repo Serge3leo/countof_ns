@@ -73,7 +73,12 @@ var_func_constexpr int sum2(const int (&a)[N][M]) {
     }
 #endif
 
+int fa1[1917];
+int fb1[countof_ns(fa1)];
+
 int main(void) {
+    assert(1917 == countof_ns(fb1));
+
     constexpr int a1[1917] = { 25, 10 };
     constexpr int a2[25][10] = { { 1917 }, { 25, 10 } };
 

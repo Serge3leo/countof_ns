@@ -37,7 +37,12 @@
     #define example_assert(e)  assert(e)
 #endif
 
+int fa1[1917];
+int fb1[countof_ns(fa1)];
+
 static void short_example(void) {
+    assert(1917 == countof_ns(fb1));
+
     size_t fail = 0;
     int a1[42] = { 0 };
     int a2[56][23] = { { 0 } };
