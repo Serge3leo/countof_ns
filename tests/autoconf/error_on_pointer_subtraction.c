@@ -8,7 +8,7 @@
 
 // Compilers with C11 semantics:
 //  - clang
-//  - GCC
+//  - GNU gcc
 //  - Pelles C 13.0
 //  - nvcc
 //

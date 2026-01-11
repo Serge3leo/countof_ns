@@ -32,7 +32,7 @@ jobs:
       # 1. <Latest MSVC compiler toolchain on the default runner image,
       # Windows, Release, default generator>
       #
-      # 2. <Latest GCC compiler toolchain on the default runner image, Linux,
+      # 2. <Latest GNU compiler toolchain on the default runner image, Linux,
       # Release, default generator>
       #
       # 3. <Latest Clang compiler toolchain on the default runner image, Linux,
