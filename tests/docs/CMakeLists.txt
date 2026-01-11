@@ -39,7 +39,7 @@ include (../unit/comparisons/stdc_countof_expected.cmake)
 include (../unit/comparisons/std_size_expected.cmake)
 include (../unit/comparisons/JZMG_ARRAY_LEN_expected.cmake)
 include (../unit/comparisons/LNX_ARRAY_SIZE_expected.cmake)
-include (../unit/comparisons/ALX_COUNTOF_expected.cmake)
+include (../unit/comparisons/N3369_NITEMS_expected.cmake)
 
 foreach (prm IN ITEMS ${tu_params_list})
     string(REGEX REPLACE "^tu_(.*)_params$" "\\1" cmp "${prm}")
@@ -58,7 +58,7 @@ add_test(NAME expected_tables
                  --std_size "${${std_size_available}}"
                  --jzmg_array_len "${${jzmg_array_len_available}}"
                  --lnx_array_size "${${lnx_array_size_available}}"
-                 --alx_countof "${${alx_countof_available}}"
+                 --n3369_nitems "${${n3369_nitems_available}}"
                 ${rep})
 
 add_test(NAME compare.en.ru
