@@ -4,7 +4,7 @@
 
 // Compilers with C11 semantics:
 //  - clang
-//  - GCC
+//  - GNU gcc
 //  - icx (IntelLLVM)
 //  - nvcc
 //  - Pelles C
