@@ -2,21 +2,9 @@
 # SPDX-License-Identifier: BSD-2-Clause
 # SPDX-FileCopyrightText: 2025 Сергей Леонтьев (leo@sai.msu.ru)
 
-if (NOT (HAVE_BUILTIN_TYPES_COMPATIBLE_P AND HAVE_TYPEOF))
+if (NOT ((HAVE_BUILTIN_TYPES_COMPATIBLE_P OR
+          HAVE_HIDDEN_BUILTIN_TYPES_COMPATIBLE_P) AND HAVE_TYPEOF))
     return ()
-endif ()
-
-try_compile(HAVE_N3369_NITEMS
-                SOURCE_FROM_CONTENT builtin_types_compatible_p.c [=[
-            #include <assert.h>
-            #if __has_builtin(__builtin_types_compatible_p)
-                // N3369_NITEMS() use `static_assert()`, not `_Static_assert()`
-                static_assert(1);
-                int main(void) {}
-            #endif
-            ]=])
-if (NOT HAVE_N3369_NITEMS)
-    message("Don't HAVE_N3369_NITEMS")
 endif ()
 
 function (tu_n3369_nitems_expected expected pos_pos neg_pos)

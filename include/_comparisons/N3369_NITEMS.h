@@ -37,7 +37,7 @@
 (                                                                    \
         0 * (int)sizeof(                                             \
                 struct {                                             \
-                        static_assert(e);                            \
+                        static_assert(e, #e);                        \
                         char ISO_C_forbids_a_struct_with_no_members; \
                 }                                                    \
         )                                                            \
