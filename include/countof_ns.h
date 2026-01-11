@@ -261,35 +261,7 @@
                     _countof_ns_typeof(*(a))(*)[_countof_ns_unsafe(a)]: 0))
     #endif
     #define _countof_ns(a)  (_countof_ns_unsafe(a) + _countof_ns_must_array(a))
-    #if __STDC_NO_VLA__ || \
-        __NVCOMPILER || __SUNPRO_C || __LCC__ || __INTEL_COMPILER
-        #define countof_ns(a)  (_countof_ns(a))
-    #elif defined(__has_builtin)
-        #if __has_builtin(__builtin_constant_p)
-            #if __clang__
-                #define countof_ns(a)  (__builtin_constant_p(a) \
-                            ? _countof_ns(a) \
-                            : ({ __typeof__(&(a)) _countof_ns_a; \
-                                 _countof_ns(*_countof_ns_a); }))
-            #elif 13 <= __GNUC__ && (__GNUC__*100+__GNUC_MINOR__) < 1403 && \
-                  _COUNTOF_NS_USE_BUILTIN
-                #define countof_ns(a)  (__builtin_constant_p(sizeof(a)) \
-                            ? _countof_ns(a) \
-                            : ({ __typeof__(&(a)) _countof_ns_a; \
-                                 (void)sizeof(a); \
-                                 _countof_ns(*_countof_ns_a); }))
-            #else
-                #define countof_ns(a)  (__builtin_constant_p(sizeof(a)) \
-                            ? _countof_ns(a) \
-                            : ({ __typeof__(&(a)) _countof_ns_a; \
-                                 _countof_ns(*_countof_ns_a); }))
-            #endif
-        #endif
-    #endif
-    #ifndef countof_ns
-        #define countof_ns(a)  ({ __typeof__(&(a)) _countof_ns_a; \
-                                  _countof_ns(*_countof_ns_a); })
-    #endif
+    #define countof_ns(a)  (_countof_ns(a))
 #else
     #if _COUNTOF_NS_REFUSE_VLA || _MSC_VER
             // _MSC_VER is the only compiler without support for the C++

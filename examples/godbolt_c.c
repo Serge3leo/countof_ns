@@ -21,11 +21,9 @@
 
 #include "countof_ns.h"
 
+#include <assert.h>
 #include <stdio.h>
 
-#if !__STDC_NO_VLA__ || __STDC_VERSION__ < 201112L
-    #include <assert.h>
-#endif
 #ifdef __has_include
     #if __has_include(<stdcountof.h>)
         #include <stdcountof.h>
@@ -89,7 +87,12 @@
     }
 #endif
 
+int fa1[1917];
+int fb1[countof_ns(fa1)];
+
 int main(void) {
+    assert(1917 == countof_ns(fb1));
+
     int a1[1917] = { 25, 10 };
     int a2[25][10] = { { 1917 }, { 25, 10 } };
 
