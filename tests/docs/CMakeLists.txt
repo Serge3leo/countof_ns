@@ -71,7 +71,7 @@ add_test(NAME check_examples
          COMMAND ${Python3_EXECUTABLE}
                  ${CMAKE_CURRENT_SOURCE_DIR}/check_examples.py
                  --verbose
-                 warning.h countof_c.c sizeof_evaluate.h vla0.c zla.c
+                 warning.h countof_c.c sizeof_evaluate.h vla0.c zla.c div0.c
                  )
 
 set(gcc_warn "stringop-overflow")
@@ -80,16 +80,16 @@ set(clang_gcc_icx_warn "sizeof-array-argument" "sizeof-array-div"
                        "sizeof-pointer-memaccess")
 foreach (w IN ITEMS warning_cxx warning_c)
     if (w MATCHES "_cxx")
-        set(src "${CMAKE_SOURCE_DIR}/docs/${w}.cpp")
+        set(src "${w}.cpp")
     else ()
-        set(src "${CMAKE_SOURCE_DIR}/docs/${w}.c")
+        set(src "${w}.c")
     endif ()
-    add_executable(${w} ${src} "${CMAKE_SOURCE_DIR}/docs/warning.h")
+    add_executable(${w} ${src} "warning.h")
     add_test(NAME ${w} COMMAND ${w})
     if (CMAKE_C_COMPILER_ID STREQUAL "Clang" OR
         CMAKE_C_COMPILER_ID STREQUAL "GNU" OR
         CMAKE_C_COMPILER_ID STREQUAL "IntelLLVM")
-        add_executable(${w}_chk ${src} "${CMAKE_SOURCE_DIR}/docs/warning.h")
+        add_executable(${w}_chk ${src} "warning.h")
         target_compile_options(${w}_chk PRIVATE "-Werror")
         set_target_properties(${w}_chk PROPERTIES EXCLUDE_FROM_ALL TRUE)
         add_test(NAME ${w}_chk
@@ -124,11 +124,11 @@ endforeach ()
 
 foreach (s IN ITEMS sizeof_evaluate_c sizeof_evaluate_cxx)
     if (s MATCHES "_cxx")
-        set(src "${CMAKE_SOURCE_DIR}/docs/${s}.cpp")
+        set(src "${s}.cpp")
     else ()
-        set(src "${CMAKE_SOURCE_DIR}/docs/${s}.c")
+        set(src "${s}.c")
     endif ()
-    add_executable(${s} ${src} "${CMAKE_SOURCE_DIR}/docs/sizeof_evaluate.h")
+    add_executable(${s} ${src} "sizeof_evaluate.h")
     add_test(NAME ${s} COMMAND ${s})
     if (CMAKE_C_COMPILER_ID STREQUAL "Clang" OR
         CMAKE_C_COMPILER_ID STREQUAL "IntelLLVM")
@@ -136,14 +136,31 @@ foreach (s IN ITEMS sizeof_evaluate_c sizeof_evaluate_cxx)
     endif ()
 endforeach ()
 if (HAVE_VLA)
-    add_executable(vla0 "${CMAKE_SOURCE_DIR}/docs/vla0.c")
+    add_executable(vla0 "vla0.c")
     add_test(NAME vla0 COMMAND vla0)
 endif ()
-add_executable(zla "${CMAKE_SOURCE_DIR}/docs/zla.c")
+add_executable(zla "zla.c")
 add_test(NAME zla COMMAND zla)
-
+if (NOT HAVE___STDC_NO_VLA__ AND HAVE_EMPTY_STRUCTURE)
+    add_executable(div0 "div0.c")
+    add_test(div0 "${CMAKE_CTEST_COMMAND}"
+                  --build-and-test "${CMAKE_SOURCE_DIR}" "${CMAKE_BINARY_DIR}"
+                  --build-generator "${CMAKE_GENERATOR}"
+                  --build-makeprogram "${CMAKE_MAKE_PROGRAM}"
+                  --build-config "${CMAKE_BUILD_TYPE}"
+                  --build-nocmake
+                  --build-noclean
+                  --build-target div0
+                  --test-command ${CMAKE_CROSSCOMPILING_EMULATOR}
+                  "${CMAKE_CURRENT_BINARY_DIR}/div0${CMAKE_EXECUTABLE_SUFFIX}")
+    set_tests_properties(div0 PROPERTIES
+        FAIL_REGULAR_EXPRESSION "sizeof.v./sizeof.v.0..=1917"
+        PASS_REGULAR_EXPRESSION
+            "sizeof.v./sizeof.v.0..=(0|[0-9][0-9][0-9][0-9][0-9])|[Ee]xception|[Ff]loating-point|[Ss]egmentation"
+        )
+endif ()
 if (HAVE_COUNTOF)
-    add_executable(countof_c "${CMAKE_SOURCE_DIR}/docs/countof_c.c")
+    add_executable(countof_c "countof_c.c")
     add_test(NAME countof_c COMMAND countof_c)
 endif ()
 
