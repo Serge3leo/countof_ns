@@ -11,7 +11,7 @@ function (tu_cntfn_expected expected pos_pos neg_pos)
             NOT CMAKE_CXX_COMPILER_ID STREQUAL SunPro)  # TODO HAVE_SPAN
             set(ints ${b}.gen.run_c2y ${b}.c11 ${b}.bltn
                      ${b}_cxx.tmpl ${b}_cxx.bltn)
-        elseif (b MATCHES "pos_eval")
+        elseif (b MATCHES "pos_eval$")
             if (HAVE___STDC_NO_VLA__)  # TODO: MSVC
                 set(ints ${b}.gen ${b}_cxx.tmpl.run_eval_1)
             else ()
@@ -24,7 +24,10 @@ function (tu_cntfn_expected expected pos_pos neg_pos)
             endif ()
         elseif (b MATCHES "pos_vla_eval$")
             set(ints ${b}.gen.run_c2y.run_eval_1)
-            if (CMAKE_C_COMPILER_ID STREQUAL SunPro)
+            if (CMAKE_C_COMPILER_ID STREQUAL Clang OR
+                CMAKE_C_COMPILER_ID STREQUAL IntelLLVM)
+                list(APPEND ints ${b}.c11.run_eval_1 ${b}.bltn.run_eval_1)
+            elseif (CMAKE_C_COMPILER_ID STREQUAL SunPro)
                 list(APPEND ints ${b}.c11.run_eval_1 ${b}.bltn.run_eval_1)
             else ()
                 list(APPEND ints ${b}.c11 ${b}.bltn)
@@ -46,9 +49,12 @@ function (tu_cntfn_expected expected pos_pos neg_pos)
             else ()
                 list(APPEND ints ${b}_cxx.bltn)
             endif ()
-        elseif (b MATCHES "pos_vla_vla_eval")
+        elseif (b MATCHES "pos_vla_vla_eval$")
             set(ints ${b}.gen.run_c2y.run_eval_5)
-            if (CMAKE_C_COMPILER_ID STREQUAL SunPro)
+            if (CMAKE_C_COMPILER_ID STREQUAL Clang OR
+                CMAKE_C_COMPILER_ID STREQUAL IntelLLVM)
+                list(APPEND ints ${b}.c11.run_eval_5 ${b}.bltn.run_eval_5)
+            elseif (CMAKE_C_COMPILER_ID STREQUAL SunPro)
                 list(APPEND ints ${b}.c11.run_eval_5 ${b}.bltn.run_eval_5)
             else ()
                 list(APPEND ints ${b}.c11.run_eval_2 ${b}.bltn.run_eval_2)
@@ -70,9 +76,12 @@ function (tu_cntfn_expected expected pos_pos neg_pos)
             else ()
                 list(APPEND ints ${b}_cxx.bltn)
             endif ()
-        elseif (b MATCHES "pos_fix_vla_eval")
+        elseif (b MATCHES "pos_fix_vla_eval$")
             set(ints ${b}.gen.run_c2y.run_eval_6)
-            if (CMAKE_C_COMPILER_ID STREQUAL SunPro)
+            if (CMAKE_C_COMPILER_ID STREQUAL Clang OR
+                CMAKE_C_COMPILER_ID STREQUAL IntelLLVM)
+                list(APPEND ints ${b}.c11.run_eval_6 ${b}.bltn.run_eval_6)
+            elseif (CMAKE_C_COMPILER_ID STREQUAL SunPro)
                 list(APPEND ints ${b}.c11.run_eval_4 ${b}.bltn.run_eval_4)
             else ()
                 list(APPEND ints ${b}.c11.run_eval_3 ${b}.bltn.run_eval_3)
@@ -93,6 +102,13 @@ function (tu_cntfn_expected expected pos_pos neg_pos)
                 endif ()
             else ()
                 list(APPEND ints ${b}_cxx.bltn)
+            endif ()
+        elseif (b MATCHES "pos_type$")
+            if (MSVC)
+                set(ints ${b}.gen ${b}_cxx.tmpl.build_fail)
+            else ()
+                set(ints ${b}.gen ${b}.c11 ${b}.bltn
+                     ${b}_cxx.tmpl.build_fail ${b}_cxx.bltn.build_fail)
             endif ()
         elseif (b MATCHES "vla")
             if (CMAKE_C_COMPILER_ID STREQUAL Clang OR
@@ -218,6 +234,12 @@ function (tu_cntfn_expected expected pos_pos neg_pos)
                              "\\1.build_unexpected"
                              neg_base "${neg_base}")
     endif ()
+    if (CMAKE_C_COMPILER_ID STREQUAL Intel OR
+        CMAKE_C_COMPILER_ID STREQUAL LCC)
+        string(REGEX REPLACE "(pos_type\\.(c11|gen|bltn))"
+                             "\\1.compiler_bug"  # TODO
+                             pos_base "${pos_base}")
+    endif ()
     if (CMAKE_C_COMPILER_ID STREQUAL SunPro)
             # TODO I don't understand. Why?
         string(REGEX REPLACE "(neg_alone_ptr\\.c11)\\.build_unexpected"
@@ -225,6 +247,9 @@ function (tu_cntfn_expected expected pos_pos neg_pos)
                              neg_base "${neg_base}")
         string(REGEX REPLACE "(pos_vla_func(|2d)_cxx\\.bltn)"
                              "\\1.compiler_bug"
+                             pos_base "${pos_base}")
+        string(REGEX REPLACE "(pos_type\\.(c11|gen|bltn))"
+                             "\\1.compiler_bug"  # TODO
                              pos_base "${pos_base}")
     endif ()
     if (CMAKE_C_COMPILER_ID STREQUAL NVHPC AND HAVE_BROKEN_VLA)

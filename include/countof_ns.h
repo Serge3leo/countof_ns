@@ -260,8 +260,13 @@
                     (_countof_ns_typeof(a) *)&(a), \
                     _countof_ns_typeof(*(a))(*)[_countof_ns_unsafe(a)]: 0))
     #endif
+    #if !__LCC__ && !__SUNPRO_C && !__INTEL_COMPILER
+        #define _countof_ns_typ2arr(a)  (*(_countof_ns_typeof(a) *)(void *)8192)
+    #else
+        #define _countof_ns_typ2arr(a)  (a)
+    #endif
     #define _countof_ns(a)  (_countof_ns_unsafe(a) + _countof_ns_must_array(a))
-    #define countof_ns(a)  (_countof_ns(a))
+    #define countof_ns(a)  (_countof_ns(_countof_ns_typ2arr(a)))
 #else
     #if _COUNTOF_NS_REFUSE_VLA || _MSC_VER
             // _MSC_VER is the only compiler without support for the C++
