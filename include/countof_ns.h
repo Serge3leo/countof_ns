@@ -303,10 +303,10 @@
     #if _COUNTOF_NS_USE_TEMPLATE
             // C++ with ZLA extension only
         #define _COUNTOF_NS_VLA_UNSUPPORTED  (1)
-        #define countof_ns(a)  (_countof_ns_aux<sizeof(a), sizeof((a)[0])>(a))
+        #define _countof_ns(a)  (_countof_ns_aux<sizeof(a), sizeof((a)[0])>(a))
     #elif _COUNTOF_NS_USE_STUB
         #warning "There is no correct implementation in pure C++ (wait C++26?)"
-        #define countof_ns(a)  (_countof_ns_unsafe(a))
+        #define _countof_ns(a)  (_countof_ns_unsafe(a))
     #elif _COUNTOF_NS_USE_BUILTIN && !__SUNPRO_CC
             // C++ with VLA extension
         #if __LCC__
@@ -343,17 +343,17 @@
                 //
                 // If sizeof(a) - compile-time constant, then count fixed size
                 // array , otherwise count VLA.
-            #define countof_ns(a)  (!__builtin_constant_p(sizeof(a)) \
-                                    ? _vla_countof_ns(a) \
-                                    : _countof_ns_fix(a))
+            #define _countof_ns(a)  (!__builtin_constant_p(sizeof(a)) \
+                                     ? _vla_countof_ns(a) \
+                                     : _countof_ns_fix(a))
         #else   // HAVE_STRANGE_BUILTIN_CONSTANT_P_CXX
                 // But Intel and IntelLLVM compilers sometimes considers:
                 // __builtin_constant_p(sizeof(VLA)) == 1
                 //
                 // See: tests/autoconf/have_strange_builtin_constant_p_cxx.cpp
-            #define countof_ns(a)  (!__builtin_constant_p(sizeof(a)) \
-                                    ? _vla_countof_ns(a) \
-                                    : size_t(-1917) == _countof_ns_fix(a) \
+            #define _countof_ns(a)  (!__builtin_constant_p(sizeof(a)) \
+                                     ? _vla_countof_ns(a) \
+                                     : size_t(-1917) == _countof_ns_fix(a) \
                                             ? _vla_countof_ns(a) \
                                             : _countof_ns_fix(a))
         #endif
@@ -371,10 +371,12 @@
         constexpr static auto _countof_ns_csize(const C& c) { return c.size(); }
         constexpr static size_t _countof_ns_csize(...) { return 0; }
 
-        #define countof_ns(a)  (std::is_class<decltype(a)>::value \
+        #define _countof_ns(a)  (std::is_class<decltype(a)>::value \
                     ? _countof_ns_csize(a) \
                     : _countof_ns_unsafe(a) + _countof_ns_must_array(a))
     #endif
+    #define _countof_ns_typ2arr(a)  a  // __SUNPRO_CC magic, don't parentheses
+    #define countof_ns(a)  (_countof_ns(_countof_ns_typ2arr(a)))
 #endif
 
 #endif // COUNTOF_NS_H_6951
