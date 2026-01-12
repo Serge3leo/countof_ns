@@ -117,6 +117,7 @@ function (tu_ms_countof_expected expected pos_pos neg_pos)
     set(build_div0_LCC pos_zla_00 pos_zla_n0 pos_zla_struct_00)
     set(run_fpe_LCC pos_vla_00 pos_vla_n0 pos_vla_struct_00
                     pos_vla_struct_n0 pos_vla_zla_00 pos_vla_zla_n0
+                    pos_type
                     neg_vla_zla_ptr neg_zla_ptr neg_zla_vla_ptr)
     set(build_div0_NVHPC pos_zla_00 pos_zla_n0 pos_zla_struct_00)
     set(div0_NVHPC pos_vla_struct_00 pos_vla_struct_n0
