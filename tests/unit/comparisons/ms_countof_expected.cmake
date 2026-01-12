@@ -21,6 +21,8 @@ function (tu_ms_countof_expected expected pos_pos neg_pos)
             list(APPEND pos_base ${b}.run_eval_2)
         elseif (b MATCHES "_vla")
             list(APPEND pos_base ${b})
+        elseif (b MATCHES "_type")
+            list(APPEND pos_base ${b}.run_fail ${b}_cxx.disable)
         else ()
             list(APPEND pos_base ${b} ${b}_cxx)
         endif ()
@@ -79,15 +81,20 @@ function (tu_ms_countof_expected expected pos_pos neg_pos)
                      pos_vla_struct_00 pos_vla_struct_n0
                      pos_vla_zla_00 pos_vla_zla_n0
                      pos_zla_alone_00 pos_zla_n0 pos_zla_struct_00
+                     pos_type
                      neg_zla_ptr)
     set(run_fpe_GNU pos_vla_00 pos_vla_n0
                     pos_vla_alone_00 pos_vla_alone_n0
                     pos_vla_struct_00 pos_vla_struct_n0
                     pos_vla_zla_00 pos_vla_zla_n0
+                    pos_type
                     neg_zla_ptr neg_vla_zla_ptr neg_zla_vla_ptr)
     set(build_div0_Intel pos_zla_00 pos_zla_n0 pos_zla_struct_00)
-    set(run_div0_Intel pos_vla_struct_n0 pos_vla_zla_n0 neg_zla_ptr)
+    set(run_div0_Intel pos_vla_struct_n0 pos_vla_zla_n0
+                       pos_type
+                       neg_zla_ptr)
     set(run_fpe_Intel pos_vla_00
+                      pos_type
                       neg_vla_zla_ptr neg_zla_ptr neg_zla_vla_ptr)
     if (CMAKE_BUILD_TYPE MATCHES "Debug")
         list(APPEND run_fpe_Intel pos_vla_n0
@@ -113,6 +120,7 @@ function (tu_ms_countof_expected expected pos_pos neg_pos)
     set(build_div0_LCC pos_zla_00 pos_zla_n0 pos_zla_struct_00)
     set(run_fpe_LCC pos_vla_00 pos_vla_n0 pos_vla_struct_00
                     pos_vla_struct_n0 pos_vla_zla_00 pos_vla_zla_n0
+                    pos_type
                     neg_vla_zla_ptr neg_zla_ptr neg_zla_vla_ptr)
     set(build_div0_NVHPC pos_zla_00 pos_zla_n0 pos_zla_struct_00)
     set(div0_NVHPC pos_vla_struct_00 pos_vla_struct_n0
@@ -129,7 +137,10 @@ function (tu_ms_countof_expected expected pos_pos neg_pos)
                                   neg_zla_ptr
                                   neg_zla_vla_ptr)
     endif ()
-    set(run_fpe_SunPro pos_vla_00 pos_vla_n0 neg_vla_zla_ptr neg_zla_vla_ptr)
+    set(run_div0_SunPro pos_type)
+    set(run_fpe_SunPro pos_vla_00 pos_vla_n0
+                       pos_type
+                       neg_vla_zla_ptr neg_zla_vla_ptr)
     foreach (base IN ITEMS pos_base neg_base)
         foreach (b IN LISTS build_div0_${CMAKE_C_COMPILER_ID})
             string(REPLACE "${b}.build_fail" "${b}.build_fail.build_DIV0"

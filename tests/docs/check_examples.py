@@ -73,7 +73,9 @@ if __name__ == '__main__':
     parser.add_argument("examples", nargs='+', help="Examples list")
     parser.add_argument("--file", help="Doc file",
                         default=os.path.join(os.path.dirname(__file__),
-                                        "../../docs/Long-awaited_Countof.ru.md"))
+                                "../../docs/Long-awaited_Countof.ru.md"))
+    parser.add_argument("--examples-dir", help="Examples directory",
+                        default=os.path.dirname(__file__))
     parser.add_argument("--verbose", "-v", help="verbose output",
                         action='count', default=0)
     args = parser.parse_args()
@@ -90,7 +92,7 @@ if __name__ == '__main__':
             err = True
             continue
         if not check_example(md_exmpls.examples[e],
-                             os.path.join(os.path.dirname(args.file), e)):
+                             os.path.join(args.examples_dir, e)):
             err = True
         del md_exmpls.examples[e]
     if md_exmpls.examples:
