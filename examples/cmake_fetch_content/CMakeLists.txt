@@ -4,7 +4,7 @@
 
 cmake_minimum_required (VERSION 3.25)
 project(example_fetch_content_countof_ns
-    VERSION 0.5.0
+    VERSION 0.6.0
     DESCRIPTION "Example use countof_ns with cmake FetchContent"
     LANGUAGES C)
 
@@ -15,9 +15,9 @@ include(FetchContent)
 FetchContent_Declare(
     CountofNS
     GIT_REPOSITORY https://github.com/Serge3leo/countof_ns.git
-    GIT_TAG  c6eeb6e3956282e24958e2fecc13a59757edcac5 # v0.5.0-pre-examples
+    GIT_TAG  e6b8a03f5c62a0866dda910379240f18d9082e0f # v0.6.0-pre-examples
         # This is not the last tag, it is the tag immediately preceding the
-        # v0.5.0-pre tag.
+        # v0.6.0-pre tag.
 )
 FetchContent_MakeAvailable(CountofNS)
 
