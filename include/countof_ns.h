@@ -6,11 +6,11 @@
 // Implementing the macro `countof()' C2y draft for C23/C++11
 // ==========================================================
 //
-// The macro `countof_ns(array)` returns the number of elements in its operand.
-// The number of elements is determined by the type of the operand. The result
-// is an integer. If the number of array elements is variable, the operand is
-// evaluated, otherwise the operand is not evaluated, and the expression is an
-// integer constant expression.
+// The macro `countof_ns(array)` returns the number of elements in its operand
+// (array or array type). The number of elements is determined by the type of
+// the operand. The result is an integer. If the number of elements is
+// variable, the operand is evaluated, otherwise the operand is not evaluated,
+// and the result is an integer constant expression.
 //
 // For standard C/C++11 arrays, the result is identical to `countof()`.
 // Otherwise, if the argument is not an array, a compilation error occurs,
