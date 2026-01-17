@@ -373,12 +373,105 @@ auto b = std::mdspan(_b[0], _m, _n);
 
 Правда, автоматизация такого превращения расширенных массивов с неявным заданием размера  может вызывать некоторые сложности:
 ```c++
-struct T0 { int flex[]; } a0, a1, a2;
+union T0 { int z[0]; };
+T0 a0, a1, a2;
 T0 _a[] = { a0, a1, a2 };
 T0 _b[] = {};
 auto a = std::span(_a);  // Для обычного массива можно размерность опустить
 auto b = std::span(_b, 0);  // А для ZLA она нужна, но немного мешает 0/0
 static_assert(0 == sizeof(_a) && 0 == sizeof(_b));
+assert(3 == std::size(a) && 0 == std::size(b));
 ```
-
 В общем, практический смысл `countof_ns()` для  C++ не ясен, но теоретическая (спортивная) задача имеет более менее чёткое определение.
+### ZLA и шаблоны
+В шаблонах тип ZLA расширений C++ не сопоставляется как массив, он сопоставляется как некий объект. Соотвественно, для него нет шаблонов свойств. Для того, что бы аргумент не вычислялся, используем `sizeof()` от разыменованного возвращаемого значения. За исключением случая, когда аргумент имеет метод `size()`, в этом случае вызываем этот метод, при его вызове аргумент будет вычислен:
+```c++
+	// T - контейнер (есть функция `size()`)
+template <class T> struct _cntfn_has_size {
+	template <class C> static char test_(decltype(&C::size));
+	template <class> static long long test_(...);
+	static constexpr bool value = sizeof(test_<T>(0)) == sizeof(char);
+};
+	// C - расширение ZLA
+template<class C, typename std::enable_if<
+						   !_cntfn_has_size<C>::value, int>::type = 0>
+constexpr static bool _cntfn_must_zla() {
+	constexpr C *pc = 0;
+	return 0 == sizeof(*pc) &&
+		   !std::is_class<C>::value && !std::is_union<C>::value &&
+		   std::is_same<decltype(**pc), decltype((*pc)[0])>::value;
+}
+	// Число элементов массива фиксированной длины, для стандартных C++ массивов
+template<class T, size_t N>
+static char (*_cntfn_match(const T (&)[N]))[N];
+	// Число элементов ZLA (расширение C++)
+template <class C, typename std::enable_if<
+							!_cntfn_has_size<C>::value &&
+							_cntfn_is_zla<C>(), int>::type = 0>
+static char (*_cntfn_match(const C &c))[0];
+	// Контейнер, только для успешной компиляции, размер не используется
+template <class C, typename std::enable_if<
+							_cntfn_has_size<C>::value, int>::type = 0>
+static char (*_cntfn_match(const C &c))[1917];  
+	// Число элементов контйнера
+template <class C, typename std::enable_if<
+							_cntfn_has_size<C>::value, int>::type = 0>
+constexpr static auto _cntfn_stub_size(const C &c) {
+	return c.size();
+}
+	// Не контейнер, только для успешной компиляции, размер не используется
+constexpr static size_t _cntfn_stub_size(...) noexcept { return 1917; }
+#define _countof_ns(a)  (_cntfn_has_size<decltype(a)>::value \
+						 ? _cntfn_stub_size(a) \
+						 : sizeof(*_cntfn_match(a)))
+```
+Результаты идентичны результатам оператора `_Countof` проекта C2Y для аналогичных массивов.
+### VLA и `__is_same()`
+Почти все компиляторы, которые реализуют расширение VLA C++, так же поддерживают функцию `__is_same()`, которая позволяет обойти неподдерживаемую специализацию шаблонов для VLA типов (у SunPro (`sunCC`) этой функции нет, зато он поддерживает VLA типы как аргументы шаблонов, хотя и ограничено).
+
+Ввиду невозможности :
+```c++
+template<bool IsArray>
+constexpr static size_t _cntfn_0_if_assert() noexcept[[ ]]{
+	static_assert(IsArray, "Must be array");
+	return 0;
+}
+	// Число элементов массива фиксированной длины, для стандартных C++ массивов
+template<class T, size_t N>
+constexpr static size_t _cntfn_size(const T (&c)[N]) noexcept {
+	return N;
+}
+    // Число элементов ZLA (расширение C++)
+template <class C, typename std::enable_if<
+							!_cntfn_has_size<C>::value, int>::type = 0>
+constexpr static size_t _cntfn_size(const C &c) noexcept {
+	    // Общий размер 0, но разыменование и индесация возможны
+	static_assert(0 == sizeof(c) && sizeof(*c) == sizeof(c[0]),
+				  "Must be zero length array");
+	return 0;
+}
+	// Число элементов контйнера
+template <class C, typename std::enable_if<
+							_cntfn_has_size<C>::value, int>::type = 0>
+constexpr static auto _cntfn_size(const C &c) {
+	return c.size();
+}
+    // Детектор VLA
+constexpr static char _cntfn_size(...) noexcept {
+	return 0;
+}
+#if __SUNPRO_CC
+    #define _cntfn_use_vla(a)  (!_cntfn_has_size<decltype(a)>::value)
+    #define _cntfn_must_array(a)  (_cntfn_0_if_assert< \
+                !std::is_same<decltype(&(a)[0]), decltype(a)>::value>())
+#else
+    #define _cntfn_use_vla(a)  (sizeof(char) == sizeof(_cntfn_size(a)))
+	#define _cntfn_must_array(a)  (_cntfn_0_if_assert< \
+						!__is_same(decltype(&(a)[0]), decltype(a))>())
+#endif
+#define _cntfn_vla(a)  (_countof_ns_unsafe(a) +  _cntfn_must_array(a))
+#define _countof_ns(a)  (_cntfn_use_vla(a) \
+						 ? _cntfn_vla(a) \
+						 : _cntfn_size(a))
+```
+В случае расширений VLA, число вычислений зависит компилятора, т.к. некоторые придерживаются правил языка C, а некоторые нет, и не вычисляют операнд `sizeof()`.

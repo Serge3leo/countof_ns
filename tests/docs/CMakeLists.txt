@@ -49,7 +49,7 @@ endforeach ()
 add_test(NAME expected_tables
          COMMAND ${Python3_EXECUTABLE}
                  ${CMAKE_CURRENT_SOURCE_DIR}/expected_tables.py
-                 -v
+                 #-v
                  --id ${CMAKE_C_COMPILER_ID}
                  --version ${CMAKE_C_COMPILER_VERSION}
                  --countof_ns "${${cntfn_available}}"
