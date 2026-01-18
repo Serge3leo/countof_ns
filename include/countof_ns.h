@@ -283,20 +283,22 @@
         #define _COUNTOF_NS_USE_BUILTIN  (1)
     #endif
 
+        // Unchecked size stub, only for compilation success
+    constexpr size_t unthinkable = 1917;
         // T is container (have `size()` member)
     template <class T> struct has_size {
         template <class C> static char test_(decltype(&C::size));
         template <class> static long long test_(...);
         static constexpr bool value = sizeof(test_<T>(0)) == sizeof(char);
     };
-        // C must be container
-    template<class C, typename std::enable_if<
-                               !has_size<C>::value, int>::type = 0>
+        // T must be ZLA
+    template<class T, typename std::enable_if<
+                               !has_size<T>::value, int>::type = 0>
     constexpr static bool must_zla() {
-        constexpr C *pc = 0;
-        return 0 == sizeof(*pc) &&
-               !std::is_class<C>::value && !std::is_union<C>::value &&
-               std::is_same<decltype(**pc), decltype((*pc)[0])>::value;
+        constexpr T *pa = 0;
+        return 0 == sizeof(*pa) &&
+               !std::is_class<T>::value && !std::is_union<T>::value &&
+               std::is_same<decltype(**pa), decltype((*pa)[0])>::value;
     }
         // Count of fixed array, standard C++
     template<class T, size_t N>
@@ -306,130 +308,97 @@
                                 !has_size<T>::value &&
                                 must_zla<T>(), int>::type = 0>
     static char (*match(const T&))[0];
-        // Container, compile only, size don't used
+        // Container (stub)
     template <class C, typename std::enable_if<
                                 has_size<C>::value, int>::type = 0>
-    static char (*match(const C&))[1917];
-
+    static char (*match(const C&))[unthinkable];
+        // Count of container
     template <class C, typename std::enable_if<
                                 has_size<C>::value, int>::type = 0>
-    constexpr static auto stub_size(const C &c) {
+    constexpr static auto cnt_size(const C &c) {
         return c.size();
     }
-        // Not container, compile only, size don't used
-    constexpr static size_t stub_size(...) noexcept { return 1917; }
+        // Not container (stub)
+    constexpr static size_t cnt_size(...) noexcept { return unthinkable; }
 
     #if _COUNTOF_NS_USE_TEMPLATE
             // C++ with ZLA extension only
         #define _COUNTOF_NS_VLA_UNSUPPORTED  (1)
         #define _countof_ns(a)  (_countof_ns_::has_size<decltype(a)>::value \
-                                 ? _countof_ns_::stub_size(a) \
+                                 ? _countof_ns_::cnt_size(a) \
                                  : sizeof(*_countof_ns_::match(a)))
     #elif _COUNTOF_NS_USE_STUB
         #warning "There is no correct implementation in pure C++ (wait C++26?)"
         #define _countof_ns(a)  (_countof_ns_unsafe(a))
     #elif _COUNTOF_NS_USE_BUILTIN // && !__SUNPRO_CC
             // C++ with VLA extension
-        template<class T, size_t N>
-        constexpr static size_t match_vla(const T (&)[N]) noexcept {
-            return false;
-        }
-        #ifndef __SUNPRO_CC
+        constexpr char no = false;
+        constexpr long long yes = true;
+        #if !__SUNPRO_CC
+            template<class T>
+            constexpr static auto match_not_vla(const T&) noexcept {
+                return yes;
+            }
+        #else
+            template<class T, size_t N>
+            constexpr static auto match_not_vla(const T (&)[N]) noexcept {
+                return yes;
+            }
             template <class C, typename std::enable_if<
-                                        !has_size<C>::value &&
-                                        must_zla<C>(), int>::type = 0>
-            constexpr static size_t match_vla(const C&) noexcept {
-                return false;
+                                        has_size<C>::value, int>::type = 0>
+            constexpr static auto match_not_vla(const C&) noexcept {
+                return yes;
+            }
+            template <class T, typename std::enable_if<
+                                std::is_pointer<T>::value, int>::type = 0>
+            constexpr static auto match_not_vla(const T&) noexcept {
+                return yes;
+            }
+            template <class T, typename std::enable_if<
+                                !has_size<T>::value &&
+                                !std::is_pointer<T>::value &&
+                                !std::is_array<T>::value, int>::type = 0>
+            constexpr static auto match_not_vla(const T&) noexcept {
+                return yes;
             }
         #endif
-        template <class C, typename std::enable_if<
-                                    has_size<C>::value, int>::type = 0>
-        constexpr static size_t match_vla(const C&) noexcept {
-            return false;
+        constexpr static auto match_not_vla(...) noexcept {
+            return no;
         }
-        template <class C, typename std::enable_if<
-                                    std::is_pointer<C>::value, int>::type = 0>
-        constexpr static size_t match_vla(const C&) noexcept {
-            return false;
-        }
-        constexpr static char match_vla(...) noexcept {
-            return true;
-        }
-        #define _cntfn_is_vla(a)  (sizeof(char) == \
-                                   sizeof(_countof_ns_::match_vla(a)))
+        #define _cntfn_not_vla(a)  (sizeof(_countof_ns_::no) != \
+                                    sizeof(_countof_ns_::match_not_vla(a)))
 
-            // Count of fixed size arrays, case: standard C++ array
-        template<class T, size_t N>
-        constexpr static size_t size(const T (&)[N]) noexcept {
-            return N;
-        }
-            // Count of ZLA
-        template <class C, typename std::enable_if<
-                                    !has_size<C>::value, int>::type = 0>
-        constexpr static size_t size(const C &c) noexcept {
-            static_assert(must_zla<C>(),
-                          "Must be zero length array");
-            return 0;
-        }
-            // Count of container
-        template <class C, typename std::enable_if<
-                                    has_size<C>::value, int>::type = 0>
-        constexpr static auto size(const C &c) {
-            static_assert(sizeof(char) < sizeof(c.size()), "Unimplemented");
-            return c.size();
-        }
-            // VLA detector
-        static_assert(sizeof(char) != sizeof(size_t), "Internal error");
-        constexpr static char size(...) noexcept {
-            return 0;
-        }
         template<bool IsArray>
         constexpr static size_t zero_assert() noexcept {
             static_assert(IsArray, "Must be array");
             return 0;
         }
         #if __SUNPRO_CC
-            #define _cntfn_use_vla(a)  (!_countof_ns_::has_size<decltype(a)>::value)
             #define _cntfn_must_array(a)  (_countof_ns_::zero_assert< \
                         !std::is_same<decltype(&(a)[0]), decltype(a)>::value>())
         #else
-            #define _cntfn_use_vla(a)  (sizeof(char) == sizeof(_countof_ns_::size(a)))
             #define _cntfn_must_array(a)  (_countof_ns_::zero_assert< \
                             !__is_same(decltype(&(a)[0]), decltype(a))>())
         #endif
-        template <class T, typename std::enable_if<
-                                    !has_size<T>::value, int>::type = 0>
-        static constexpr size_t stub_fix(const T &a) {
-            return sizeof(*match(a));
-        }
         template <class C, typename std::enable_if<
                                     has_size<C>::value, int>::type = 0>
-        constexpr static auto stub_fix(const C &c) {
-            return c.size();
+        constexpr static auto match_cnt(const C&) noexcept {
+            return yes;
         }
-        static constexpr size_t stub_fix(...) {
-            return 1917;
+        constexpr static auto match_cnt(...) {
+            return no;
         }
-        template <class C, typename std::enable_if<
-                                    has_size<C>::value, int>::type = 0>
-        constexpr static char match_cnt(const C&) noexcept {
-            return true;
-        }
-        constexpr static size_t match_cnt(...) {
-            return false;
-        }
-        #define _cntfn_is_cnt(a)  (sizeof(char) == sizeof(_countof_ns_::match_cnt(a)))
-
-        template <class C>
-        constexpr static auto stub_match(const C& c) ->
-                            decltype(match(c));
-        constexpr static char (*stub_match(...))[1917];
-
+        #define _cntfn_is_cnt(c)  (sizeof(_countof_ns_::no) != \
+                                   sizeof(_countof_ns_::match_cnt(c)))
+        template <class T>
+        constexpr static auto stub_match(const T& a) ->
+                            decltype(match(a));
+        constexpr static char (*stub_match(...))[unthinkable];
         #define _cntfn_vla(a)  (_countof_ns_unsafe(a) +  _cntfn_must_array(a))
-        #define _countof_ns(a)  (_cntfn_is_vla(a)  \
+        #define _countof_ns(a)  (!_cntfn_not_vla(a)  \
                                  ? _cntfn_vla(a) \
                                  : _cntfn_is_cnt(a) \
-                                        ? _countof_ns_::stub_size(a) \
+                                        ? _countof_ns_::cnt_size(a) \
                                         : sizeof(*_countof_ns_::stub_match(a)))
     #endif
     #define _countof_ns_typ2arr(a)  a  // magic, don't parentheses

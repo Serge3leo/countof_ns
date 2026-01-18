@@ -21,50 +21,37 @@ function (tu_cntfn_expected expected pos_pos neg_pos)
         elseif (b MATCHES "pos_vla_eval$")
             set(ints ${b}.gen.run_c2y.run_eval_1)
             if (CMAKE_C_COMPILER_ID STREQUAL Clang OR
-                CMAKE_C_COMPILER_ID STREQUAL IntelLLVM)
-                list(APPEND ints ${b}.c11.run_eval_1 ${b}.bltn.run_eval_1)
-            elseif (CMAKE_C_COMPILER_ID STREQUAL SunPro)
+                CMAKE_C_COMPILER_ID STREQUAL IntelLLVM OR
+                CMAKE_C_COMPILER_ID STREQUAL SunPro)
                 list(APPEND ints ${b}.c11.run_eval_1 ${b}.bltn.run_eval_1)
             else ()
                 list(APPEND ints ${b}.c11 ${b}.bltn)
             endif ()
             list(APPEND ints ${b}_cxx.tmpl.disable)
-            if (CMAKE_CXX_COMPILER_ID STREQUAL Clang OR
-                CMAKE_CXX_COMPILER_ID STREQUAL LCC)
-                list(APPEND ints ${b}_cxx.bltn)
-            elseif (CMAKE_CXX_COMPILER_ID STREQUAL GNU OR
+            if (CMAKE_CXX_COMPILER_ID STREQUAL GNU OR
                     CMAKE_CXX_COMPILER_ID STREQUAL SunPro)
                 list(APPEND ints ${b}_cxx.bltn.run_eval_-1)
-            elseif (CMAKE_CXX_COMPILER_ID STREQUAL Intel OR
-                    CMAKE_CXX_COMPILER_ID STREQUAL IntelLLVM)
-                list(APPEND ints ${b}_cxx.bltn)
             else ()
                 list(APPEND ints ${b}_cxx.bltn)
             endif ()
         elseif (b MATCHES "pos_vla_vla_eval$")
             set(ints ${b}.gen.run_c2y.run_eval_5)
             if (CMAKE_C_COMPILER_ID STREQUAL Clang OR
-                CMAKE_C_COMPILER_ID STREQUAL IntelLLVM)
-                list(APPEND ints ${b}.c11.run_eval_5 ${b}.bltn.run_eval_5)
-            elseif (CMAKE_C_COMPILER_ID STREQUAL SunPro)
+                CMAKE_C_COMPILER_ID STREQUAL IntelLLVM OR
+                CMAKE_C_COMPILER_ID STREQUAL SunPro)
                 list(APPEND ints ${b}.c11.run_eval_5 ${b}.bltn.run_eval_5)
             else ()
                 list(APPEND ints ${b}.c11.run_eval_2 ${b}.bltn.run_eval_2)
             endif ()
             list(APPEND ints ${b}_cxx.tmpl.disable)
             if (CMAKE_CXX_COMPILER_ID STREQUAL Clang OR
-                CMAKE_CXX_COMPILER_ID STREQUAL LCC)
+                CMAKE_CXX_COMPILER_ID STREQUAL LCC OR
+                CMAKE_CXX_COMPILER_ID STREQUAL Intel OR
+                CMAKE_CXX_COMPILER_ID STREQUAL IntelLLVM)
                 list(APPEND ints ${b}_cxx.bltn.run_eval_2)
             elseif (CMAKE_CXX_COMPILER_ID STREQUAL GNU OR
                     CMAKE_CXX_COMPILER_ID STREQUAL SunPro)
                 list(APPEND ints ${b}_cxx.bltn.run_eval_-1)
-            elseif (CMAKE_CXX_COMPILER_ID STREQUAL Intel OR
-                    CMAKE_CXX_COMPILER_ID STREQUAL IntelLLVM)
-                if (CMAKE_BUILD_TYPE MATCHES "Debug")
-                    list(APPEND ints ${b}_cxx.bltn.run_eval_1)
-                else ()
-                    list(APPEND ints ${b}_cxx.bltn.run_eval_2)
-                endif ()
             else ()
                 list(APPEND ints ${b}_cxx.bltn)
             endif ()
@@ -80,17 +67,10 @@ function (tu_cntfn_expected expected pos_pos neg_pos)
             endif ()
             list(APPEND ints ${b}_cxx.tmpl.disable)
             if (CMAKE_CXX_COMPILER_ID STREQUAL Clang OR
-                CMAKE_CXX_COMPILER_ID STREQUAL LCC)
+                CMAKE_CXX_COMPILER_ID STREQUAL LCC OR
+                CMAKE_CXX_COMPILER_ID STREQUAL Intel OR
+                CMAKE_CXX_COMPILER_ID STREQUAL IntelLLVM)
                 list(APPEND ints ${b}_cxx.bltn.run_eval_3)
-            elseif (CMAKE_CXX_COMPILER_ID STREQUAL GNU)
-                list(APPEND ints ${b}_cxx.bltn)
-            elseif (CMAKE_CXX_COMPILER_ID STREQUAL Intel OR
-                    CMAKE_CXX_COMPILER_ID STREQUAL IntelLLVM)
-                if (CMAKE_BUILD_TYPE MATCHES "Debug")
-                    list(APPEND ints ${b}_cxx.bltn.run_eval_2)
-                else ()
-                    list(APPEND ints ${b}_cxx.bltn.run_eval_3)
-                endif ()
             else ()
                 list(APPEND ints ${b}_cxx.bltn)
             endif ()
