@@ -83,7 +83,7 @@ if (TAC_ENABLE_WARNINGS)
                                 " -Wno-zero-length-array"
                                 " -ferror-limit=9999")
     elseif (CMAKE_C_COMPILER_ID STREQUAL "GNU")
-        string(APPEND cmn_flags " -Wall -Wextra -Wno-vla")
+        string(APPEND cmn_flags " -Wall -Wextra -Wno-vla -Wno-unused-function")
     # elseif (CMAKE_C_COMPILER_ID MATCHES "Intel")
     #     # HAVE_BROKEN___TYPEOF__
     elseif (CMAKE_C_COMPILER_ID MATCHES "LCC")

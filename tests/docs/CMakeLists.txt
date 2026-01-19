@@ -49,7 +49,7 @@ endforeach ()
 add_test(NAME expected_tables
          COMMAND ${Python3_EXECUTABLE}
                  ${CMAKE_CURRENT_SOURCE_DIR}/expected_tables.py
-                 -v
+                 #-v
                  --id ${CMAKE_C_COMPILER_ID}
                  --version ${CMAKE_C_COMPILER_VERSION}
                  --countof_ns "${${cntfn_available}}"
@@ -71,7 +71,10 @@ add_test(NAME check_examples
          COMMAND ${Python3_EXECUTABLE}
                  ${CMAKE_CURRENT_SOURCE_DIR}/check_examples.py
                  --verbose
+                 --examples-dir ${CMAKE_SOURCE_DIR}/include
+                 countof_ns.h
                  warning.h countof_c.c sizeof_evaluate.h vla0.c zla.c div0.c
+                 types_compatible_p.c
                  )
 
 set(gcc_warn "stringop-overflow")
