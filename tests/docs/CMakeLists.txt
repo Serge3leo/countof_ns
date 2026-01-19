@@ -71,7 +71,10 @@ add_test(NAME check_examples
          COMMAND ${Python3_EXECUTABLE}
                  ${CMAKE_CURRENT_SOURCE_DIR}/check_examples.py
                  --verbose
+                 --examples-dir ${CMAKE_SOURCE_DIR}/include
+                 countof_ns.h
                  warning.h countof_c.c sizeof_evaluate.h vla0.c zla.c div0.c
+                 types_compatible_p.c
                  )
 
 set(gcc_warn "stringop-overflow")
