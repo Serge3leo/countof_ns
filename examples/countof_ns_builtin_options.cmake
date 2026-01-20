@@ -9,6 +9,7 @@ set(countof_ns_builtin_c_options_MSVC
 set(countof_ns_builtin_c_options_SunPro
     "-errwarn=E_BAD_POINTER_SUBTRACTION"
     "-D_countof_ns_ptr_compatible_type(p,t)=(0==0*sizeof((p)-(t)(p)))")
+   #"-D_countof_ns_compatible_type(p,t1,t2)=(0==0*sizeof((t1)(p)-(t2)(p)))")
 
 set(countof_ns_builtin_c_options_XL
     "-qlanglvl=extc1x" "-qhaltonmsg=1506-068"
@@ -37,3 +38,14 @@ set(countof_ns_builtin_options_LCC
    )
 endif ()
 endif ()
+
+set(countof_ns_kr_c_options_GNU
+    "-Werror=sizeof-pointer-div" "-Werror=sizeof-array-argument")
+
+set(countof_ns_kr_c_options_Clang
+    "-Werror=sizeof-pointer-div" "-Werror=sizeof-array-argument"
+    "-Werror=sizeof-array-decay")
+
+set(countof_ns_kr_c_options_IntelLLVM
+    "-Werror=sizeof-pointer-div" "-Werror=sizeof-array-argument"
+    "-Werror=sizeof-array-decay")

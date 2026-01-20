@@ -21,6 +21,15 @@ if "%1"=="nmake" (
     echo     Without argument - use default generator for Visual Studio
     exit /b 1
 )
+if %generator%=="Visual Studio xx yyyy" (
+    if "%VisualStudioVersion%"=="16.0" (
+        set generator="Visual Studio 16 2019"
+    ) else if "%VisualStudioVersion%"=="17.0" (
+        set generator="Visual Studio 17 2022"
+    ) else (
+        set generator="Visual Studio 18 2026"
+    )
+)
 if "%PRESET%"=="" (
     set prst=default
 ) else (
@@ -32,10 +41,11 @@ set build_type=Release
 if %generator%=="NMake Makefiles" (
     cmake --preset %prst% -G %generator% ..\.. %2 %3 %4 %5 %6 %7 %8 %9
     cmake --build .
-    ctest --output-on-failure
+    ctest --output-on-failure %CTEST_ARGS%
 ) else (
     cmake -B . -DCMAKE_CXX_COMPILER=cl -DCMAKE_C_COMPILER=cl ^
+          -G %generator% ^
           -DCMAKE_BUILD_TYPE=%build_type% -S ..\.. --preset %prst% %2 %3 %4 %5 %6 %7 %8 %9
     cmake --build . --config %build_type%
-    ctest --output-on-failure --build-config %build_type%
+    ctest --output-on-failure --build-config %build_type% %CTEST_ARGS%
 )
