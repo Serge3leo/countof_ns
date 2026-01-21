@@ -13,6 +13,7 @@ if (CMAKE_C_COMPILER_ID STREQUAL LCC AND
 endif ()
 
 include(${CMAKE_SOURCE_DIR}/examples/countof_ns_builtin_options.cmake)
+include(${CMAKE_SOURCE_DIR}/examples/countof_ns_kr_options.cmake)
 
 function (process_params params)
     list(GET params 0 dflt)

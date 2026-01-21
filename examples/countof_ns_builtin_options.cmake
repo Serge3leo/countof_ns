@@ -2,6 +2,8 @@
 # SPDX-License-Identifier: BSD-2-Clause
 # SPDX-FileCopyrightText: 2025 Сергей Леонтьев (leo@sai.msu.ru)
 
+# Options for compilers without __builtin_types_compatible_p
+
 set(countof_ns_builtin_c_options_MSVC
     "/std:clatest" "/wd4116" "/we4047" "/we4048"
     "/FI_countof_ns_ptr_compatible_type_msvc.h")
@@ -17,18 +19,17 @@ set(countof_ns_builtin_c_options_XL
 
 # For _COUNTOF_NS_BROKEN_BUILTIN_TYPES_COMPATIBLE_P, with check sizes
 if (TAC_EXTRA_USER_BUILTINS)
+    set(countof_ns_builtin_options_Intel
+        "-diag-error=1121"
+        "-D_countof_ns_ptr_compatible_type(p,t)=(0==0*sizeof((p)-(t)(p)))"
+        )
 
-set(countof_ns_builtin_options_Intel
-    "-diag-error=1121"
-    "-D_countof_ns_ptr_compatible_type(p,t)=(0==0*sizeof((p)-(t)(p)))"
-    )
+    set(countof_ns_builtin_options_NVHPC
+        "--diag_error=nonstandard_ptr_minus_ptr"
+        "-D_countof_ns_ptr_compatible_type(p,t)=(0==0*sizeof((p)-(t)(p)))")
 
-set(countof_ns_builtin_options_NVHPC
-    "--diag_error=nonstandard_ptr_minus_ptr"
-    "-D_countof_ns_ptr_compatible_type(p,t)=(0==0*sizeof((p)-(t)(p)))")
-
-if (FALSE)
-set(countof_ns_builtin_options_LCC
+    if (FALSE)
+        set(countof_ns_builtin_options_LCC
 # TODO "-Werror-????"
 #      "-D_countof_ns_ptr_compatible_type(p,t)=(0==0*sizeof((p)-(t)(p)))"
 # TODO ошибка #28: выражение должно иметь константное значение
@@ -36,16 +37,5 @@ set(countof_ns_builtin_options_LCC
 # TODO Workaround hack
 "-D_countof_ns_ptr_compatible_type(ppa,t)=(!__builtin_types_compatible_p(__typeof__(&*(**(ppa))), __typeof__(**(ppa))))"
    )
+    endif ()
 endif ()
-endif ()
-
-set(countof_ns_kr_c_options_GNU
-    "-Werror=sizeof-pointer-div" "-Werror=sizeof-array-argument")
-
-set(countof_ns_kr_c_options_Clang
-    "-Werror=sizeof-pointer-div" "-Werror=sizeof-array-argument"
-    "-Werror=sizeof-array-decay")
-
-set(countof_ns_kr_c_options_IntelLLVM
-    "-Werror=sizeof-pointer-div" "-Werror=sizeof-array-argument"
-    "-Werror=sizeof-array-decay")
