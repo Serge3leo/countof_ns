@@ -425,13 +425,13 @@ assert(3 == std::size(a) && 0 == std::size(b));
 ```c++
 	// Unchecked size stub, only for compilation success
 constexpr size_t unthinkable = 1917;
-constexpr char no = false;
-constexpr long long yes = true;
+using no_t = char;
+using yes_t = long long;
 	// T is container (have `size()` member)
 template <class T> struct has_size {
-	template <class C> static decltype(yes) test_(decltype(&C::size));
-	template <class> static decltype(no) test_(...);
-	static constexpr bool value = sizeof(test_<T>(0)) == sizeof(yes);
+	template <class C> static yes_t test_(decltype(&C::size));
+	template <class> static no_t test_(...);
+	static constexpr bool value = sizeof(test_<T>(0)) == sizeof(yes_t);
 };
 	// T is ZLA
 template<class T>
@@ -481,33 +481,33 @@ constexpr static auto cnt_size(...) noexcept { return unthinkable; }
 		#define _countof_ns_must_vla(a)  (_countof_ns_::zero_assert< \
 						!__is_same(decltype(&(a)[0]), decltype(a))>())
 		template<class T>
-		constexpr static auto match_not_vla(const T&) { return yes; }
+		constexpr static yes_t match_not_vla(const T&);
 	#else
 		#define _countof_ns_must_vla(a)  (_countof_ns_::zero_assert< \
 				  !std::is_same<decltype(&(a)[0]), decltype(a)>::value>())
 		template <class T, typename std::enable_if<
 								!std::is_array<T>::value ||
 								0 < std::extent<T>::value, int>::type = 0>
-		constexpr static auto match_not_vla(const T&) { return yes; }
+		constexpr static yes_t match_not_vla(const T&);
 	#endif
-	constexpr static auto match_not_vla(...) { return no; }
+	constexpr static no_t match_not_vla(...);
 		// Count of VLA
 	#define _countof_ns_vla(a)  \
 					(_countof_ns_unsafe(a) + _countof_ns_must_vla(a))
 		// Argument is container
 	template <class C, typename std::enable_if<
 								has_size<C>::value, int>::type = 0>
-	constexpr static auto match_cnt(const C&) { return yes; }
-	constexpr static auto match_cnt(...) { return no; }
+	constexpr static yes_t match_cnt(const C&);
+	constexpr static no_t match_cnt(...);
 		// Count of fixed array (or ZLA)
 	template <class T>
 	constexpr static auto stub_match(const T& a) -> decltype(match(a));
 	constexpr static char (*stub_match(...))[unthinkable];
 	#define _countof_ns(a)  (sizeof(_countof_ns_::match_not_vla(a)) == \
-							 sizeof(_countof_ns_::no) \
+							 sizeof(_countof_ns_::no_t) \
 							 ? _countof_ns_vla(a) \
 							 : sizeof(_countof_ns_::match_cnt(a)) == \
-							   sizeof(_countof_ns_::yes) \
+							   sizeof(_countof_ns_::yes_t) \
 									? _countof_ns_::cnt_size(a) \
 									: sizeof(*_countof_ns_::stub_match(a)))
 ```

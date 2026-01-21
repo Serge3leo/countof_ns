@@ -26,7 +26,7 @@ BEGIN {
         if (0 == test_case_div) {
             print test_case, ":", test_case_flt_msg;
         } else {
-            l = match(test_case_div_msg, "(Divide|Divisi)");
+            l = match(test_case_div_msg, "(Divide|Divisi).*[Zz0]");
             sub("[[].*$", "", test_case_div_msg)
             sub("is undefined", "", test_case_div_msg);
             print test_case, ":", substr(test_case_div_msg, RSTART);
@@ -55,7 +55,7 @@ END {
     }
 
     print "Total float/div test cases:", total_case,
-          " (float:", total_flt, ", div:", total_div, "strings)" 
+          " (float:", total_flt, ", div:", total_div, "strings)"
 }
 
 /Divide|[^-]Divisi/ {
