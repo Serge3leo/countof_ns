@@ -151,7 +151,11 @@
         // - C++ containers implement only `[]` operator;
     #define _countof_ns_unsafe(a)  \
                 (0 == sizeof(*(a)) ? 0 : sizeof(a)/sizeof(*(a)))
-#elif !__GNUC__ || __NVCOMPILER
+#elif __NVCOMPILER
+        // Probably NVHPC (pgcc) bug (HAVE_BROKEN_VLA et all)
+    #define _countof_ns_unsafe(a)  (0 == sizeof((a)[0]) ? 0 \
+                : sizeof(a)/( sizeof((a)[0]) ? sizeof((a)[0]) : (size_t)-1 ))
+#elif !__GNUC__
         // NVHPC (pgcc) incomplete implementation (?:);
     #define _countof_ns_unsafe(a)  \
                 (0 == sizeof((a)[0]) ? 0 : sizeof(a)/sizeof((a)[0]))
@@ -159,11 +163,11 @@
         // Assume: __GNUC__ => has Conditionals with Omitted (?:)
         //         sizeof((a)[0]) == 0 => sizeof(a) == 0
     #define _countof_ns_unsafe(a)  (sizeof(a)/(sizeof((a)[0]) ?: 1))
-    #define _cntfn_not_kr_idiom_  (1)
+    #define _countof_ns_not_kr_idiom_  (1)
 #endif
 #if _COUNTOF_NS_WANT_KR || (_MSC_VER < 1939 && _MSC_VER && !__cplusplus)
     #define _COUNTOF_NS_USE_KR (1)
-    #if _cntfn_not_kr_idiom_
+    #if _countof_ns_not_kr_idiom_
             // For compilers, analyzers and warnings (as errors)
         #define _countof_ns_must_array(a)  (0*sizeof(sizeof(a)/sizeof((a)[0])))
     #else
@@ -301,12 +305,14 @@
 
         // Unchecked size stub, only for compilation success
     constexpr size_t unthinkable = 1917;
-    constexpr char no = false;
-    constexpr long long yes = true;
+    using no_t = char;
+    using yes_t = long long;
+    constexpr no_t no = false;
+    constexpr yes_t yes = true;
         // T is container (have `size()` member)
     template <class T> struct has_size {
-        template <class C> static decltype(yes) test_(decltype(&C::size));
-        template <class> static decltype(no) test_(...);
+        template <class C> static yes_t test_(decltype(&C::size));
+        template <class> static no_t test_(...);
         static constexpr bool value = sizeof(test_<T>(0)) == sizeof(yes);
     };
         // T is ZLA
@@ -351,12 +357,12 @@
         }
             // Argument may be VLA or not
         #if !__SUNPRO_CC  // Number compilers HAVE_HIDDEN_IS_SAME_CXX
-            #define _cntfn_must_vla(a)  (_countof_ns_::zero_assert< \
+            #define _countof_ns_must_vla(a)  (_countof_ns_::zero_assert< \
                             !__is_same(decltype(&(a)[0]), decltype(a))>())
             template<class T>
             constexpr static auto match_not_vla(const T&) { return yes; }
         #else
-            #define _cntfn_must_vla(a)  (_countof_ns_::zero_assert< \
+            #define _countof_ns_must_vla(a)  (_countof_ns_::zero_assert< \
                       !std::is_same<decltype(&(a)[0]), decltype(a)>::value>())
             template <class T, typename std::enable_if<
                                     !std::is_array<T>::value ||
@@ -365,7 +371,8 @@
         #endif
         constexpr static auto match_not_vla(...) { return no; }
             // Count of VLA
-        #define _cntfn_vla(a)  (_countof_ns_unsafe(a) + _cntfn_must_vla(a))
+        #define _countof_ns_vla(a)  \
+                        (_countof_ns_unsafe(a) + _countof_ns_must_vla(a))
             // Argument is container
         template <class C, typename std::enable_if<
                                     has_size<C>::value, int>::type = 0>
@@ -377,7 +384,7 @@
         constexpr static char (*stub_match(...))[unthinkable];
         #define _countof_ns(a)  (sizeof(_countof_ns_::match_not_vla(a)) == \
                                  sizeof(_countof_ns_::no) \
-                                 ? _cntfn_vla(a) \
+                                 ? _countof_ns_vla(a) \
                                  : sizeof(_countof_ns_::match_cnt(a)) == \
                                    sizeof(_countof_ns_::yes) \
                                         ? _countof_ns_::cnt_size(a) \

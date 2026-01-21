@@ -478,12 +478,12 @@ constexpr static auto cnt_size(...) noexcept { return unthinkable; }
 	}
 		// Argument may be VLA or not
 	#if !__SUNPRO_CC  // Number compilers HAVE_HIDDEN_IS_SAME_CXX
-		#define _cntfn_must_vla(a)  (_countof_ns_::zero_assert< \
+		#define _countof_ns_must_vla(a)  (_countof_ns_::zero_assert< \
 						!__is_same(decltype(&(a)[0]), decltype(a))>())
 		template<class T>
 		constexpr static auto match_not_vla(const T&) { return yes; }
 	#else
-		#define _cntfn_must_vla(a)  (_countof_ns_::zero_assert< \
+		#define _countof_ns_must_vla(a)  (_countof_ns_::zero_assert< \
 				  !std::is_same<decltype(&(a)[0]), decltype(a)>::value>())
 		template <class T, typename std::enable_if<
 								!std::is_array<T>::value ||
@@ -492,7 +492,8 @@ constexpr static auto cnt_size(...) noexcept { return unthinkable; }
 	#endif
 	constexpr static auto match_not_vla(...) { return no; }
 		// Count of VLA
-	#define _cntfn_vla(a)  (_countof_ns_unsafe(a) + _cntfn_must_vla(a))
+	#define _countof_ns_vla(a)  \
+					(_countof_ns_unsafe(a) + _countof_ns_must_vla(a))
 		// Argument is container
 	template <class C, typename std::enable_if<
 								has_size<C>::value, int>::type = 0>
@@ -504,7 +505,7 @@ constexpr static auto cnt_size(...) noexcept { return unthinkable; }
 	constexpr static char (*stub_match(...))[unthinkable];
 	#define _countof_ns(a)  (sizeof(_countof_ns_::match_not_vla(a)) == \
 							 sizeof(_countof_ns_::no) \
-							 ? _cntfn_vla(a) \
+							 ? _countof_ns_vla(a) \
 							 : sizeof(_countof_ns_::match_cnt(a)) == \
 							   sizeof(_countof_ns_::yes) \
 									? _countof_ns_::cnt_size(a) \

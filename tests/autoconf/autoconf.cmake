@@ -73,6 +73,7 @@ if (TAC_ENABLE_WARNINGS)
                                 " -Wno-c2y-extensions"  # countof()
                                 " -Wno-c99-extensions"  # C++ flexible array members
                                 " -Wno-flexible-array-extensions"
+                                " -Wno-gnu-conditional-omitted-operand"
                                 " -Wno-gnu-empty-initializer"
                                 " -Wno-gnu-empty-struct"
                                 " -Wno-gnu-flexible-array-union-member"
