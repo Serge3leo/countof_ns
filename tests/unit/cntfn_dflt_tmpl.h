@@ -2,10 +2,10 @@
 // SPDX-License-Identifier: BSD-2-Clause
 // SPDX-FileCopyrightText: 2025 Сергей Леонтьев (leo@sai.msu.ru)
 size_t TU_UNIT(void) {
-    #ifndef _COUNTOF_NS_USE_TEMPLATE
+    #if !_COUNTOF_NS_USE_TEMPLATE
         #error "_COUNTOF_NS_USE_TEMPLATE don't default"
         tu_assert(0);
-    #elif !defined(_COUNTOF_NS_VLA_UNSUPPORTED)
+    #elif !_COUNTOF_NS_VLA_UNSUPPORTED
         #error "Don't defined _COUNTOF_NS_VLA_UNSUPPORTED"
         tu_assert(0);
     #else

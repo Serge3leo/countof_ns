@@ -13,6 +13,7 @@ if (CMAKE_C_COMPILER_ID STREQUAL LCC AND
 endif ()
 
 include(${CMAKE_SOURCE_DIR}/examples/countof_ns_builtin_options.cmake)
+include(${CMAKE_SOURCE_DIR}/examples/countof_ns_kr_options.cmake)
 
 function (process_params params)
     list(GET params 0 dflt)
@@ -51,6 +52,11 @@ function (process_params params)
                                        "_COUNTOF_NS_REFUSE_VLA")
             set(vla_fail_regex
                 "(_COUNTOF_NS_USE_SUBTRACTION|_COUNTOF_NS_USE_BUILTIN)")
+        elseif (etgt MATCHES "\\.kr")
+            target_compile_definitions(${tgt} PRIVATE ${inc}
+                                        "_COUNTOF_NS_WANT_KR")
+            target_compile_options(${tgt} PRIVATE
+                    ${countof_ns_kr_c_options_${CMAKE_C_COMPILER_ID}})
         elseif (etgt MATCHES "\\.c11")
             target_compile_definitions(${tgt} PRIVATE ${inc}
                                        "_COUNTOF_NS_WANT_VLA_C11")

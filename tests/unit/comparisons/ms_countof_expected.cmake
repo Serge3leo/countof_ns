@@ -126,7 +126,7 @@ function (tu_ms_countof_expected expected pos_pos neg_pos)
     set(div0_NVHPC pos_vla_struct_00 pos_vla_struct_n0
                    pos_vla_zla_00 pos_vla_zla_n0
                    neg_zla_ptr)
-    set(run_fpe_NVHPC pos_vla_00 pos_vla_0n pos_vla_n0)
+    set(run_fpe_NVHPC pos_type pos_vla_00 pos_vla_0n pos_vla_n0)
     if (CMAKE_BUILD_TYPE MATCHES "Debug")
         list(APPEND build_div0_NVHPC pos_vla_struct_00 pos_vla_struct_n0
                                      pos_vla_zla_00 pos_vla_zla_n0

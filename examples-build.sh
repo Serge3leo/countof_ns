@@ -128,12 +128,12 @@ default_cmpl() {
     mkdir -p "$LT_DIR"
 
     rc=0
-    if [ -z "$ctest_args" ] ; then
+    if [ -z "$ctest_args" -a -z "$CTEST_ARGS" ] ; then
         ctest --output-on-failure || {
             rc=$?
         }
     else
-        echo "$ctest_args" | xargs ctest --output-on-failure || {
+        echo "$ctest_args" "$CTEST_ARGS" | xargs ctest --output-on-failure || {
             rc=$?
         }
     fi

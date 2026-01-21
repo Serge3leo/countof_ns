@@ -73,6 +73,7 @@ if (TAC_ENABLE_WARNINGS)
                                 " -Wno-c2y-extensions"  # countof()
                                 " -Wno-c99-extensions"  # C++ flexible array members
                                 " -Wno-flexible-array-extensions"
+                                " -Wno-gnu-conditional-omitted-operand"
                                 " -Wno-gnu-empty-initializer"
                                 " -Wno-gnu-empty-struct"
                                 " -Wno-gnu-flexible-array-union-member"
@@ -283,7 +284,7 @@ message("CMAKE_C_COMPILER_ID=${CMAKE_C_COMPILER_ID}"
         " CMAKE_C_COMPILER_FRONTEND_VARIANT=${CMAKE_C_COMPILER_FRONTEND_VARIANT}")
 tac_report(rep)
 message("${rep}")
-if (NOT HAVE_TYPEOF AND NOT HAVE___TYPEOF__)
+if (NOT HAVE_TYPEOF AND NOT HAVE___TYPEOF__ AND NOT MSVC)
     message(FATAL_ERROR "Don't have `typeof()` or `__typeof__()`")
 endif ()
 if (HAVE_BROKEN___TYPEOF__)

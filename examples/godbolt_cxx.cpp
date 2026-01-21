@@ -2,11 +2,12 @@
 // SPDX-License-Identifier: BSD-2-Clause
 // SPDX-FileCopyrightText: 2025 Сергей Леонтьев (leo@sai.msu.ru)
 
-//#define EXAMPLE_FAIL (1)  // 1 - on T *
-                            // 2 - on function arg
-                            // 3 - on T (*)[N]
-                            // 4 - on T (*)[0]  (ZLA)
-                            // 5 - on T (*)[n]  (VLA)
+//#define EXAMPLE_FAIL (1)  // 1 - on T
+                            // 2 - on T *
+                            // 3 - on function arg
+                            // 4 - on T (*)[N]
+                            // 5 - on T (*)[0]  (ZLA)
+                            // 6 - on T (*)[n]  (VLA)
 #if !defined(HAVE_VLA_CXX) && !defined(_MSC_VER)
     // To disable VLA tests for non MSVC, use: -DHAVE_VLA_CXX=0
     #define HAVE_VLA_CXX  (1)
@@ -65,8 +66,8 @@ var_func_constexpr int sum2(const int (&a)[N][M]) {
     return s;
 }
 
-#if EXAMPLE_FAIL == 2
-    int bad1(size_t n, const int a[]) {
+#if EXAMPLE_FAIL == 3
+    int bad1(size_t n, const int a[1917]) {
         (void)std_size(a);
         (void)countof_ns(a);
         return 1;
@@ -99,19 +100,24 @@ int main(void) {
     printf("sum1() & sum2() - Ok\n");
 
     #if EXAMPLE_FAIL == 1
+        int i = 0;
+        (void)std_size(i);
+        (void)countof_ns(i);
+        printf("int - Fail\n");
+    #endif
+    #if EXAMPLE_FAIL == 2
         auto *p1 = &a1[0];
-
         (void)std_size(p1);
         (void)countof_ns(p1);
         printf("auto *p1 = &a1[0] - fail\n");
     #endif
 
-    #if EXAMPLE_FAIL == 2
+    #if EXAMPLE_FAIL == 3
         (void)bad1(1917, a1);
         printf("not pure array function argument - Fail\n");
     #endif
 
-    #if EXAMPLE_FAIL == 3
+    #if EXAMPLE_FAIL == 4
         auto *p2 = &a2[0];
 
         (void)std_size(p2);
@@ -151,7 +157,7 @@ int main(void) {
 
         printf("ZLA - Ok\n");
 
-        #if EXAMPLE_FAIL == 4
+        #if EXAMPLE_FAIL == 5
             auto *zp = &z;
 
             (void)countof_ns(zp);
@@ -177,7 +183,7 @@ int main(void) {
             assert(0 == sizeof(v0n));
             assert(0  == countof_ns(v0n));
 
-            #if EXAMPLE_FAIL == 5
+            #if EXAMPLE_FAIL == 6
                 auto *vp = &vn0[0];
 
                 // Compile-time constraint violation

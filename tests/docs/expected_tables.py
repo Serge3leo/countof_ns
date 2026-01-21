@@ -16,11 +16,13 @@ from compiler_versions import compiler_versions, cv_result
 
 ETC_modules = {
         "countof_ns": {
+                ".kr": "countof_ns<sup>kr</sup>",
                 ".bltn": "countof_ns<sup>bltn</sup>",
                 ".c11": "countof_ns<sup>c11</sup>",
                 ".gen": "countof_ns<sup>gen</sup>",
                 "_cxx.bltn": "countof_ns<sup>bltn</sup>",
                 "_cxx.tmpl": "countof_ns<sup>tmpl</sup>",
+                "_kr": "countof_ns<sup>kr</sup>",
                 "_bltn": "countof_ns<sup>bltn</sup>",
                 "_c11": "countof_ns<sup>c11</sup>",
                 "_gen": "countof_ns<sup>gen</sup>",
@@ -74,13 +76,13 @@ terms = [
         (r'pos_.*\.run_eval_8',         '⚠️<sub>eval+8</sub>'),
         (r'pos_.*\.run_eval_9',         '⚠️<sub>eval+9</sub>'),
         (r'pos_[^.]*\.gen\.run_c2y',    '⚠️<sub>C2Y</sub>'),
-        (r'pos_[^.]*(\.gen|\.tmpl|\.c11|\.bltn|)$',
+        (r'pos_[^.]*(\.kr|\.gen|\.tmpl|\.c11|\.bltn|)$',
                                         '✅'),
         (r'neg_.*\.run_fail',           '❌<sub>-Inv</sub>'),
         (r'neg_.*\.run_0_unexpected',   '☸️i<sub>Inv0</sub>'),
         (r'neg_.*\.build_unexpected',   '⚠️'),
         (r'neg_.*\.build_fail',         '✅'),
-        (r'neg_[^.]*(\.gen|\.tmpl|\.c11|\.bltn|)$',
+        (r'neg_[^.]*(\.kr|\.gen|\.tmpl|\.c11|\.bltn|)$',
                                         '**TODO**'),
         (r'cntfn_dflt_.*',              '✅'),
     ]
@@ -160,7 +162,7 @@ def check_expected(table_fn: str, check_id: str,
             continue
         ...  # Выбор из ETC_modules[k]
         for ec in args.__dict__[k].split(';'):
-            m = re.match(r"([^.]*?)([._]gen|[._]c11|[._]bltn|)($|\..*)", ec)
+            m = re.match(r"([^.]*?)([._]kr|[._]gen|[._]c11|[._]bltn|)($|\..*)", ec)
             if not m:
                 print(f"{k}: unrecognized case: {ec, m=}")
                 res = False

@@ -55,7 +55,8 @@ function (tu_n3369_nitems_expected expected pos_pos neg_pos)
                     pos_vla_alone_00 pos_vla_alone_n0
                     pos_vla_struct_00 pos_vla_struct_n0
                     pos_vla_zla_00 pos_vla_zla_n0)
-    set(run_fpe_Intel pos_vla_00)
+    set(run_fpe_Intel pos_vla_00 pos_vla_n0
+                      pos_vla_zla_00 pos_vla_zla_n0)
     set(run_div0_Intel pos_vla_struct_00 pos_vla_struct_n0
                        pos_vla_zla_00 pos_vla_zla_n0)
     set(build_div0_IntelLLVM pos_alone_n0 pos_struct_n0 pos_zla_n0

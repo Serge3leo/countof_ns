@@ -2,12 +2,13 @@
 // SPDX-License-Identifier: BSD-2-Clause
 // SPDX-FileCopyrightText: 2025 Сергей Леонтьев (leo@sai.msu.ru)
 
-//#define EXAMPLE_FAIL (6)  // 1 - on T *
-                            // 2 - on not pure array function argument
-                            // 3 - on T (*)[N]
-                            // 4 - on T (*)[0]  (ZLA)
-                            // 5 - on T (*)[n]  (VLA)
-                            // 6 - resolve the uncertain zero-by-zero for ZLA
+//#define EXAMPLE_FAIL (7)  // 1 - on T
+                            // 2 - on T *
+                            // 3 - on not pure array function argument
+                            // 4 - on T (*)[N]
+                            // 5 - on T (*)[0]  (ZLA)
+                            // 6 - on T (*)[n]  (VLA)
+                            // 7 - resolve the uncertain zero-by-zero for ZLA
 #if !defined(HAVE_ZLA) && !defined(_MSC_VER) && !defined(__POCC__) && \
     !defined(__SUNPRO_C) && !defined(__IBMC__)
     // To enable ZLA for SunPro, use: -features=zla -DHAVE_ZLA=1
@@ -79,8 +80,12 @@
         return s;
     }
 #endif
-#if EXAMPLE_FAIL == 2
-    int bad1(size_t n, const int a[static n]) {  // Not VLA
+#if EXAMPLE_FAIL == 3
+    #if !_MSC_VER
+        int bad1(size_t n, const int a[static n]) {  // Not VLA
+    #else
+        int bad1(size_t n, const int a[1917]) {  // Not VLA
+    #endif
         (void)stdc_countof(a);
         (void)countof_ns(a);
         return 1;
@@ -112,6 +117,13 @@ int main(void) {
     #endif
 
     #if EXAMPLE_FAIL == 1
+        int i = 0;
+        (void)i;
+        (void)stdc_countof(i);
+        (void)countof_ns(i);
+        printf("int - Fail\n");
+    #endif
+    #if EXAMPLE_FAIL == 2
         int *p1 = &a1[0];
         (void)p1;
         (void)stdc_countof(p1);
@@ -119,12 +131,12 @@ int main(void) {
         printf("int * - Fail\n");
     #endif
 
-    #if EXAMPLE_FAIL == 2
+    #if EXAMPLE_FAIL == 3
         (void)bad1(1917, a1);
         printf("not pure array function argument - Fail\n");
     #endif
 
-    #if EXAMPLE_FAIL == 3
+    #if EXAMPLE_FAIL == 4
         int (*p2)[10] = &a2[0];
         (void)p2;
         (void)stdc_countof(p2);
@@ -140,7 +152,7 @@ int main(void) {
         g_static_assert(0 == sizeof(zn0));
         countof_compare(1917 == countof(zn0));
         // Current countof_ns(zn0), can't resolve the uncertain zero-by-zero.
-        #if EXAMPLE_FAIL == 6
+        #if EXAMPLE_FAIL == 7
             #if !__LCC__ && !__NVCOMPILER && !__INTEL_COMPILER
                 // if !HAVE_BROKEN_BUILTIN_TYPES_COMPATIBLE_P
                 // For ZLA case, fail if resolve not true
@@ -166,7 +178,7 @@ int main(void) {
 
         printf("ZLA - Ok\n");
 
-        #if EXAMPLE_FAIL == 4
+        #if EXAMPLE_FAIL == 5
             int (*zp)[0] = &zn0[0];
             (void)zp;
             (void)countof_ns(zp);
@@ -201,7 +213,7 @@ int main(void) {
             countof_compare(0  == countof(v0n));
             assert(0  == countof_ns(v0n));
 
-            #if EXAMPLE_FAIL == 5
+            #if EXAMPLE_FAIL == 6
                 int (*vp)[n] = &vn0[0];
                 (void)vp;
                 (void)countof_ns(vp);  // Compile-time constraint violation
