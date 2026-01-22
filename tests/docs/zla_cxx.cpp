@@ -7,12 +7,18 @@
 
 int zla[0];
 #if __NVCOMPILER || __SUNPRO_CC || (__clang__ && \
-    __clang_major__ <= 16 && !__apple_build_version__ && !__INTEL_COMPILER)
+    __clang_major__ <= 18 && !__apple_build_version__ && !__INTEL_COMPILER)
     static_assert(std::is_array<decltype(zla)>::value, "std::is_array_v<>");
 #else
     static_assert(!std::is_array<decltype(zla)>::value, "!std::is_array_v<>");
 #endif
-static_assert(0 == std::extent<decltype(zla)>::value, "0 == std::extent<>");
+#if __SUNPRO_CC || __GNUC__ >= 15 || (__clang_major__ >= 21 && \
+    !__INTEL_LLVM_COMPILER)
+    static_assert(1 == std::rank<decltype(zla)>::value, "1 == std::rank_v<>");
+#else
+    static_assert(0 == std::rank<decltype(zla)>::value, "0 == std::rank_v<>");
+#endif
+static_assert(0 == std::extent<decltype(zla)>::value, "0 == std::extent_v<>");
 template <class T, size_t N>
 constexpr static size_t size(const T (&)[N]) { return N; }
 template <class T>
