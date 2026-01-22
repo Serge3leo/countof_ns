@@ -5,7 +5,7 @@
 #include <stdio.h>
 
 int main(void) {
-#if !__STDC_NO_VLA__ && HAVE_EMPTY_STRUCTURE
+#if !__STDC_NO_VLA__
     size_t n = 1917;
     struct{} v[n][n];
     printf("sizeof(v)/sizeof(v[0])=%zu\n", sizeof(v)/sizeof(v[0]));

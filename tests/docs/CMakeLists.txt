@@ -74,7 +74,7 @@ add_test(NAME check_examples
                  --examples-dir ${CMAKE_SOURCE_DIR}/include
                  countof_ns.h
                  warning.h countof_c.c sizeof_evaluate.h vla0.c zla.c div0.c
-                 types_compatible_p.c
+                 types_compatible_p.c zla_cxx.cpp
                  )
 
 set(gcc_warn "stringop-overflow")
@@ -144,6 +144,10 @@ if (HAVE_VLA)
 endif ()
 add_executable(zla "zla.c")
 add_test(NAME zla COMMAND zla)
+if (HAVE_ZLA)
+    add_executable(zla_cxx "zla_cxx.cpp")
+    add_test(NAME zla_cxx COMMAND zla_cxx)
+endif ()
 if (NOT HAVE___STDC_NO_VLA__ AND HAVE_EMPTY_STRUCTURE)
     add_executable(div0 "div0.c")
     add_test(div0 "${CMAKE_CTEST_COMMAND}"
