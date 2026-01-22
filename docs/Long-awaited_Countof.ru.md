@@ -452,7 +452,7 @@ constexpr static size_t size(const T&) { return 1917; }
 #endif
 ```
 <!-- endexample: "zla_cxx.cpp" -->
-В общем, для ZLA нет общепринятых шаблонов свойств, необходимо своё. Кроме того, по аналогии с `std::size()`, будем считать контейнером любой тип, который имеет метод `size()`. Для того, что бы аргумент не вычислялся, используем `sizeof()` от разыменованного возвращаемого значения, за исключением случая контейнера. Для него вызовем `size()` и, только при его вызове, аргумент будет вычислен:
+В общем, для ZLA невозможно применить общепринятые шаблоны свойств, необходима своя реализация. Кроме того, по аналогии с `std::size()`, будем считать контейнером любой тип, который имеет метод `size()`. Для того, что бы аргумент не вычислялся, используем `sizeof()` от разыменованного возвращаемого значения, за исключением случая контейнера. Для него вызовем `size()` и, только при его вызове, аргумент будет вычислен:
 <!-- example: "countof_ns.h" -->
 ```c++
 	// Unchecked size stub, only for compilation success
@@ -496,52 +496,79 @@ constexpr static auto cnt_size(...) noexcept { return unthinkable; }
                          : sizeof(*_countof_ns_::match(a)))
 ```
 <!-- endexample: "countof_ns.h" -->
-Результаты такого `_countof_ns(a)` идентичны результатам оператора `_Countof` проекта C2Y для массивов фиксированного размера.
+Результаты этого варианта `_countof_ns(a)` идентичны результатам оператора `_Countof` проекта C2Y для массивов фиксированного размера.
 ### VLA и `__is_same()`
-Почти все компиляторы, которые реализуют расширение VLA C++, так же поддерживают функцию `__is_same()`, которая позволяет обойти неподдерживаемую специализацию шаблонов для VLA типов (у SunPro (`sunCC`) этой функции нет, зато он поддерживает VLA типы как аргументы шаблонов, хотя и ограничено).
+Использование изменяемых типов (VLA, указатели на них и др.) в шаблонах C++ - нерешённая проблема, подавляющее большинство компиляторов просто запрещают такое использование.
 
-Ввиду невозможности :
+Однако, почти все компиляторы, которые реализуют расширение VLA C++, так же поддерживают встроенную функцию `__is_same()`, при помощи которой можно различать указатели и массивы и т.п., у SunPro (sunCC) этой функции нет, зато он поддерживает использование VLA типов, как аргументов шаблонов, хотя и ограничено. К сожалению, многие компиляторы не поддерживают `__has_builtin(__is_same)`, но поскольку, мне пока известен только один `SunPro`, который поддерживает расширение VLA С++ и её не имеет, можно её использовать по умолчанию:
 <!-- example: "countof_ns.h" -->
 ```c++
-	template<bool IsArray>
-	constexpr static size_t zero_assert() noexcept {
-		static_assert(IsArray, "Must be array");
-		return 0;
-	}
-		// Argument may be VLA or not
-	#if !__SUNPRO_CC  // Number compilers HAVE_HIDDEN_IS_SAME_CXX
-		#define _countof_ns_must_vla(a)  (_countof_ns_::zero_assert< \
-						!__is_same(decltype(&(a)[0]), decltype(a))>())
-		template<class T>
-		constexpr static yes_t match_not_vla(const T&);
-	#else
-		#define _countof_ns_must_vla(a)  (_countof_ns_::zero_assert< \
-				  !std::is_same<decltype(&(a)[0]), decltype(a)>::value>())
-		template <class T, typename std::enable_if<
-								!std::is_array<T>::value ||
-								0 < std::extent<T>::value, int>::type = 0>
-		constexpr static yes_t match_not_vla(const T&);
-	#endif
-	constexpr static no_t match_not_vla(...);
-		// Count of VLA
-	#define _countof_ns_vla(a)  \
-					(_countof_ns_unsafe(a) + _countof_ns_must_vla(a))
-		// Argument is container
-	template <class C, typename std::enable_if<
-								has_size<C>::value, int>::type = 0>
-	constexpr static yes_t match_cnt(const C&);
-	constexpr static no_t match_cnt(...);
-		// Count of fixed array (or ZLA)
-	template <class T>
-	constexpr static auto stub_match(const T& a) -> decltype(match(a));
-	constexpr static char (*stub_match(...))[unthinkable];
-	#define _countof_ns(a)  (sizeof(_countof_ns_::match_not_vla(a)) == \
-							 sizeof(_countof_ns_::no_t) \
-							 ? _countof_ns_vla(a) \
-							 : sizeof(_countof_ns_::match_cnt(a)) == \
-							   sizeof(_countof_ns_::yes_t) \
-									? _countof_ns_::cnt_size(a) \
-									: sizeof(*_countof_ns_::stub_match(a)))
+template<bool IsArray>
+constexpr static size_t zero_assert() noexcept {
+	static_assert(IsArray, "Must be array");
+	return 0;
+}
+	// Argument may be VLA or not
+#if !__SUNPRO_CC  // Number compilers HAVE_HIDDEN_IS_SAME_CXX
+	#define _countof_ns_must_vla(a)  (_countof_ns_::zero_assert< \
+					!__is_same(decltype(&(a)[0]), decltype(a))>())
+	template<class T>
+	constexpr static yes_t match_not_vla(const T&);
+#else
+	#define _countof_ns_must_vla(a)  (_countof_ns_::zero_assert< \
+			  !std::is_same<decltype(&(a)[0]), decltype(a)>::value>())
+	template <class T, typename std::enable_if<
+							!std::is_array<T>::value ||
+							0 < std::extent<T>::value, int>::type = 0>
+	constexpr static yes_t match_not_vla(const T&);
+#endif
+constexpr static no_t match_not_vla(...);
+	// Count of VLA
+#define _countof_ns_vla(a)  \
+				(_countof_ns_unsafe(a) + _countof_ns_must_vla(a))
+	// Argument is container
+template <class C, typename std::enable_if<
+							has_size<C>::value, int>::type = 0>
+constexpr static yes_t match_cnt(const C&);
+constexpr static no_t match_cnt(...);
+	// Count of fixed array (or ZLA)
+template <class T>
+constexpr static auto stub_match(const T& a) -> decltype(match(a));
+constexpr static char (*stub_match(...))[unthinkable];
+#define _countof_ns(a)  (sizeof(_countof_ns_::match_not_vla(a)) == \
+						 sizeof(_countof_ns_::no_t) \
+						 ? _countof_ns_vla(a) \
+						 : sizeof(_countof_ns_::match_cnt(a)) == \
+						   sizeof(_countof_ns_::yes_t) \
+								? _countof_ns_::cnt_size(a) \
+								: sizeof(*_countof_ns_::stub_match(a)))
 ```
 <!-- endexample: "countof_ns.h" -->
-В случае расширений VLA, число вычислений зависит компилятора, т.к. некоторые придерживаются правил языка C, а некоторые нет, и не вычисляют операнд `sizeof()`.
+Результаты этого варианта `_countof_ns(a)` идентичны результатам оператора `_Countof` проекта C2Y для массивов фиксированного размера не содержащих изменяемых типов. В случае массивов изменяемых типов, вычисление числа элементов будет происходить во время выполнения и, в случае если `0 == sizeof(a)`, будет всегда возвращаться 0.
+
+В случае расширений VLA, число вычислений аргумента зависит компилятора, т.к. некоторые придерживаются правил языка C в части VLA, а некоторые нет, и не вычисляют операнд `sizeof()`.
+### Статическая рефлексия C++26
+Оператор рефлексии (^^) \[[expr.reflect](https://eel.is/c++draft/expr.reflect)\] применяется, грубо говоря, к идентификаторам, типам или пространствам, но не к выражениям, т.е. не применим к поставленной задаче в общем виде.
+
+Если ограничится массивами фиксированной длины, то можно определить шаблонную функцию, в которой уже будут идентификаторы аргументов и шаблонов, но в этом случае, C++26 не предлагает ничего существенно более компактного, чем уже было в C++17.
+
+А можно ограничить аргумент макроса `id` - идентификатором массива и покопаться в его содержимом. Идеально было бы просто вызвать `extent(type_of(^^id))` \[[meta.reflection.traits (8)](https://eel.is/c++draft/meta#reflection.traits-8)\], но предварительные версии, ни Clang, ни GNU, не предоставляют какой-либо расширения ("перегрузки") этой функции для расширений VLA без `consteval`.
+
+В GNU, при проверке,  что `id` является массивом, можно заменить использование встроенной функции `__is_same()` на `is_pointer_type(type_of(^^id))`  \[[meta.reflection.traits (2)](https://eel.is/c++draft/meta#reflection.traits-2)\](как вариант, можно использовать `rank(type_of(^^id))`  \[[meta.reflection.traits (7)](https://eel.is/c++draft/meta#reflection.traits-7)\]).
+```c++
+#define id_countof_ns_must_vla(id)  (_countof_ns_::zero_assert< \
+									!is_pointer_type(type_of(^^id))>())
+#define id_countof_ns_vla(id)  \
+				(_countof_ns_unsafe(a) + id_countof_ns_must_vla(id))
+#define id_countof(id)  (sizeof(_countof_ns_::match_not_vla(id)) == \
+						 sizeof(_countof_ns_::no_t) \
+						 ? id_countof_ns_vla(id) \
+						 : sizeof(_countof_ns_::match_cnt(id)) == \
+						   sizeof(_countof_ns_::yes_t) \
+								? _countof_ns_::cnt_size(id) \
+								: sizeof(*_countof_ns_::stub_match(id)))
+
+```
+Clang, хотя и имеет соответствующие встроенные `consteval` функции `__is_pointer()` и `__array_rank()`, не предоставляет и этого, по крайней мере, пока.
+
+Есть шанс, что такая ограниченная задача, в C++26 будет иметь более менее "чистое" решение. Спецификации интерфейсов этого не запрещают, но не и обязывают, поскольку не специфицируют реализацию `std::meta::info`.
