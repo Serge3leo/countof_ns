@@ -5,8 +5,8 @@
 #include <stdio.h>
 
 void foo(size_t m, size_t n, int (*v)[m][n]) {
-    printf("m=%zu n=%zu sizeof(*v) = %zu sizeof(**v) = %zu\n",
-            m, n, sizeof(*v), sizeof(**v));
+    printf("m=%zu n=%zu sizeof(*v) = %zu sizeof((*v)[0]) = %zu\n",
+            m, n, sizeof(*v), sizeof((*v)[0]));
 }
 int main(void) {
     for (size_t m = 0; m < 3; m++) {
