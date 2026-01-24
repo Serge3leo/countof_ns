@@ -154,15 +154,17 @@
 #elif __NVCOMPILER
         // Probably NVHPC (pgcc) bug (HAVE_BROKEN_VLA et all)
     #define _countof_ns_unsafe(a)  (0 == sizeof((a)[0]) ? 0 \
-                : sizeof(a)/( sizeof((a)[0]) ? sizeof((a)[0]) : (size_t)-1 ))
+              : sizeof(a)/(sizeof((a)[0]) ? sizeof((a)[0]) : 2*sizeof(void *)))
+    #define _countof_ns_not_kr_idiom_  (1)
 #elif !__GNUC__
         // NVHPC (pgcc) incomplete implementation (?:);
     #define _countof_ns_unsafe(a)  \
                 (0 == sizeof((a)[0]) ? 0 : sizeof(a)/sizeof((a)[0]))
 #else
         // Assume: __GNUC__ => has Conditionals with Omitted (?:)
-        //         sizeof((a)[0]) == 0 => sizeof(a) == 0
-    #define _countof_ns_unsafe(a)  (sizeof(a)/(sizeof((a)[0]) ?: 1))
+        //         sizeof((a)[0]) == 0 => sizeof(a) == 0 or sizeof(void *)
+    #define _countof_ns_unsafe(a)  \
+                        (sizeof(a)/(sizeof((a)[0]) ?: 2*sizeof(void *)))
     #define _countof_ns_not_kr_idiom_  (1)
 #endif
 #if _COUNTOF_NS_WANT_KR || (_MSC_VER < 1939 && _MSC_VER && !__cplusplus)
@@ -282,7 +284,7 @@
                     _countof_ns_typeof(*(a))(*)[_countof_ns_unsafe(a)]: 0))
     #endif
     #if !__LCC__ && !__SUNPRO_C && !__INTEL_COMPILER
-        #define _countof_ns_typ2arr(a)  (*(_countof_ns_typeof(a) *)(void *)8192)
+        #define _countof_ns_typ2arr(a)  (*(_countof_ns_typeof(a) *)(void *)64)
     #else
         #define _countof_ns_typ2arr(a)  a
     #endif
@@ -307,7 +309,7 @@
     constexpr size_t unthinkable = 1917;
     using no_t = char;
     using yes_t = long long;
-        // T is container (have `size()` member)
+        // T is container (has `size()` member)
     template <class T> struct has_size {
         template <class C> static yes_t test_(decltype(&C::size));
         template <class> static no_t test_(...);
@@ -324,7 +326,7 @@
                                 !std::is_void<T>::value> {};
         // Count of fixed array, standard C++
     template<class T, size_t N> static char (*match(const T (&)[N]))[N];
-        // Count of fixed ZLA
+        // Count of ZLA
     template <class T, typename std::enable_if<
                                 is_zla<T>::value, int>::type = 0>
     static char (*match(const T&))[0];

@@ -15,4 +15,8 @@ int main(void) {
     int v70[n7][n0];
     assert(0 == sizeof(v70) && 7 == countof(v70));
     assert(7 == countof(int [n7][n0]));
+    int fv[7][n0];
+    assert(0 == sizeof(fv));
+    static_assert(7 == countof(fv));
+    static_assert(7 == countof(int [7][n0]));
 }

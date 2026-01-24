@@ -9,13 +9,13 @@ int main(void) {
     size_t r = 0;
     int  a[1917][10];
     int  (*pa)[1917][10] = &a;
-    r += sizeof(*pa++[0]);  // Clang/IntelLLVM: unevaluated-expression
+    r += sizeof(*pa++[0]);  // W: Clang/IntelLLVM: unevaluated-expression
     assert(&a == pa);
     #if (!__cplusplus && !__STDC_NO_VLA__) || (__cplusplus && HAVE_VLA_CXX)
         size_t n = 25;
         int v[n];
         __typeof__(v) *pv = &v;
-        r += sizeof(*pv++[0]);  // Clang/IntelLLVM: unevaluated-expression
+        r += sizeof(*pv++[0]);  // W: Clang/IntelLLVM: unevaluated-expression
         assert(&v == pv);
         size_t m = 7;
         int w[m][n];

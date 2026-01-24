@@ -11,29 +11,29 @@
     size_t foo(size_t n, int va[static n]) {
 #endif
     size_t r = n;
-    r += sizeof(va);  // Clang/GNU/IntelLLVM: sizeof-array-argument
+    r += sizeof(va);  // W: Clang/GNU/IntelLLVM: sizeof-array-argument
     return r;
 }
 size_t boo(size_t n, int *p) {
     size_t r = n;
     r += sizeof(p);
-    r += sizeof(p)/sizeof(p[0]);  // Clang/IntelLLVM: sizeof-pointer-div
-                                  // GNU (with -Wall): sizeof-pointer-div
+    r += sizeof(p)/sizeof(p[0]);  // W: Clang/IntelLLVM: sizeof-pointer-div
+                                  // W: GNU (with -Wall): sizeof-pointer-div
     r += sizeof(p)/(sizeof(p[0]));  // Clang/IntelLLVM: Ok
-                                    // GNU (with -Wall): sizeof-pointer-div
-    r += sizeof(p)/(0 + sizeof(p[0]));  // Ok
-    memset(p, 0, sizeof(p));  // Clang/IntelLLVM: sizeof-pointer-memaccess
-                              // GNU (with -Wall): sizeof-pointer-memaccess
+                                    // W: GNU11 (with -Wall): sizeof-pointer-div
+    r += sizeof(p)/(sizeof(p[0]) + 0);  // Ok
+    memset(p, 0, sizeof(p));  // W: Clang/IntelLLVM: sizeof-pointer-memaccess
+                              // W: GNU (with -Wall): sizeof-pointer-memaccess
     return r;
 }
 int main(void) {
     size_t r = 0;
     int a[1917] = { 10 };
-    r += foo(1918, a);  // GNU (11 and above): stringop-overflow
+    r += foo(1918, a);  // W: GNU (11 and above): stringop-overflow
     r += boo(1918, a);
-    r += sizeof(a)/sizeof(short);  // Clang/IntelLLVM: sizeof-array-div
-                                   // GNU (with -Wall): sizeof-array-div
+    r += sizeof(a)/sizeof(short);  // W: Clang/IntelLLVM: sizeof-array-div
+                                   // W: GNU (with -Wall): sizeof-array-div
     r += sizeof(a)/(sizeof(short));  // Ok
-    r += sizeof(a + 25);  // Clang/IntelLLVM: sizeof-array-decay
+    r += sizeof(a + 25);  // W: Clang/IntelLLVM: sizeof-array-decay
     printf("Ok %zu\n", r);
 }
