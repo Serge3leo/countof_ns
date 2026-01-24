@@ -559,7 +559,7 @@ constexpr static char (*stub_match(...))[unthinkable];
 
 В случае расширений VLA, число вычислений аргумента зависит компилятора, т.к. некоторые придерживаются правил языка C в части VLA, а некоторые нет, и не вычисляют операнд `sizeof()`.
 ### Статическая рефлексия C++26
-
+Формально, использование оператора рефлексии `^^decltype(a)` позволяет получить свойства типа минуя сопоставление с шаблоном, что даёт возможность избавится от вызовов встроенных функций. Но, для получения числа элементов фиксированных массивов, ZLA или контейнеров, не видно существенных улучшений:
 <!-- example: "c++26.cpp" -->
 ```c++
 template<bool IsArray>
@@ -588,6 +588,9 @@ constexpr static bool has_size() {
 template<class T>
 constexpr static auto match_size(const T&) -> char (*)[bias + has_size<T>()];
 constexpr static auto match_size(...) -> no_t *;
+#define _countof_26_must_fix(a)  (zero_assert< \
+					sizeof(*match_size(a)) == sizeof(yes_t) || \
+					1 <= rank(^^decltype(a))>())
 template<class T>
 static auto match_countof(const T&)
         -> char (*)[1 <= rank(^^T) ? bias + extent(^^T) : unthinkable];
@@ -604,29 +607,32 @@ constexpr static size_t _countof_26_container(...) {
 }
 #define countof_26_fixcnt(a)  (sizeof(*match_size(a)) == sizeof(yes_t) \
                                ? _countof_26_container(a) \
-                               : sizeof(*match_countof(a)) - bias)
+                               : sizeof(*match_countof(a)) - bias + \
+                                 _countof_26_must_fix(a))
 ```
 <!-- endexample: "c++26.cpp" -->
-На январь 2016, в некоторых случаях предварительная версия GNU (gcc 16.0.1 20260114) некорректно реализует `extent(^^T)`. В качестве обхода этой проблемы, можно заменить на `std::extent_v<T>`.
+На январь 2016, в некоторых случаях, предварительная версия GNU (gcc 16.0.1 20260114) некорректно реализует `extent(^^T)`. В качестве обхода этой проблемы, можно заменить на `std::extent_v<T>`.
 
-Идеально было бы просто вызвать `extent(^^decltype(a))` \[[meta.reflection.traits (8)](https://eel.is/c++draft/meta#reflection.traits-8)\], но предварительные версии, ни Clang, ни GNU, не предоставляют какой-либо расширения этой функции  без `consteval` для расширений VLA.
+В случае VLA, идеально было бы просто вызвать `extent(^^decltype(a))` \[[meta.reflection.traits (8)](https://eel.is/c++draft/meta#reflection.traits-8)\], но предварительные версии, ни Clang, ни GNU, не предоставляют какого-либо расширения этой функции  без `consteval` для расширений VLA (в C++26 она имеет спецификатор `consteval`, поэтому она не может вернуть размер VLA). У Clang есть встроенная функция `__array_extent()`, но она возвращает 0 для VLA.
+
+Таким образом, для VLA, так же как в C++14, приходится делить `sizeof()` с тем отличием, что `_countof_26_must_vla()` может быть выражен с использованием стандартных интерфейсов `rank(^^decltype(a))`  \[[meta.reflection.traits (7)](https://eel.is/c++draft/meta#reflection.traits-7)\] или  `is_pointer_type(^^decltype(a))`  \[[meta.reflection.traits (2)](https://eel.is/c++draft/meta#reflection.traits-2)\]:
 <!-- example: "c++26.cpp" -->
 ```c++
 template<class T>
 constexpr static yes_t *match_not_vla(const T&);
 constexpr static no_t *match_not_vla(...);
-#define countof_26_must_vla(a)  (zero_assert< \
+#define _countof_26_must_vla(a)  (zero_assert< \
 					sizeof(*match_not_vla(a)) != sizeof(no_t) || \
 					1 <= rank(^^decltype(a))>())
-#define countof_26_vla(a)  (_countof_ns_unsafe(a) + countof_26_must_vla(a))
+#define _countof_26_vla(a)  (_countof_ns_unsafe(a) + _countof_26_must_vla(a))
 #define countof_26(a)  (sizeof(*match_not_vla(a)) == sizeof(no_t) \
-                        ? countof_26_vla(a) \
+                        ? _countof_26_vla(a) \
                         : sizeof(*match_size(a)) == sizeof(yes_t) \
                             ? _countof_26_container(a) \
-                            : sizeof(*match_countof(a)) - bias)
+                            : sizeof(*match_countof(a)) - bias + \
+                              _countof_26_must_fix(a))
 ```
 <!-- endexample: "c++26.cpp" -->
-На январь 2016, предварительная версия clang (Clang 21.0.0git `(https://github.com/Bloomberg/clang-p2996 9813722a72c07f47206d50604f0e8fd00781e067)`) не реализует `rank(^^decltype(a))`  \[[meta.reflection.traits (7)](https://eel.is/c++draft/meta#reflection.traits-7)\] или  `is_pointer_type(^^decltype(a))`  \[[meta.reflection.traits (2)](https://eel.is/c++draft/meta#reflection.traits-2)\] для VLA. В качестве обхода этой проблемы, можно заменить на встроенную функцию `__array_rank()` или `__is_pointer()`.
+На январь 2016, предварительная версия clang (Clang 21.0.0git `(https://github.com/Bloomberg/clang-p2996 9813722a72c07f47206d50604f0e8fd00781e067)`) не реализует `rank(^^decltype(a))` или  `is_pointer_type(^^decltype(a))` для VLA. В качестве обхода этой проблемы, можно заменить на встроенную функцию `__array_rank()` или `__is_pointer()`.
 
-
-Есть шанс, что такая ограниченная задача, в C++26 будет иметь более менее "чистое" решение. Спецификации интерфейсов этого не запрещают, но не и обязывают, поскольку не специфицируют реализацию `std::meta::info`.
+Таким образом, в C++26, так же как в C++14, невозможно получить число элементов VLA с элементами нулевого размера, можно только вернуть 0 в этом случае. Но, есть шанс, что в C++26 это можно будет сделать более менее "чисто". Спецификации интерфейсов этого не запрещают, но не и обязывают, поскольку не специфицируют реализацию std::meta::info.

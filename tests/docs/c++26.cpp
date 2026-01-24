@@ -57,6 +57,16 @@ static_assert(sizeof(no_t) == sizeof(*match_size(a7)));
 static_assert(sizeof(no_t) == sizeof(*match_size(z0)));
 static_assert(sizeof(yes_t) == sizeof(*match_size(arr1)));
 
+#if !Clang_WORKAROUND
+    #define _countof_26_must_fix(a)  (zero_assert< \
+                        sizeof(*match_size(a)) == sizeof(yes_t) || \
+                        1 <= rank(^^decltype(a))>())
+#else
+        // Workaround for VLA enabled case
+    #define _countof_26_must_fix(a)  (zero_assert< \
+                        sizeof(*match_size(a)) == sizeof(yes_t) || \
+                        1 <= __array_rank(decltype(a))>())
+#endif
 template<class T>
 static auto match_countof(const T&)
     #if !GNU_WORKAROUND
@@ -86,7 +96,8 @@ static_assert(1 == _countof_26_container(arr1));
 
 #define countof_26_fixcnt(a)  (sizeof(*match_size(a)) == sizeof(yes_t) \
                                ? _countof_26_container(a) \
-                               : sizeof(*match_countof(a)) - bias)
+                               : sizeof(*match_countof(a)) - bias + \
+                                 _countof_26_must_fix(a))
 static_assert(7 == countof_26_fixcnt(a7));
 static_assert(0 == countof_26_fixcnt(z0));
 static_assert(1 == countof_26_fixcnt(arr1));
@@ -96,52 +107,53 @@ constexpr static yes_t *match_not_vla(const T&);
 constexpr static no_t *match_not_vla(...);
 #define _countof_ns_unsafe(a)  (sizeof(a)/(sizeof(a[0]) ?: 2*sizeof(void *)))
 #if !Clang_WORKAROUND
-    #define countof_26_must_vla(a)  (zero_assert< \
+    #define _countof_26_must_vla(a)  (zero_assert< \
                         sizeof(*match_not_vla(a)) != sizeof(no_t) || \
                         1 <= rank(^^decltype(a))>())
 #else
-    #define countof_26_must_vla(a)  (zero_assert< \
+    #define _countof_26_must_vla(a)  (zero_assert< \
                         sizeof(*match_not_vla(a)) != sizeof(no_t) || \
                         1 <= __array_rank(decltype(a))>())
 #endif
-#define countof_26_vla(a)  (_countof_ns_unsafe(a) + countof_26_must_vla(a))
+#define _countof_26_vla(a)  (_countof_ns_unsafe(a) + _countof_26_must_vla(a))
 #define countof_26(a)  (sizeof(*match_not_vla(a)) == sizeof(no_t) \
-                        ? countof_26_vla(a) \
+                        ? _countof_26_vla(a) \
                         : sizeof(*match_size(a)) == sizeof(yes_t) \
                             ? _countof_26_container(a) \
-                            : sizeof(*match_countof(a)) - bias)
+                            : sizeof(*match_countof(a)) - bias + \
+                              _countof_26_must_fix(a))
 static_assert(7 == countof_26(a7));
 static_assert(0 == countof_26(z0));
 static_assert(1 == countof_26(arr1));
 
 int main(void) {
-    printf("countof_26_fixcnt(a7) = %zu\n",
-            countof_26_fixcnt(a7));
-    printf("countof_26_fixcnt(z0) = %zu\n",
-            countof_26_fixcnt(z0));
-    printf("countof_26_fixcnt(arr1) = %zu\n",
-            countof_26_fixcnt(arr1));
+    printf("countof_26(a7) = %zu\n",
+            countof_26(a7));
+    printf("countof_26(z0) = %zu\n",
+            countof_26(z0));
+    printf("countof_26(arr1) = %zu\n",
+            countof_26(arr1));
     std::vector<int> vec0;
-    printf("countof_26_fixcnt(vec0) = %zu\n",
-            countof_26_fixcnt(vec0));
+    printf("countof_26(vec0) = %zu\n",
+            countof_26(vec0));
     std::string str5 = "Hello";
     #if !GNU_WORKAROUND
-        printf("countof_26_fixcnt(str5) = %zu\n",
-                countof_26_fixcnt(str5));
-        assert(5 == countof_26_fixcnt(str5));
+        printf("countof_26(str5) = %zu\n",
+                countof_26(str5));
+        assert(5 == countof_26(str5));
     #endif
-    assert(7 == countof_26_fixcnt(a7));
-    assert(0 == countof_26_fixcnt(z0));
-    assert(1 == countof_26_fixcnt(arr1));
-    assert(0 == countof_26_fixcnt(vec0));
+    assert(7 == countof_26(a7));
+    assert(0 == countof_26(z0));
+    assert(1 == countof_26(arr1));
+    assert(0 == countof_26(vec0));
     int a77[7][7];
     int a70[7][0];
     int a07[0][7];
     int a00[0][0];
-    static_assert(7 == countof_26_fixcnt(a77));
+    static_assert(7 == countof_26(a77));
     static_assert(extent(^^decltype(a77)) ==
                   std::extent_v<decltype(a77)>);
-    static_assert(7 == countof_26_fixcnt(a70));
+    static_assert(7 == countof_26(a70));
     #if !GNU_WORKAROUND
         printf("extent(^^decltype(a70)) = %zu\n",
                 extent(^^decltype(a70)));
@@ -154,10 +166,10 @@ int main(void) {
         printf("std::extent_v<decltype(a70) = %zu\n",
                 std::extent_v<decltype(a70)>);
     #endif
-    static_assert(0 == countof_26_fixcnt(a07));
+    static_assert(0 == countof_26(a07));
     static_assert(extent(^^decltype(a07)) ==
                   std::extent_v<decltype(a07)>);
-    static_assert(0 == countof_26_fixcnt(a00));
+    static_assert(0 == countof_26(a00));
     static_assert(extent(^^decltype(a00)) ==
                   std::extent_v<decltype(a00)>);
     size_t n2 = 2;
