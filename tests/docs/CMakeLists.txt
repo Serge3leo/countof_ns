@@ -74,7 +74,7 @@ add_test(NAME check_examples
                  --examples-dir ${CMAKE_SOURCE_DIR}/include
                  countof_ns.h
                  warning.h countof_c.c sizeof_evaluate.h vla0.c zla.c div0.c
-                 types_compatible_p.c zla_cxx.cpp
+                 types_compatible_p.c zla_cxx.cpp c++26.cpp
                  )
 
 set(gcc_warn "stringop-overflow")

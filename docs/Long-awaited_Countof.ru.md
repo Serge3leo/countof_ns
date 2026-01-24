@@ -559,27 +559,74 @@ constexpr static char (*stub_match(...))[unthinkable];
 
 В случае расширений VLA, число вычислений аргумента зависит компилятора, т.к. некоторые придерживаются правил языка C в части VLA, а некоторые нет, и не вычисляют операнд `sizeof()`.
 ### Статическая рефлексия C++26
-Оператор рефлексии (^^) \[[expr.reflect](https://eel.is/c++draft/expr.reflect)\] применяется, грубо говоря, к идентификаторам, типам или пространствам, но не к выражениям, т.е. не применим к поставленной задаче в общем виде.
 
-Если ограничится массивами фиксированной длины, то можно определить шаблонную функцию, в которой уже будут идентификаторы аргументов и шаблонов, но в этом случае, C++26 не предлагает ничего существенно более компактного, чем уже было в C++17.
-
-А можно ограничить аргумент макроса `id` - идентификатором массива и покопаться в его содержимом. Идеально было бы просто вызвать `extent(type_of(^^id))` \[[meta.reflection.traits (8)](https://eel.is/c++draft/meta#reflection.traits-8)\], но предварительные версии, ни Clang, ни GNU, не предоставляют какой-либо расширения ("перегрузки") этой функции для расширений VLA без `consteval`.
-
-В GNU, при проверке,  что `id` является массивом, можно заменить использование встроенной функции `__is_same()` на `is_pointer_type(type_of(^^id))`  \[[meta.reflection.traits (2)](https://eel.is/c++draft/meta#reflection.traits-2)\](как вариант, можно использовать `rank(type_of(^^id))`  \[[meta.reflection.traits (7)](https://eel.is/c++draft/meta#reflection.traits-7)\]).
+<!-- example: "c++26.cpp" -->
 ```c++
-#define id_countof_ns_must_vla(id)  (_countof_ns_::zero_assert< \
-									!is_pointer_type(type_of(^^id))>())
-#define id_countof_ns_vla(id)  \
-				(_countof_ns_unsafe(a) + id_countof_ns_must_vla(id))
-#define id_countof(id)  (sizeof(_countof_ns_::match_not_vla(id)) == \
-						 sizeof(_countof_ns_::no_t) \
-						 ? id_countof_ns_vla(id) \
-						 : sizeof(_countof_ns_::match_cnt(id)) == \
-						   sizeof(_countof_ns_::yes_t) \
-								? _countof_ns_::cnt_size(id) \
-								: sizeof(*_countof_ns_::stub_match(id)))
-
+template<bool IsArray>
+constexpr static size_t zero_assert() noexcept {
+    static_assert(IsArray, "Must be array");
+    return 0;
+}
+constexpr size_t unthinkable = 1917;
+constexpr size_t bias = 1;
+using no_t = char [bias + false];
+using yes_t = char [bias + true];
+template<class T>
+constexpr static bool has_size() {
+    if constexpr (is_class_type(^^T)) {
+        constexpr auto ctx = std::meta::access_context::current();
+        constexpr auto ms = define_static_array(members_of(^^T, ctx)
+                |std::views::filter(std::meta::is_function)
+                |std::views::filter(std::meta::has_identifier)
+                |std::views::filter([](const std::meta::info& m){
+                    return identifier_of(m) == "size";
+                }));
+        return !ms.empty();
+    }
+    return false;
+}
+template<class T>
+constexpr static auto match_size(const T&) -> char (*)[bias + has_size<T>()];
+constexpr static auto match_size(...) -> no_t *;
+template<class T>
+static auto match_countof(const T&)
+        -> char (*)[1 <= rank(^^T) ? bias + extent(^^T) : unthinkable];
+static char (*match_countof(...))[unthinkable];
+template<class C>
+constexpr static size_t _countof_26_container(const C& c) {
+    if constexpr (sizeof(*match_size(c)) == sizeof(yes_t)) {
+        return c.size();
+    }
+    return unthinkable;
+}
+constexpr static size_t _countof_26_container(...) {
+    return unthinkable;
+}
+#define countof_26_fixcnt(a)  (sizeof(*match_size(a)) == sizeof(yes_t) \
+                               ? _countof_26_container(a) \
+                               : sizeof(*match_countof(a)) - bias)
 ```
-Clang, хотя и имеет соответствующие встроенные `consteval` функции `__is_pointer()` и `__array_rank()`, не предоставляет и этого, по крайней мере, пока.
+<!-- endexample: "c++26.cpp" -->
+На январь 2016, в некоторых случаях предварительная версия GNU (gcc 16.0.1 20260114) некорректно реализует `extent(^^T)`. В качестве обхода этой проблемы, можно заменить на `std::extent_v<T>`.
+
+Идеально было бы просто вызвать `extent(^^decltype(a))` \[[meta.reflection.traits (8)](https://eel.is/c++draft/meta#reflection.traits-8)\], но предварительные версии, ни Clang, ни GNU, не предоставляют какой-либо расширения этой функции  без `consteval` для расширений VLA.
+<!-- example: "c++26.cpp" -->
+```c++
+template<class T>
+constexpr static yes_t *match_not_vla(const T&);
+constexpr static no_t *match_not_vla(...);
+#define countof_26_must_vla(a)  (zero_assert< \
+					sizeof(*match_not_vla(a)) != sizeof(no_t) || \
+					1 <= rank(^^decltype(a))>())
+#define countof_26_vla(a)  (_countof_ns_unsafe(a) + countof_26_must_vla(a))
+#define countof_26(a)  (sizeof(*match_not_vla(a)) == sizeof(no_t) \
+                        ? countof_26_vla(a) \
+                        : sizeof(*match_size(a)) == sizeof(yes_t) \
+                            ? _countof_26_container(a) \
+                            : sizeof(*match_countof(a)) - bias)
+```
+<!-- endexample: "c++26.cpp" -->
+На январь 2016, предварительная версия clang (Clang 21.0.0git `(https://github.com/Bloomberg/clang-p2996 9813722a72c07f47206d50604f0e8fd00781e067)`) не реализует `rank(^^decltype(a))`  \[[meta.reflection.traits (7)](https://eel.is/c++draft/meta#reflection.traits-7)\] или  `is_pointer_type(^^decltype(a))`  \[[meta.reflection.traits (2)](https://eel.is/c++draft/meta#reflection.traits-2)\] для VLA. В качестве обхода этой проблемы, можно заменить на встроенную функцию `__array_rank()` или `__is_pointer()`.
+
 
 Есть шанс, что такая ограниченная задача, в C++26 будет иметь более менее "чистое" решение. Спецификации интерфейсов этого не запрещают, но не и обязывают, поскольку не специфицируют реализацию `std::meta::info`.
