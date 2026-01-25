@@ -48,18 +48,27 @@ ce_comment = re.compile(r'//.*')
 
 def check_example(name: str, body: list[str], content: list[str]) -> bool:
     ret = True
+    prev_i = 0
+    prev_s = "<BEGIN>"
+    prev_c = "<BEGIN>"
     c = 0
     for b in body:
         s = b.strip().replace("\N{NBSP}", " ")
         if "```" in s:
             continue
         s = ce_comment.sub("", s)
+        if not s:
+            continue
         for i in range(c, len(content)):
             if s in content[i]:
                 c = i + 1
+                prev_i = i
+                prev_s = s
+                prev_c = content[i]
                 break
         else:
-            print(f"{name}: Not found '{s}'")
+            print(f"{name}: Not found '{s}'"
+                  f" {c, len(content), prev_i, prev_s, prev_c=}")
             ret = False
     return ret
 
