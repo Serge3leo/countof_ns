@@ -4,10 +4,12 @@
 
 #include <assert.h>
 #include <stdio.h>
-#if __has_include(<stdcountof.h>)
-    #include <stdcountof.h>
-    #ifndef HAVE_COUNTOF
-        #define HAVE_COUNTOF  (1)
+#ifdef __has_include
+    #if __has_include(<stdcountof.h>)
+        #include <stdcountof.h>
+        #ifndef HAVE_COUNTOF
+            #define HAVE_COUNTOF  (1)
+        #endif
     #endif
 #endif
 

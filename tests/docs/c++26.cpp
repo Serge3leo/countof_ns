@@ -27,15 +27,8 @@ int a7[7];
 int z0[0];
 std::array<int, 1> arr1;
 
-template<bool IsArray>
-constexpr static size_t zero_assert() noexcept {
-    static_assert(IsArray, "Must be array");
-    return 0;
-}
 constexpr size_t unthinkable = 1917;
 constexpr size_t bias = 1;
-using no_t = char [bias + false];
-using yes_t = char [bias + true];
 template<class T>
 constexpr static bool has_size() {
     if constexpr (is_class_type(^^T)) {
@@ -50,61 +43,50 @@ constexpr static bool has_size() {
     }
     return false;
 }
-template<class T>
-constexpr static auto match_size(const T&) -> char (*)[bias + has_size<T>()];
-constexpr static auto match_size(...) -> no_t *;
-static_assert(sizeof(no_t) == sizeof(*match_size(a7)));
-static_assert(sizeof(no_t) == sizeof(*match_size(z0)));
-static_assert(sizeof(yes_t) == sizeof(*match_size(arr1)));
+static_assert(!has_size<decltype(a7)>());
+static_assert(!has_size<decltype(z0)>());
+static_assert(has_size<decltype(arr1)>());
 
-#if !Clang_WORKAROUND
-    #define _countof_26_must_fix(a)  (zero_assert< \
-                        sizeof(*match_size(a)) == sizeof(yes_t) || \
-                        1 <= rank(^^decltype(a))>())
+template<class T> requires (1 <= rank(^^T))
+#if !GNU_WORKAROUND
+    static char (*match(const T&))[bias + extent(^^T)];
 #else
-        // Workaround for VLA enabled case
-    #define _countof_26_must_fix(a)  (zero_assert< \
-                        sizeof(*match_size(a)) == sizeof(yes_t) || \
-                        1 <= __array_rank(decltype(a))>())
+    static char (*match(const T&))[bias + std::extent_v<T>];
 #endif
-template<class T>
-static auto match_countof(const T&)
-    #if !GNU_WORKAROUND
-        -> char (*)[1 <= rank(^^T) ? bias + extent(^^T) : unthinkable];
-    #else
-        -> char (*)[1 <= rank(^^T) ? bias + std::extent_v<T> : unthinkable];
-    #endif
-static char (*match_countof(...))[unthinkable];  // For VLA
+template<class C> requires (has_size<C>())
+static char (*match(const C&))[unthinkable];
 
-static_assert(bias + 7 == sizeof(*match_countof(a7)));
-static_assert(bias + 0 == sizeof(*match_countof(z0)));
-static_assert(unthinkable == sizeof(*match_countof(arr1)));
+static_assert(bias + 7 == sizeof(*match(a7)));
+static_assert(bias + 0 == sizeof(*match(z0)));
+static_assert(unthinkable == sizeof(*match(arr1)));
 
-template<class C>
-constexpr static size_t _countof_26_container(const C& c) {
-    if constexpr (sizeof(*match_size(c)) == sizeof(yes_t)) {
-        return c.size();
-    }
-    return unthinkable;
+template<class C> requires (has_size<C>())
+constexpr static auto cnt_size(const C& c) noexcept(noexcept(c.size())) {
+    return c.size();
 }
-constexpr static size_t _countof_26_container(...) {  // For VLA
-    return unthinkable;
-}
-static_assert(unthinkable == _countof_26_container(a7));
-static_assert(unthinkable == _countof_26_container(z0));
-static_assert(1 == _countof_26_container(arr1));
+constexpr static size_t cnt_size(...) { return unthinkable; }
+static_assert(unthinkable == cnt_size(a7));
+static_assert(unthinkable == cnt_size(z0));
+static_assert(1 == cnt_size(arr1));
 
-#define countof_26_fixcnt(a)  (sizeof(*match_size(a)) == sizeof(yes_t) \
-                               ? _countof_26_container(a) \
-                               : sizeof(*match_countof(a)) - bias + \
-                                 _countof_26_must_fix(a))
+#define countof_26_fixcnt(a)  (has_size<decltype(a)>() \
+                               ? cnt_size(a) \
+                               : sizeof(*match(a)) - bias)
 static_assert(7 == countof_26_fixcnt(a7));
 static_assert(0 == countof_26_fixcnt(z0));
 static_assert(1 == countof_26_fixcnt(arr1));
 
+template<bool IsArray>
+constexpr static size_t zero_assert() noexcept {
+    static_assert(IsArray, "Must be array");
+    return 0;
+}
+using no_t = char [bias + false];
+using yes_t = char [bias + true];
 template<class T>
-constexpr static yes_t *match_not_vla(const T&);
-constexpr static no_t *match_not_vla(...);
+static yes_t *match_not_vla(const T&);
+static no_t *match_not_vla(...);
+
 #define _countof_ns_unsafe(a)  (sizeof(a)/(sizeof(a[0]) ?: 2*sizeof(void *)))
 #if !Clang_WORKAROUND
     #define _countof_26_must_vla(a)  (zero_assert< \
@@ -116,12 +98,31 @@ constexpr static no_t *match_not_vla(...);
                         1 <= __array_rank(decltype(a))>())
 #endif
 #define _countof_26_vla(a)  (_countof_ns_unsafe(a) + _countof_26_must_vla(a))
+
+template<class T>
+constexpr static auto match_cnt(const T&) -> char (*)[bias + has_size<T>()];
+constexpr static auto match_cnt(...) -> no_t *;
+static_assert(sizeof(no_t) == sizeof(*match_cnt(a7)));
+static_assert(sizeof(no_t) == sizeof(*match_cnt(z0)));
+static_assert(sizeof(yes_t) == sizeof(*match_cnt(arr1)));
+
+template <class T>
+static auto match(yes_t *not_vla, const T& a) -> decltype(match(a));
+static char (*match(no_t *not_vla, ...))[unthinkable];
+
+static_assert(bias + 7 == sizeof(*match((yes_t *)0, a7)));
+static_assert(bias + 0 == sizeof(*match((yes_t *)0, z0)));
+static_assert(unthinkable == sizeof(*match((yes_t *)0, arr1)));
+static_assert(unthinkable == sizeof(*match((no_t *)0, a7)));
+static_assert(unthinkable == sizeof(*match((no_t *)0, z0)));
+static_assert(unthinkable == sizeof(*match((no_t *)0, arr1)));
+
 #define countof_26(a)  (sizeof(*match_not_vla(a)) == sizeof(no_t) \
                         ? _countof_26_vla(a) \
-                        : sizeof(*match_size(a)) == sizeof(yes_t) \
-                            ? _countof_26_container(a) \
-                            : sizeof(*match_countof(a)) - bias + \
-                              _countof_26_must_fix(a))
+                        : sizeof(*match_cnt(a)) == sizeof(yes_t) \
+                            ? cnt_size(a) \
+                            : sizeof(*match(match_not_vla(a), (a))) - \
+                              bias)
 static_assert(7 == countof_26(a7));
 static_assert(0 == countof_26(z0));
 static_assert(1 == countof_26(arr1));
