@@ -485,13 +485,13 @@ constexpr static size_t size(const T&) { return 1917; }
 	// Unchecked size stub, only for compilation success
 constexpr size_t unthinkable = 1917;
 constexpr size_t bias = 1;
-using no_t = char [bias + false];
-using yes_t = char [bias + true];
+class no_t { char no_[1]; };
+class yes_t { long long yes_[2]; };
 	// T is container (have `size()` member)
 template <class T> struct has_size {
-	template <class C> static yes_t *test_(decltype(&C::size));
-	template <class> static no_t *test_(...);
-	static constexpr bool value = sizeof(*test_<T>(0)) == sizeof(yes_t);
+	template <class C> static yes_t test_(decltype(&C::size));
+	template <class> static no_t test_(...);
+	static constexpr bool value = sizeof(test_<T>(0)) == sizeof(yes_t);
 };
 	// T is ZLA
 template<class T>
@@ -542,33 +542,33 @@ constexpr static size_t zero_assert() noexcept {
 	#define _countof_ns_must_vla(a)  (_countof_ns_::zero_assert< \
 						!__is_same(decltype(&(a)[0]), decltype(a))>())
 	template<class T>
-	static yes_t *match_not_vla(const T&);
+	static yes_t match_not_vla(const T&);
 #else
 	#define _countof_ns_must_vla(a)  (_countof_ns_::zero_assert< \
 						!std::is_pointer<decltype(a)>::value>())
 	template <class T, typename std::enable_if<
 							!std::is_array<T>::value ||
 							0 < std::extent<T>::value, int>::type = 0>
-	static yes_t *match_not_vla(const T&);
+	static yes_t match_not_vla(const T&);
 #endif
-static no_t *match_not_vla(...);
+static no_t match_not_vla(...);
 	// Count of VLA
 #define _countof_ns_vla(a)  \
 				(_countof_ns_unsafe(a) + _countof_ns_must_vla(a))
 	// Argument is container
 template <class C, typename std::enable_if<
 							has_size<C>::value, int>::type = 0>
-static yes_t *match_cnt(const C&);
-static no_t *match_cnt(...);
+static yes_t match_cnt(const C&);
+static no_t match_cnt(...);
 	// Count of fixed array (or ZLA)
 template <class T>
-static auto match(yes_t *not_vla, const T& a) -> decltype(match(a));
+static auto match(yes_t not_vla, const T& a) -> decltype(match(a));
 	// VLA match stub
-static char (*match(no_t *not_vla, ...))[unthinkable];
-#define _countof_ns(a)  (sizeof(*_countof_ns_::match_not_vla(a)) == \
+static char (*match(no_t not_vla, ...))[unthinkable];
+#define _countof_ns(a)  (sizeof(_countof_ns_::match_not_vla(a)) == \
 						 sizeof(_countof_ns_::no_t) \
 						 ? _countof_ns_vla(a) \
-						 : sizeof(*_countof_ns_::match_cnt(a)) == \
+						 : sizeof(_countof_ns_::match_cnt(a)) == \
 						   sizeof(_countof_ns_::yes_t) \
 							? _countof_ns_::cnt_size(a) \
 							: sizeof(*_countof_ns_::match( \
@@ -586,12 +586,11 @@ https://godbolt.org/z/oPWbhE49W
 <!-- example: "c++26.cpp" -->
 ```c++
 constexpr size_t unthinkable = 1917;
-constexpr size_t bias = 1;
-template<class T>
-constexpr static bool has_size() {
-    if constexpr (is_class_type(^^T)) {
-        constexpr auto ctx = std::meta::access_context::current();
-        constexpr auto ms = define_static_array(members_of(^^T, ctx)
+
+consteval bool has_size(info type) {
+    if (is_class_type(type)) {
+        auto ctx = access_context::current();
+        auto ms = define_static_array(members_of(type, ctx)
                 |std::views::filter(std::meta::is_function)
                 |std::views::filter(std::meta::has_identifier)
                 |std::views::filter([](const std::meta::info& m){
@@ -601,21 +600,25 @@ constexpr static bool has_size() {
     }
     return false;
 }
-	// Count of fixed array, standard C++ or ZLA
-template<class T> requires (1 <= rank(^^T))
-static char (*match(const T&))[bias + extent(^^T)];
-	// Container (stub)
-template<class C> requires (has_size<C>())
-static char (*match(const C&))[unthinkable];
-	// Count of container
-template<class C> requires (has_size<C>())
+
+consteval size_t count_of(info type) {
+    if (1 <= rank(type)) {
+		return extent(type);
+    } else if(!has_size(type)) {
+        throw "Must array or container";
+    }
+    return unthinkable;
+}
+
+template<class C> requires (has_size(^^C))
 constexpr static auto cnt_size(const C& c) noexcept(noexcept(c.size())) {
-	return c.size();
+    return c.size();
 }
 constexpr static size_t cnt_size(...) { return unthinkable; }
-#define countof_26_fixcnt(a)  (has_size<decltype(a)>() \
+
+#define countof_26_fixcnt(a)  (has_size(^^decltype(a)) \
                                ? cnt_size(a) \
-                               : sizeof(*match(a)) - bias)
+                               : count_of(^^decltype(a)))
 ```
 <!-- endexample: "c++26.cpp" -->
 На январь 2016, в некоторых случаях, предварительная версия GNU (gcc 16.0.1 20260114) некорректно реализует `extent(^^T)`. В качестве обхода этой проблемы, можно заменить на `std::extent_v<T>`.
@@ -630,32 +633,37 @@ constexpr static size_t zero_assert() noexcept {
     static_assert(IsArray, "Must be array");
     return 0;
 }
-using no_t = char [bias + false];
-using yes_t = char [bias + true];
+class no_t { char no_[1]; };
+class yes_t { long long yes_[2]; };
 	// Argument may be VLA or not
 template<class T>
-static yes_t *match_not_vla(const T&);
-static no_t *match_not_vla(...);
+static yes_t match_not_vla(const T&);
+static no_t match_not_vla(...);
 	// Count of VLA
 #define _countof_26_must_vla(a)  (zero_assert< \
-					sizeof(*match_not_vla(a)) != sizeof(no_t) || \
+					sizeof(match_not_vla(a)) != sizeof(no_t) || \
 					1 <= rank(^^decltype(a))>())
 #define _countof_26_vla(a)  (_countof_ns_unsafe(a) + _countof_26_must_vla(a))
 	// Argument is container
-template<class T>
-static auto match_cnt(const T&) -> char (*)[bias + has_size<T>()];
-static auto match_cnt(...) -> no_t *;
+consteval bool has_size(size_t sizeof_not_vla, info type) {
+    if (sizeof_not_vla != sizeof(no_t)) {
+        return has_size(type);
+    }
+    return false;
+}
 	// Count of fixed array (or ZLA)
-template <class T>
-static auto match(yes_t *not_vla, const T& a) -> decltype(match(a));
-	// VLA match stub
-static char (*match(no_t *not_vla, ...))[unthinkable];
-#define countof_26(a)  (sizeof(*match_not_vla(a)) == sizeof(no_t) \
+consteval size_t count_of(size_t sizeof_not_vla, info type) {
+    if (sizeof_not_vla != sizeof(no_t)) {
+        return count_of(type);
+    }
+    return unthinkable;
+}
+#define countof_26(a)  (sizeof(match_not_vla(a)) == sizeof(no_t) \
                         ? _countof_26_vla(a) \
-                        : sizeof(*match_cnt(a)) == sizeof(yes_t) \
-                            ? cnt_size(a) \
-                            : sizeof(*match(match_not_vla(a), (a))) - \
-                              bias)
+                        : has_size(sizeof(match_not_vla(a)), ^^decltype(a)) \
+                               ? cnt_size(a) \
+                               : count_of(sizeof(match_not_vla(a)), \
+                                          ^^decltype(a)))
 ```
 <!-- endexample: "c++26.cpp" -->
 На январь 2016, предварительная версия clang (Clang 21.0.0git `(https://github.com/Bloomberg/clang-p2996 9813722a72c07f47206d50604f0e8fd00781e067)`) не реализует `rank(^^decltype(a))` или  `is_pointer_type(^^decltype(a))` для VLA. В качестве обхода этой проблемы, можно заменить на встроенную функцию `__array_rank()` или `__is_pointer()`.
