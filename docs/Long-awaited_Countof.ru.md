@@ -75,7 +75,7 @@ int main(void) {
 |                                         |                                                                                                                                                                                                                                                                                                                                           | `struct { int flex[]; } af0;`             |
 |                                         |                                                                                                                                                                                                                                                                                                                                           | `union { int i0[0]; char c0[0]; } u0;`    |
 ## Жизнь до `_Countof`
-В ранних языках программирования с числом элементов массива традиционно имелись некоторые сложности. Считалось, что если программист определил массив `A[N]`, то он без труда может просто использовать `N`. В языке C, авторы предусмотрели несколько методов неявного задания размера, но, из соображений минимализма, решили ограничится единственным оператором `sizeof`, поскольку в то время, он являлся константным строго положительным выражением.
+В ранних языках программирования с числом элементов массива традиционно имелись некоторые сложности. Считалось, что если программист определил массив `A[N]`, то он без труда может просто использовать `N`. В языке C, авторы предусмотрели несколько методов неявного задания размера, но, из соображений минимализма, решили ограничиться единственным оператором `sizeof`, поскольку в то время, он являлся константным строго положительным выражением.
 ### Идиома количества элементов массива
 В K&R первого издания (1978) был пример получения количества элементов массива:
 ```c
@@ -335,7 +335,7 @@ TODO: https://godbolt.org/z/o5esxh9K5
 <!-- endexample: "countof_ns.h" -->
 Плюсы:
 - Используется только расширение `__typeof__()`, которое имеется почти у всех компиляторов (кроме, наверное, `_MSC_VER < 1939`);
-- Ограничения `_Generic()` однозначно понимаются всеми компиляторами и однозначно вызывают ошибку компиляции, при необходимости;
+- Ограничения `_Generic()` однозначно понимаются всеми компиляторами и однозначно вызывают ошибку компиляции, при нарушении;
 Минусы:
 - Подходит только в случаях `__STDC_NO_VLA__` (в интерпретации C99...C17) или уже для C2Y (или на некоторых компиляторах).
 ##### Использование `__builtin_types_compatible_p()`
@@ -532,7 +532,7 @@ constexpr static size_t zero_assert() noexcept {
 	static_assert(IsArray, "Must be array");
 	return 0;
 }
-	// Аргумент не может являться VLA
+	// Тип аргумента не является изменяемым
 #if !__SUNPRO_CC
 	#define _countof_ns_must_vla(a)  (_countof_ns_::zero_assert< \
 						!__is_same(decltype(&(a)[0]), decltype(a))>())
@@ -579,7 +579,7 @@ static char (*match(no_t not_vla, ...))[unthinkable];
 Формально, использование оператора рефлексии `^^decltype(a)` позволяет получить свойства типа минуя сопоставление с шаблоном, что даёт возможность избавится от вызовов встроенных функций. Но, и при получении числа элементов фиксированных массивов, ZLA или контейнеров,  можно упростить код и улучшить диагностику:
 <!-- example: "c++26.cpp" -->
 ```c++
-	// Непроверяемый размер заглушка, только для успеха компиляции
+	// Размер заглушка, только для успеха компиляции
 constexpr size_t unthinkable = 1917;
 	// type - контейнер (имеется `size()`)
 consteval bool has_size(info type) {
@@ -623,47 +623,50 @@ constexpr static size_t cnt_size(...) { return unthinkable; }
 Таким образом, для VLA, так же как в C++14, приходится делить `sizeof()` на `sizeof()`, с тем отличием, что `_countof_26_must_vla()` может быть выражен с использованием стандартных интерфейсов `rank(^^decltype(a))`  \[[meta.reflection.traits (7)](https://eel.is/c++draft/meta#reflection.traits-7)\] или  `is_pointer_type(^^decltype(a))`  \[[meta.reflection.traits (2)](https://eel.is/c++draft/meta#reflection.traits-2)\]:
 <!-- example: "c++26.cpp" -->
 ```c++
-template<bool IsArray>
-constexpr static size_t zero_assert() noexcept {
-    static_assert(IsArray, "Must be array");
+    // Тип аргумента не является изменяемым
+template<class T>
+constexpr bool _detect_vla = true;
+consteval bool _not_vla(info type) {
+    return can_substitute(^^_detect_vla, {type});
+}
+    // TODO: Совместимость с обходом ошибки clang
+#define not_vla(a)  _not_vla(^^decltype(a))
+
+consteval size_t _must_vla(info type) {
+    if (!_not_vla(type) && 0 == rank(type)) {
+        throw "Must VLA array";
+    }
     return 0;
 }
-class no_t { char no_[1]; };
-class yes_t { long long yes_[2]; };
-	// Аргумент не может являться VLA
-template<class T>
-static yes_t match_not_vla(const T&);
-static no_t match_not_vla(...);
+    // TODO: Совместимость с обходом ошибки clang
+#define must_vla(a)  _must_vla(^^decltype(a))
+
 	// Число элементов VLA
-#define _countof_26_must_vla(a)  (zero_assert< \
-					sizeof(match_not_vla(a)) != sizeof(no_t) || \
-					1 <= rank(^^decltype(a))>())
-#define _countof_26_vla(a)  (_countof_ns_unsafe(a) + _countof_26_must_vla(a))
+#define _countof_vla(a)  (_countof_ns_unsafe(a) + must_vla(a))
 	// Аргумент - конейнер
-consteval bool has_size(size_t sizeof_not_vla, info type) {
-    if (sizeof_not_vla != sizeof(no_t)) {
+consteval bool has_size(bool not_vla, info type) {
+    if (not_vla) {  // TODO: clang bug: крэш на _not_vla(type)
         return has_size(type);
     }
     return false;
 }
 	// Число элементов фиксированного массива, возможно, ZLA
-consteval size_t count_of(size_t sizeof_not_vla, info type) {
-    if (sizeof_not_vla != sizeof(no_t)) {
+consteval size_t count_of(bool not_vla, info type) {
+    if (not_vla) {  // TODO: clang bug: крэш на _not_vla(type)
         return count_of(type);
     }
     return unthinkable;
 }
 
-#define countof_26(a)  (sizeof(match_not_vla(a)) == sizeof(no_t) \
-                        ? _countof_26_vla(a) \
-                        : has_size(sizeof(match_not_vla(a)), ^^decltype(a)) \
-                               ? cnt_size(a) \
-                               : count_of(sizeof(match_not_vla(a)), \
-                                          ^^decltype(a)))
+#define countof_26(a)  (!not_vla(a) \
+                        ? _countof_vla(a) \
+                        : has_size(not_vla(a), ^^decltype(a)) \
+						   ? cnt_size(a) \
+						   : count_of(not_vla(a), ^^decltype(a)))
 ```
 <!-- endexample: "c++26.cpp" -->
 На январь 2016, предварительная версия clang (Clang 21.0.0git `(https://github.com/Bloomberg/clang-p2996 9813722a72c07f47206d50604f0e8fd00781e067)`) не реализует `rank(^^decltype(a))` или  `is_pointer_type(^^decltype(a))` для VLA. В качестве обхода этой проблемы, можно заменить на встроенную функцию `__array_rank()` или `__is_pointer()`.
 
 Таким образом, в проекте C++26, так же как в C++14, невозможно получить число элементов VLA с элементами нулевого размера, в этом случае, ввиду неопределённости 0/0, можно только вернуть 0. Но, есть шанс, что в C++26 это можно будет сделать более менее "чисто". Спецификации интерфейсов этого не запрещают, но не и обязывают, поскольку не специфицируют реализацию std::meta::info.
 
-Вариант C++26 кода: https://godbolt.org/z/TvEc3bxYz
+Вариант C++26 кода: https://godbolt.org/z/xzn77z83M

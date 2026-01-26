@@ -26,15 +26,30 @@
 #endif
 #include <vector>
 
+using namespace std::meta;
+#if !Clang_WORKAROUND
+    template<class F>
+    consteval bool has_exception(const F& f) {
+        try {
+            (void)f();
+        } catch(...) {
+            return true;
+        }
+        return false;
+    }
+#else
+    #define has_exception(...)  (true)
+#endif
+
 int a7[7];
 int z0[0];
 std::array<int, 1> arr1;
 int *p;
 
-using namespace std::meta;
 
+    // Размер заглушка, только для успеха компиляции
 constexpr size_t unthinkable = 1917;
-
+    // type - контейнер (имеется `size()`)
 consteval bool has_size(info type) {
     if (is_class_type(type)) {
         auto ctx = access_context::current();
@@ -48,11 +63,13 @@ consteval bool has_size(info type) {
     }
     return false;
 }
+
 static_assert(!has_size(^^decltype(a7)));
 static_assert(!has_size(^^decltype(z0)));
 static_assert(has_size(^^decltype(arr1)));
 static_assert(!has_size(^^decltype(p)));
 
+    // Число элементов фиксированного массива, возможно, ZLA
 consteval size_t count_of(info type) {
     if (1 <= rank(type)) {
         #if !GNU_WORKAROUND
@@ -69,8 +86,9 @@ consteval size_t count_of(info type) {
 static_assert(7 == count_of(^^decltype(a7)));
 static_assert(0 == count_of(^^decltype(z0)));
 static_assert(unthinkable == count_of(^^decltype(arr1)));
-// static_assert(unthinkable == count_of(^^decltype(p)));
+static_assert(has_exception([]() consteval { (void)count_of(^^decltype(p)); }));
 
+    // Число элементов контейнера
 template<class C> requires (has_size(^^C))
 constexpr static auto cnt_size(const C& c) noexcept(noexcept(c.size())) {
     return c.size();
@@ -89,77 +107,90 @@ static_assert(unthinkable == cnt_size(&p));
 static_assert(7 == countof_26_fixcnt(a7));
 static_assert(0 == countof_26_fixcnt(z0));
 static_assert(1 == countof_26_fixcnt(arr1));
-#if !Clang_WORKAROUND
-    consteval bool tst() {
-        try {
-            (void)countof_26_fixcnt(&p);
-        } catch(...) {
-            return true;
-        }
-        return false;
-    }
-    static_assert(tst());
-#endif
+static_assert(has_exception([]() consteval { (void)countof_26_fixcnt(&p); }));
 
-template<bool IsArray>
-constexpr static size_t zero_assert() noexcept {
-    static_assert(IsArray, "Must be array");
+/*
+ * <source>:166:12: error: variably modified type 'int[n22]' cannot be used as a template argument
+  166 |     return can_substitute(^^not_vla_v, {type});
+      |            ^
+PLEASE submit a bug report to https://github.com/llvm/llvm-project/issues/ and include the crash backtrace, preprocessed source, and associated run script.
+Stack dump:
+ */
+
+#if !Clang_WORKAROUND
+    // Аргумент не может являться VLA
+template<class T>
+constexpr bool _detect_vla = true;
+consteval bool _not_vla(info type) {
+    return can_substitute(^^_detect_vla, {type});
+}
+    // TODO: Совместимость с обходом ошибки clang
+#define not_vla(a)  _not_vla(^^decltype(a))
+
+consteval size_t _must_vla(info type) {
+    if (!_not_vla(type) && 0 == rank(type)) {
+        throw "Must VLA array";
+    }
     return 0;
 }
+    // TODO: Совместимость с обходом ошибки clang
+#define must_vla(a)  _must_vla(^^decltype(a))
+#else
 class no_t { char no_[1]; };
 class yes_t { long long yes_[2]; };
-static_assert(sizeof(no_t) != sizeof(yes_t));
 template<class T>
-static yes_t match_not_vla(const T&);
-static no_t match_not_vla(...);
-
-#define _countof_ns_unsafe(a)  (sizeof(a)/(sizeof(a[0]) ?: 2*sizeof(void *)))
-#if !Clang_WORKAROUND
-    #define _countof_26_must_vla(a)  (zero_assert< \
-                        sizeof(match_not_vla(a)) != sizeof(no_t) || \
-                        1 <= rank(^^decltype(a))>())
-#else
-    #define _countof_26_must_vla(a)  (zero_assert< \
-                        sizeof(match_not_vla(a)) != sizeof(no_t) || \
-                        1 <= __array_rank(decltype(a))>())
+static yes_t _detect_not_vla(const T&);
+static no_t _detect_not_vla(...);
+#define not_vla(a)  (sizeof(yes_t) == sizeof(_detect_not_vla(a)))
+consteval size_t _must_vla(bool not_vla, size_t rank) {
+    if (!not_vla && 0 == rank) {
+        throw "Must VLA array";
+    }
+    return 0;
+}
+#define must_vla(a)  _must_vla(not_vla(a), __array_rank(decltype(a)))
 #endif
-#define _countof_26_vla(a)  (_countof_ns_unsafe(a) + _countof_26_must_vla(a))
-consteval bool has_size(size_t sizeof_not_vla, info type) {
-    if (sizeof_not_vla != sizeof(no_t)) {
+    // Число элементов VLA
+#define _countof_ns_unsafe(a)  (sizeof(a)/(sizeof((a)[0]) ?: 2*sizeof(void *)))
+#define _countof_vla(a)  (_countof_ns_unsafe(a) + must_vla(a))
+    // Аргумент - контейнер
+consteval bool has_size(bool not_vla, info type) {
+    if (not_vla) {  // TODO: clang bug: crash at _not_vla(type)
         return has_size(type);
     }
     return false;
 }
-consteval size_t count_of(size_t sizeof_not_vla, info type) {
-    if (sizeof_not_vla != sizeof(no_t)) {
+    // Число элементов фиксированного массива, возможно, ZLA
+consteval size_t count_of(bool not_vla, info type) {
+    if (not_vla) {  // TODO: clang bug: crash at _not_vla(type)
         return count_of(type);
     }
     return unthinkable;
 }
-#define countof_26(a)  (sizeof(match_not_vla(a)) == sizeof(no_t) \
-                        ? _countof_26_vla(a) \
-                        : has_size(sizeof(match_not_vla(a)), ^^decltype(a)) \
-                               ? cnt_size(a) \
-                               : count_of(sizeof(match_not_vla(a)), \
-                                          ^^decltype(a)))
+#define countof_26(a)  (!not_vla(a) \
+                        ? _countof_vla(a) \
+                        : has_size(not_vla(a), ^^decltype(a)) \
+                           ? cnt_size(a) \
+                           : count_of(not_vla(a), ^^decltype(a)))
 
 static_assert(7 == countof_26(a7));
 static_assert(0 == countof_26(z0));
 static_assert(1 == countof_26(arr1));
-#if !Clang_WORKAROUND
-    consteval bool tst1() {
-        try {
-            (void)countof_26(&p);
-        } catch(...) {
-            return true;
-        }
-        return false;
-    }
-    static_assert(tst1());
-#endif
+static_assert(has_exception([]() consteval { (void)countof_26(&p); }));
+
 
 
 int main(void) {
+    int nv[2];
+    static_assert(not_vla(nv));
+    size_t n22 = 22;
+    int nnv[n22];
+    static_assert(!not_vla(nnv));
+    static_assert(0 == must_vla(nnv));
+    int (*pnnv)[n22];
+    static_assert(!not_vla(pnnv));
+    // (void)must_vla(pnnv);
+
     printf("countof_26(a7) = %zu\n",
             countof_26(a7));
     printf("countof_26(z0) = %zu\n",
