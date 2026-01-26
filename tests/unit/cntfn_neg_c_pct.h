@@ -6,5 +6,6 @@ size_t TU_UNIT(void) {
     const int **cpp;
     // A compilation error is also allowed instead of returning 0.
     TU_STATIC_ASSERT_AND_RETURN(0, (size_t)(
-                0 == _countof_ns_ptr_compatible_type(&cpp, cp_t **)));
+                0 != _countof_ns_must_compatible(&cpp,
+                                const int ***, cp_t **)));
 }

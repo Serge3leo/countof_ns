@@ -8,8 +8,11 @@ size_t TU_UNIT(void) {
     ca_t *pca;
     cva_t *pcva;
     va_t *pva;
-    tu_static_assert(_countof_ns_ptr_compatible_type(&pcva, cva_t **));
-    tu_static_assert(_countof_ns_ptr_compatible_type(&pva, va_t **));
+    tu_static_assert(0 == _countof_ns_must_compatible(
+                        &pcva, const volatile int (**)[1917], cva_t **));
+    tu_static_assert(0 == _countof_ns_must_compatible(
+                        &pva, volatile int (**)[1917], va_t **));
     TU_STATIC_ASSERT_AND_RETURN(1, (size_t)(
-                0 != _countof_ns_ptr_compatible_type(&pca, ca_t **)));
+                0 == _countof_ns_must_compatible(
+                        &pca, const int (**)[1917], ca_t **)));
 }

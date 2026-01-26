@@ -90,25 +90,24 @@
 // The `_COUNTOF_NS_WANT_VLA_BUILTIN` macro also allows you to document
 // compiler settings:
 //
-//     $ icc -diag-error=1121
-//         -D'_countof_ns_ptr_compatible_type(p,t)=(0==0*sizeof((p)-(t)(p)))'
-//         -D_COUNTOF_NS_WANT_VLA_BUILTIN ...
+// $ icc -diag-error=1121
+//     '-D_countof_ns_must_compatible(p,t1,t2)=(0*sizeof((t1)(p)-(t2)(p)))'
+//     -D_COUNTOF_NS_WANT_VLA_BUILTIN ...
 //
-//     $ pgcc --diag_error=nonstandard_ptr_minus_ptr
-//         -D'_countof_ns_ptr_compatible_type(p,t)=(0==0*sizeof((p)-(t)(p)))'
-//         -D_COUNTOF_NS_WANT_VLA_BUILTIN ...
+// $ pgcc --diag_error=nonstandard_ptr_minus_ptr
+//     '-D_countof_ns_must_compatible(p,t1,t2)=(0*sizeof((t1)(p)-(t2)(p)))'
+//     -D_COUNTOF_NS_WANT_VLA_BUILTIN ...
 //
 // $ suncc -errwarn=E_BAD_POINTER_SUBTRACTION
-//   #-D'_countof_ns_compatible_type(p,t1,t2)=(0==0*sizeof((t1)(p)-(t2)(p)))'
-//    -D'_countof_ns_ptr_compatible_type(p,t)=(0==0*sizeof((p)-(t)(p)))'
-//    -D_COUNTOF_NS_WANT_VLA_BUILTIN ...
+//     '-D_countof_ns_must_compatible(p,t1,t2)=(0*sizeof((t1)(p)-(t2)(p)))'
+//     -D_COUNTOF_NS_WANT_VLA_BUILTIN ...
 //
-//     It is unlikely that anyone will need `_COUNTOF_NS_WANT_VLA_BUILTIN` for
-//     MSVC, but for testing, it's also possible:
+// It is unlikely that anyone will need `_COUNTOF_NS_WANT_VLA_BUILTIN` for
+// MSVC, but for testing, it's also possible:
 //
-//     > cl /std:clatest /wd4116 /we4047 ^
-//          /FI_countof_ns_ptr_compatible_type_msvc.h ^
-//          /D_COUNTOF_NS_WANT_VLA_BUILTIN ...
+// > cl /std:clatest /wd4116 /we4047 ^
+//      /FI_countof_ns_must_compatible_msvc.h ^
+//      /D_COUNTOF_NS_WANT_VLA_BUILTIN ...
 //
 //
 // VLA Support Status
@@ -184,11 +183,11 @@
     #elif _COUNTOF_NS_REFUSE_VLA || __STDC_NO_VLA__
         #define _COUNTOF_NS_USE_GENERIC  (1)
     #elif __SUNPRO_C || __IBMC__
-        #ifdef _countof_ns_ptr_compatible_type
+        #ifdef _countof_ns_must_compatible
             #define _COUNTOF_NS_USE_BUILTIN  (1)
         #else
             #define _COUNTOF_NS_USE_GENERIC  (1)
-            #warning "For SunPro/IBM XL, you must define either _COUNTOF_NS_REFUSE_VLA or _countof_ns_ptr_compatible_type(p, type)"
+            #warning "For SunPro/IBM XL, you must define either _COUNTOF_NS_REFUSE_VLA or _countof_ns_must_compatible()"
         #endif
     #elif __POCC__
         #define _COUNTOF_NS_USE_SUBTRACTION  (1)
@@ -200,7 +199,7 @@
         #define _countof_ns_typeof(t)  typeof(t)
     #elif !_COUNTOF_NS_WANT_STDC
         #define _countof_ns_assert  _Static_assert
-        #if !defined(_countof_ns_ptr_compatible_type) && \
+        #if !defined(_countof_ns_must_compatible) && \
             (_COUNTOF_NS_BROKEN_TYPEOF || _COUNTOF_NS_USE_BUILTIN)
             #define _countof_ns_typeof(t)  const volatile __typeof__(t)
         #else
@@ -211,46 +210,39 @@
     #endif
     #if _COUNTOF_NS_USE_BUILTIN || _COUNTOF_NS_USE_SUBTRACTION
         #if !_COUNTOF_NS_USE_BUILTIN  // TODO XXX
-            #define _countof_ns_ptr_compatible_type(ppa, type) \
-                            (0 == 0*sizeof((ppa) - (type)(ppa)))
+            #define _countof_ns_must(c)  (c)
+            #define _countof_ns_must_compatible(p, t1, t2) \
+                                        (0*sizeof((t1)(p) - (t2)(p)))
             // TODO: _countof_ns_must_compatible(p, t1, t2)
             // C11:  (0*sizeof((t1)(p) - (t2)(p)))
             // Norm: _countof_ns_must(__builtin_types_compatible_p(t1, t2))
             // Arnd: _countof_ns_must!__builtin_types_compatible_p(
             //                                  typeof(p), typeof(&*(p)))
-        #elif !defined(_countof_ns_ptr_compatible_type)
-            #if defined(__has_builtin)
+        #elif !defined(_countof_ns_must_compatible)
+            #ifdef __has_builtin
                 #if __has_builtin(__builtin_types_compatible_p) && \
                     !__NVCOMPILER && !__LCC__ && \
                     !_COUNTOF_NS_BROKEN_BUILTIN_TYPES_COMPATIBLE_P || \
                     __ibmxl__
-                    #define _countof_ns_ptr_compatible_type(p, type)  \
-                                __builtin_types_compatible_p( \
-                                    _countof_ns_typeof(p), type)
+                    #define _countof_ns_must_compatible(p, t1, t2) \
+                                    (!__builtin_types_compatible_p(t1, t2))
                 #endif
             #endif
-            #if !defined(_countof_ns_ptr_compatible_type)
-                #define _countof_ns_ptr_compatible_type(ppa, type)  \
-                                (!__builtin_types_compatible_p( \
+            #ifndef _countof_ns_must_compatible
+                    // Workaround, implement is_pointer_v<decltype(**(ppa))>
+                #define _countof_ns_must_compatible(ppa, t1, t2)  \
+                                (__builtin_types_compatible_p( \
                                     _countof_ns_typeof(&*(**(ppa))), \
                                     _countof_ns_typeof(**(ppa))))
             #endif
         #endif
-        #if !defined(_countof_ns_ptr_compatible_type)
-            #error "Not __builtin_types_compatible_p() or _countof_ns_ptr_compatible_type()"
+        #ifndef _countof_ns_must_compatible
+            #error "Not __builtin_types_compatible_p() or _countof_ns_must_compatible()"
         #endif
-            // Constraints `a` is array and have `_countof_ns_unsafe(a)`
-            // elements (for VLA, number elements is unconstrained).
-            //
-            // Constraints identically C11 constraints of pointer
-            // subtraction.  See below.
-        #define _countof_ns_must_array(a)  \
-                (0*sizeof(struct { int _countof_ns; _countof_ns_assert( \
-                    _countof_ns_ptr_compatible_type( \
-                        (_countof_ns_typeof(a) **)&(a), \
-                        _countof_ns_typeof(*(a))(**)[_countof_ns_unsafe(a)] \
-                    ), "Must be array"); }))
-    #elif _COUNTOF_NS_USE_SUBTRACTION
+        #ifndef _countof_ns_must
+            #define _countof_ns_must(c)  (0*sizeof(struct { int _countof_ns; \
+                            _countof_ns_assert(!(c), "Must be array"); }))
+        #endif
             // Constraints `a` is array and have `_countof_ns_unsafe(a)`
             // elements (for VLA, number elements is unconstrained).
             //
@@ -270,9 +262,11 @@
             //     size_t u = ...;
             //     T0 c[u];  // Constraints OK - "is array", at compile time,
             //               // for any `u`
-        #define _countof_ns_must_array(a)  (0*sizeof( \
-                (_countof_ns_typeof(a) **)&(a) - \
-                (_countof_ns_typeof(*(a))(**)[_countof_ns_unsafe(a)])&(a)))
+        #define _countof_ns_must_array(a) \
+                    _countof_ns_must(_countof_ns_must_compatible( \
+                        (_countof_ns_typeof(a) **)&(a), \
+                        _countof_ns_typeof(a) **, \
+                        _countof_ns_typeof(*(a))(**)[_countof_ns_unsafe(a)]))
     #else
         #define _COUNTOF_NS_VLA_UNSUPPORTED  (1)
             // Constraints `a` is fixed array and have `_countof_ns_unsafe(a)`

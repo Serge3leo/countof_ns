@@ -202,7 +202,7 @@ function (tu_cntfn_expected expected pos_pos neg_pos)
                               "cntfn_dflt_bltn_cxx")
     endif()
 
-    # Check internal or example user defined _countof_ns_ptr_compatible_type()
+    # Check internal or example user defined _countof_ns_must_compatible()
 
     file(GLOB pct_hdr RELATIVE "${CMAKE_CURRENT_LIST_DIR}"
          "${CMAKE_CURRENT_LIST_DIR}/cntfn_*_pct.h")

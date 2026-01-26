@@ -80,26 +80,26 @@
 настройки компилятора:
 
 ```
-    $ icc -diag-error=1121 \
-          -D'_countof_ns_ptr_compatible_type(p,t)=(0==0*sizeof((p)-(t)(p)))' \
-          -D_COUNTOF_NS_WANT_VLA_BUILTIN ...
+$ icc -diag-error=1121 \
+  '-D_countof_ns_must_compatible(p,t1,t2)=(0*sizeof((t1)(p)-(t2)(p)))' \
+  -D_COUNTOF_NS_WANT_VLA_BUILTIN ...
 
-    $ pgcc --diag_error=nonstandard_ptr_minus_ptr \
-           -D'_countof_ns_ptr_compatible_type(p,t)=(0==0*sizeof((p)-(t)(p)))' \
-           -D_COUNTOF_NS_WANT_VLA_BUILTIN ...
+$ pgcc --diag_error=nonstandard_ptr_minus_ptr \
+   '-D_countof_ns_must_compatible(p,t1,t2)=(0*sizeof((t1)(p)-(t2)(p)))' \
+   -D_COUNTOF_NS_WANT_VLA_BUILTIN ...
 
-    $ suncc -errwarn=E_BAD_POINTER_SUBTRACTION \
-            -D'_countof_ns_ptr_compatible_type(p,t)=(0==0*sizeof((p)-(t)(p)))' \
-            -D_COUNTOF_NS_WANT_VLA_BUILTIN ...
+$ suncc -errwarn=E_BAD_POINTER_SUBTRACTION \
+	'-D_countof_ns_must_compatible(p,t1,t2)=(0*sizeof((t1)(p)-(t2)(p)))' \
+	-D_COUNTOF_NS_WANT_VLA_BUILTIN ...
 ```
 
 Маловероятно, что кому-нибудь потребуется `_COUNTOF_NS_WANT_VLA_BUILTIN` для
 MSVC, но для тестирования, это тоже возможно:
 
 ```
-    > cl /std:clatest /wd4116 /we4047 ^
-         /FI_countof_ns_ptr_compatible_type_msvc.h ^
-         /D_COUNTOF_NS_WANT_VLA_BUILTIN ...
+> cl /std:clatest /wd4116 /we4047 ^
+	 /FI_countof_ns_must_compatible_msvc.h ^
+	 /D_COUNTOF_NS_WANT_VLA_BUILTIN ...
 ```
 
 ### Статус поддержки VLA
