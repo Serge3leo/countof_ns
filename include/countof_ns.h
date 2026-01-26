@@ -175,8 +175,7 @@
     #else
         #define _countof_ns_must_array(a)  (0)
     #endif
-    #define _countof_ns_typ2arr(a)  a
-    #define _countof_ns(a)  (_countof_ns_unsafe(a) + _countof_ns_must_array(a))
+    #define countof_ns(a)  (_countof_ns_unsafe(a) + _countof_ns_must_array(a))
 #elif !__cplusplus
     #if _COUNTOF_NS_WANT_VLA_C11 || _COUNTOF_NS_WANT_STDC
         #define _COUNTOF_NS_USE_SUBTRACTION  (1)
@@ -283,12 +282,7 @@
                     (_countof_ns_typeof(a) *)&(a), \
                     _countof_ns_typeof(*(a))(*)[_countof_ns_unsafe(a)]: 0))
     #endif
-    #if !__LCC__ && !__SUNPRO_C && !__INTEL_COMPILER
-        #define _countof_ns_typ2arr(a)  (*(_countof_ns_typeof(a) *)(void *)64)
-    #else
-        #define _countof_ns_typ2arr(a)  a
-    #endif
-    #define _countof_ns(a)  (_countof_ns_unsafe(a) + _countof_ns_must_array(a))
+    #define countof_ns(a)  (_countof_ns_unsafe(a) + _countof_ns_must_array(a))
 #else
     #include <type_traits>
     namespace _countof_ns_ {
@@ -347,10 +341,10 @@
     #if _COUNTOF_NS_USE_TEMPLATE
             // C++ with ZLA extension only
         #define _COUNTOF_NS_VLA_UNSUPPORTED  (1)
-        #define _countof_ns(a)  (_countof_ns_::has_size<decltype(a)>::value \
-                                 ? _countof_ns_::cnt_size(a) \
-                                 : sizeof(*_countof_ns_::match(a)) - \
-                                   _countof_ns_::bias)
+        #define countof_ns(a)  (_countof_ns_::has_size<decltype(a)>::value \
+                                ? _countof_ns_::cnt_size(a) \
+                                : sizeof(*_countof_ns_::match(a)) - \
+                                  _countof_ns_::bias)
     #elif _COUNTOF_NS_USE_BUILTIN // && !__SUNPRO_CC
             // C++ with VLA extension
         template<bool IsArray>
@@ -386,21 +380,18 @@
         static auto match(yes_t not_vla, const T& a) -> decltype(match(a));
             // VLA match stub
         static char (*match(no_t not_vla, ...))[unthinkable];
-        #define _countof_ns(a)  (sizeof(_countof_ns_::match_not_vla(a)) == \
-                                 sizeof(_countof_ns_::no_t) \
-                                 ? _countof_ns_vla(a) \
-                                 : sizeof(_countof_ns_::match_cnt(a)) == \
-                                   sizeof(_countof_ns_::yes_t) \
+        #define countof_ns(a)  (sizeof(_countof_ns_::match_not_vla(a)) == \
+                                sizeof(_countof_ns_::no_t) \
+                                ? _countof_ns_vla(a) \
+                                : sizeof(_countof_ns_::match_cnt(a)) == \
+                                  sizeof(_countof_ns_::yes_t) \
                                     ? _countof_ns_::cnt_size(a) \
                                     : sizeof(*_countof_ns_::match( \
                                         _countof_ns_::match_not_vla(a), \
                                         (a))) - \
                                       _countof_ns_::bias)
     #endif
-    #define _countof_ns_typ2arr(a)  a  // magic, don't parentheses
-
     }  // of namespace
 #endif
-#define countof_ns(a)  (_countof_ns(_countof_ns_typ2arr(a)))
 
 #endif // COUNTOF_NS_H_6951
