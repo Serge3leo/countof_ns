@@ -343,24 +343,27 @@
             // C++ with VLA extension
         template<bool IsArray>
         constexpr static size_t zero_assert() noexcept {
-            static_assert(IsArray, "Must be array");
+            static_assert(IsArray, "Must be VLA");
             return 0;
         }
-            // Argument may be VLA or not
-        #if !__SUNPRO_CC  // Number compilers HAVE_HIDDEN_IS_SAME_CXX
+            // Argument type is not variably modified (VM) type
+        #if !__SUNPRO_CC
+                // Number compilers HAVE_HIDDEN_IS_SAME_CXX
             #define _countof_ns_must_vla(a)  (_countof_ns_::zero_assert< \
                                 !__is_same(decltype(&(a)[0]), decltype(a))>())
             template<class T>
-            static yes_t match_not_vla(const T&);
+            static yes_t match_not_vmt(const T&);
+            // !match_not_vmt => VLA, pointer to VLA or fixed array of VLA
         #else
             #define _countof_ns_must_vla(a)  (_countof_ns_::zero_assert< \
                                 !std::is_pointer<decltype(a)>::value>())
             template <class T, typename std::enable_if<
                                     !std::is_array<T>::value ||
                                     0 < std::extent<T>::value, int>::type = 0>
-            static yes_t match_not_vla(const T&);
+            static yes_t match_not_vmt(const T&);
+            // !match_not_vmt => VLA or ZLA
         #endif
-        static no_t match_not_vla(...);
+        static no_t match_not_vmt(...);
             // Count of VLA
         #define _countof_ns_vla(a)  \
                         (_countof_ns_unsafe(a) + _countof_ns_must_vla(a))
@@ -371,17 +374,17 @@
         static no_t match_cnt(...);
             // Count of fixed array (or ZLA)
         template <class T>
-        static auto match(yes_t not_vla, const T& a) -> decltype(match(a));
+        static auto match(yes_t not_vmt, const T& a) -> decltype(match(a));
             // VLA match stub
-        static char (*match(no_t not_vla, ...))[unthinkable];
-        #define countof_ns(a)  (sizeof(_countof_ns_::match_not_vla(a)) == \
+        static char (*match(no_t not_vmt, ...))[unthinkable];
+        #define countof_ns(a)  (sizeof(_countof_ns_::match_not_vmt(a)) == \
                                 sizeof(_countof_ns_::no_t) \
                                 ? _countof_ns_vla(a) \
                                 : sizeof(_countof_ns_::match_cnt(a)) == \
                                   sizeof(_countof_ns_::yes_t) \
                                     ? _countof_ns_::cnt_size(a) \
                                     : sizeof(*_countof_ns_::match( \
-                                        _countof_ns_::match_not_vla(a), \
+                                        _countof_ns_::match_not_vmt(a), \
                                         (a))) - \
                                       _countof_ns_::bias)
     #endif

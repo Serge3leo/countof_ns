@@ -24,6 +24,7 @@
 #if GNU_WORKAROUND
     #include <type_traits>
 #endif
+#include <typeinfo>
 #include <vector>
 
 using namespace std::meta;
@@ -44,14 +45,75 @@ using namespace std::meta;
 int a7[7];
 int z0[0];
 std::array<int, 1> arr1;
+int i;
 int *p;
 
 
-    // Размер заглушка, только для успеха компиляции
-constexpr size_t unthinkable = 1917;
-    // type - контейнер (имеется `size()`)
-consteval bool has_size(info type) {
-    if (is_class_type(type)) {
+
+/*
+ * <source>:166:12: error: variably modified type 'int[n22]' cannot be used as a template argument
+  166 |     return can_substitute(^^not_vla_v, {type});
+      |            ^
+PLEASE submit a bug report to https://github.com/llvm/llvm-project/issues/ and include the crash backtrace, preprocessed source, and associated run script.
+Stack dump:
+ */
+
+#if !Clang_WORKAROUND
+        // Тип аргумента не является изменяемым
+    template<class T>
+    constexpr bool _detect_not_vmt;
+    consteval bool _not_vmt(info type) {
+        return can_substitute(^^_detect_not_vmt, {type});
+    }
+        // TODO: Совместимость с обходом ошибки clang
+    #define not_vmt(a)  _not_vmt(^^decltype(a))
+
+        // Проверка, что аргумент - VLA
+    consteval size_t _must_vla(info type) {
+        if (!_not_vmt(type) && 0 == rank(type)) {
+            throw exception(u8"Must be VLA", ^^type);
+        }
+        int debug_level = 0;
+        do {
+            type = remove_extent(type);
+            if (_not_vmt(type) && 0 == size_of(type)) {
+                if (debug_level) {
+                    throw exception(u8"VLA has zero size elements,"
+                                    u8" debug_level>0", ^^type);
+                }
+                throw exception(u8"VLA has zero size elements,"
+                                u8" 0==debug_level", ^^type);
+            }
+            debug_level++;
+        } while (rank(type));
+        return 0;
+    }
+        // TODO: Совместимость с обходом ошибки clang
+    #define must_vla(a)  _must_vla(^^decltype(a))
+#else
+    class no_t { char no_[1]; };
+    class yes_t { long long yes_[2]; };
+    template<class T>
+    static yes_t _detect_not_vmt(const T&);
+    static no_t _detect_not_vmt(...);
+    #define not_vmt(a)  (sizeof(yes_t) == sizeof(_detect_not_vmt(a)))
+
+    consteval size_t _must_vla(bool not_vmt, size_t rank) {
+        if (!not_vmt && 0 == rank) {
+            throw "Must be VLA";
+        }
+        return 0;
+    }
+    #define must_vla(a)  _must_vla(not_vmt(a), __array_rank(decltype(a)))
+#endif
+    // Число элементов VLA
+#define _countof_ns_unsafe(a)  (sizeof(a)/(sizeof((a)[0]) ?: 2*sizeof(void *)))
+#define _countof_vla(a)  (_countof_ns_unsafe(a) + must_vla(a))
+
+    // Аргумент - контейнер
+consteval bool has_size(bool not_vmt, info type) {
+        //  TODO: not_vmt - workaround clang bug: crash at _not_vmt(type)
+    if (not_vmt && is_class_type(type)) {
         auto ctx = access_context::current();
         auto ms = define_static_array(members_of(type, ctx)
                 |std::views::filter(std::meta::is_function)
@@ -64,32 +126,42 @@ consteval bool has_size(info type) {
     return false;
 }
 
-static_assert(!has_size(^^decltype(a7)));
-static_assert(!has_size(^^decltype(z0)));
-static_assert(has_size(^^decltype(arr1)));
-static_assert(!has_size(^^decltype(p)));
+static_assert(!has_size(true, ^^decltype(a7)));
+static_assert(!has_size(true, ^^decltype(z0)));
+static_assert(has_size(true, ^^decltype(arr1)));
+static_assert(!has_size(true, ^^decltype(p)));
 
+    // Размер заглушка, только для успеха компиляции
+constexpr size_t unthinkable = 1917;
     // Число элементов фиксированного массива, возможно, ZLA
-consteval size_t count_of(info type) {
-    if (1 <= rank(type)) {
-        #if !GNU_WORKAROUND
-            return extent(type);
-        #else
-            return extract<size_t>(substitute(^^std::extent_v, {type}));
-        #endif
-    } else if(!has_size(type)) {
-        throw "Must array or container";
+consteval size_t count_of(bool not_vmt, info type) {
+    if (not_vmt) {  // TODO: clang bug: crash at _not_vmt(type)
+        if (1 <= rank(type)) {
+            #if !GNU_WORKAROUND
+                return extent(type);
+            #else
+                return extract<size_t>(substitute(^^std::extent_v, {type}));
+            #endif
+        } else if(!has_size(not_vmt, type)) {
+            #if !Clang_WORKAROUND
+                throw exception(u8"Must be array or container", ^^type);
+            #else
+                throw "Must be array or container";
+            #endif
+        }
     }
     return unthinkable;
 }
 
-static_assert(7 == count_of(^^decltype(a7)));
-static_assert(0 == count_of(^^decltype(z0)));
-static_assert(unthinkable == count_of(^^decltype(arr1)));
-static_assert(has_exception([]() consteval { (void)count_of(^^decltype(p)); }));
+static_assert(7 == count_of(true, ^^decltype(a7)));
+static_assert(0 == count_of(true, ^^decltype(z0)));
+static_assert(unthinkable == count_of(true, ^^decltype(arr1)));
+static_assert(has_exception([]() consteval {
+                                (void)count_of(true, ^^decltype(p));
+                            }));
 
     // Число элементов контейнера
-template<class C> requires (has_size(^^C))
+template<class C> requires (has_size(true, ^^C))
 constexpr static auto cnt_size(const C& c) noexcept(noexcept(c.size())) {
     return c.size();
 }
@@ -100,97 +172,75 @@ static_assert(unthinkable == cnt_size(z0));
 static_assert(1 == cnt_size(arr1));
 static_assert(unthinkable == cnt_size(&p));
 
-#define countof_26_fixcnt(a)  (has_size(^^decltype(a)) \
-                               ? cnt_size(a) \
-                               : count_of(^^decltype(a)))
-
-static_assert(7 == countof_26_fixcnt(a7));
-static_assert(0 == countof_26_fixcnt(z0));
-static_assert(1 == countof_26_fixcnt(arr1));
-static_assert(has_exception([]() consteval { (void)countof_26_fixcnt(&p); }));
-
-/*
- * <source>:166:12: error: variably modified type 'int[n22]' cannot be used as a template argument
-  166 |     return can_substitute(^^not_vla_v, {type});
-      |            ^
-PLEASE submit a bug report to https://github.com/llvm/llvm-project/issues/ and include the crash backtrace, preprocessed source, and associated run script.
-Stack dump:
- */
-
-#if !Clang_WORKAROUND
-    // Аргумент не может являться VLA
-template<class T>
-constexpr bool _detect_vla = true;
-consteval bool _not_vla(info type) {
-    return can_substitute(^^_detect_vla, {type});
-}
-    // TODO: Совместимость с обходом ошибки clang
-#define not_vla(a)  _not_vla(^^decltype(a))
-
-consteval size_t _must_vla(info type) {
-    if (!_not_vla(type) && 0 == rank(type)) {
-        throw "Must VLA array";
-    }
-    return 0;
-}
-    // TODO: Совместимость с обходом ошибки clang
-#define must_vla(a)  _must_vla(^^decltype(a))
-#else
-class no_t { char no_[1]; };
-class yes_t { long long yes_[2]; };
-template<class T>
-static yes_t _detect_not_vla(const T&);
-static no_t _detect_not_vla(...);
-#define not_vla(a)  (sizeof(yes_t) == sizeof(_detect_not_vla(a)))
-consteval size_t _must_vla(bool not_vla, size_t rank) {
-    if (!not_vla && 0 == rank) {
-        throw "Must VLA array";
-    }
-    return 0;
-}
-#define must_vla(a)  _must_vla(not_vla(a), __array_rank(decltype(a)))
-#endif
-    // Число элементов VLA
-#define _countof_ns_unsafe(a)  (sizeof(a)/(sizeof((a)[0]) ?: 2*sizeof(void *)))
-#define _countof_vla(a)  (_countof_ns_unsafe(a) + must_vla(a))
-    // Аргумент - контейнер
-consteval bool has_size(bool not_vla, info type) {
-    if (not_vla) {  // TODO: clang bug: crash at _not_vla(type)
-        return has_size(type);
-    }
-    return false;
-}
-    // Число элементов фиксированного массива, возможно, ZLA
-consteval size_t count_of(bool not_vla, info type) {
-    if (not_vla) {  // TODO: clang bug: crash at _not_vla(type)
-        return count_of(type);
-    }
-    return unthinkable;
-}
-#define countof_26(a)  (!not_vla(a) \
+#define countof_26(a)  (!not_vmt(a) \
                         ? _countof_vla(a) \
-                        : has_size(not_vla(a), ^^decltype(a)) \
+                        : has_size(not_vmt(a), ^^decltype(a)) \
                            ? cnt_size(a) \
-                           : count_of(not_vla(a), ^^decltype(a)))
+                           : count_of(not_vmt(a), ^^decltype(a)))
 
 static_assert(7 == countof_26(a7));
 static_assert(0 == countof_26(z0));
 static_assert(1 == countof_26(arr1));
 static_assert(has_exception([]() consteval { (void)countof_26(&p); }));
 
+consteval bool is_variably_modified(info type);
+consteval bool is_variably_modified_size_of(info type);
+consteval auto variably_modified_size_of(info type) -> size_t (*)(void);
+consteval bool is_variably_modified_extent(info type);
+consteval auto variably_modified_extent(info type) -> size_t (*)(void);
 
+size_t free_eval(void) {
+    if consteval {
+        throw "Don't use in consteval";
+        return 42;
+    }
+    return 1917;
+}
+
+#if !Clang_WORKAROUND
+    template<class T>
+    constexpr bool _detect_variably_modified;
+    consteval bool is_variably_modified(info type) {
+        if (can_substitute(^^_detect_variably_modified, {type})) {
+            (void)size_of(type);
+            (void)(0 == rank(type) || extent(type));
+            #if 1  // TODO: gcc strange or?
+                for (;;) {
+                    if (rank(type)) {
+                        type = remove_extent(type);
+                    } else if (is_pointer_type(type)) {
+                        type = remove_pointer(type);
+                    } else {
+                        break;
+                    }
+                    if (!can_substitute(^^_detect_variably_modified, {type})) {
+                        return true;
+                    }
+                    (void)size_of(type);
+                    (void)(0 == rank(type) || extent(type));
+                }
+            #endif
+            return false;
+        }
+        return true;
+    }
+#else
+    consteval bool is_variably_modified(info type) { return false; }
+#endif
+consteval bool is_variably_modified_size_of(info type) {
+    return is_variably_modified(type);
+}
+consteval auto variably_modified_size_of(info type) -> size_t (*)(void) {
+    return free_eval;
+}
+consteval bool is_variably_modified_extent(info type) {
+    return is_variably_modified(type);
+}
+consteval auto variably_modified_extent(info type) -> size_t (*)(void) {
+    return free_eval;
+}
 
 int main(void) {
-    int nv[2];
-    static_assert(not_vla(nv));
-    size_t n22 = 22;
-    int nnv[n22];
-    static_assert(!not_vla(nnv));
-    static_assert(0 == must_vla(nnv));
-    int (*pnnv)[n22];
-    static_assert(!not_vla(pnnv));
-    // (void)must_vla(pnnv);
-
     printf("countof_26(a7) = %zu\n",
             countof_26(a7));
     printf("countof_26(z0) = %zu\n",
@@ -260,17 +310,85 @@ int main(void) {
     int vf20[n2][0];
     int vf00[n0][0];
     int vf02[n0][2];
-    #if !GNU_WORKAROUND
-        assert(0 == countof_26(vf20));  // Отличие от _Countof
-        assert(0 == countof_26(vf00));
-    #endif
+    // (void)countof_26(vf20);  // Ошибка, отличие от _Countof
+    // (void)countof_26(vf00);  // Ошибка, отличие от _Countof
     assert(0 == countof_26(vf02));
     int fv20[2][n0];
     int fv00[0][n0];
     int fv02[0][n2];
+        // Нельзя использовать static_assert(), отличие от _Countof
     assert(0 == countof_26(fv20));  // Отличие от _Countof
     assert(0 == countof_26(fv00));
     assert(0 == countof_26(fv02));
+
+    printf("typeid(a77).name()=%s\n",
+            typeid(a77).name());
+    printf("typeid(a70).name()=%s\n",
+            typeid(a70).name());
+    printf("typeid(a00).name()=%s\n",
+            typeid(a00).name());
+    printf("typeid(a07).name()=%s\n",
+            typeid(a07).name());
+//     printf("typeid(v20).name()=%s\n",
+//             typeid(v20).name());
+//     printf("typeid(v00).name()=%s\n",
+//             typeid(v00).name());
+//     printf("typeid(v02).name()=%s\n",
+//             typeid(v02).name());
+//     printf("typeid(vf20).name()=%s\n",  // gcc internal error
+//             typeid(vf20).name());
+//     printf("typeid(vf00).name()=%s\n",  // gcc internal error
+//             typeid(vf00).name());
+//     printf("typeid(vf02).name()=%s\n",
+//             typeid(vf02).name());
+//     printf("typeid(fv20).name()=%s\n",
+//             typeid(fv20).name());
+//     printf("typeid(fv00).name()=%s\n",
+//             typeid(fv00).name());
+//     printf("typeid(fv02).name()=%s\n",
+//             typeid(fv02).name());
+
+    printf("is_variably_modified(^^decltype(a00)) = %d\n",
+            is_variably_modified(^^decltype(a00)));
+    printf("is_variably_modified(^^decltype(v20)) = %d\n",
+            is_variably_modified(^^decltype(v20)));
+    printf("is_variably_modified(^^decltype(v00)) = %d\n",
+            is_variably_modified(^^decltype(v00)));
+    printf("is_variably_modified(^^decltype(v02)) = %d\n",
+            is_variably_modified(^^decltype(v02)));
+    printf("is_variably_modified(^^decltype(vf20)) = %d\n",
+            is_variably_modified(^^decltype(vf20)));
+    printf("is_variably_modified(^^decltype(vf00)) = %d\n",
+            is_variably_modified(^^decltype(vf00)));
+    printf("is_variably_modified(^^decltype(vf02)) = %d\n",
+            is_variably_modified(^^decltype(vf02)));
+    printf("is_variably_modified(^^decltype(fv20)) = %d\n",
+            is_variably_modified(^^decltype(fv20)));
+    printf("is_variably_modified(^^decltype(fv00)) = %d\n",
+            is_variably_modified(^^decltype(fv00)));
+    printf("is_variably_modified(^^decltype(fv02)) = %d\n",
+            is_variably_modified(^^decltype(fv02)));
+
+    printf("is_variably_modified(^^decltype(&a00)) = %d\n",
+            is_variably_modified(^^decltype(&a00)));
+    printf("is_variably_modified(^^decltype(&v20)) = %d\n",
+            is_variably_modified(^^decltype(&v20)));
+    printf("is_variably_modified(^^decltype(&v00)) = %d\n",
+            is_variably_modified(^^decltype(&v00)));
+    printf("is_variably_modified(^^decltype(&v02)) = %d\n",
+            is_variably_modified(^^decltype(&v02)));
+    printf("is_variably_modified(^^decltype(&vf20)) = %d\n",
+            is_variably_modified(^^decltype(&vf20)));
+    printf("is_variably_modified(^^decltype(&vf00)) = %d\n",
+            is_variably_modified(^^decltype(&vf00)));
+    printf("is_variably_modified(^^decltype(&vf02)) = %d\n",
+            is_variably_modified(^^decltype(&vf02)));
+    printf("is_variably_modified(^^decltype(&fv20)) = %d\n",
+            is_variably_modified(^^decltype(&fv20)));
+    printf("is_variably_modified(^^decltype(&fv00)) = %d\n",
+            is_variably_modified(^^decltype(&fv00)));
+    printf("is_variably_modified(^^decltype(&fv02)) = %d\n",
+            is_variably_modified(^^decltype(&fv02)));
 
     printf("Ok __GNUC__=%d  __VERSION__='%s'\n",
             __GNUC__, __VERSION__);
