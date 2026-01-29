@@ -183,62 +183,93 @@ static_assert(0 == countof_26(z0));
 static_assert(1 == countof_26(arr1));
 static_assert(has_exception([]() consteval { (void)countof_26(&p); }));
 
-consteval bool is_variably_modified(info type);
 consteval bool is_variably_modified_size_of(info type);
-consteval auto variably_modified_size_of(info type) -> size_t (*)(void);
+class variably_modified_size_of_t {
+    friend consteval variably_modified_size_of_t
+                        variably_modified_size_of(info type);
+    size_t size_of_;
+    bool variable_;
+    constexpr variably_modified_size_of_t(size_t size_of, bool variable)
+        : size_of_(size_of), variable_(variable) {}
+public:
+    constexpr size_t size_of(void) const;
+};
+consteval variably_modified_size_of_t
+                variably_modified_size_of(info type);
 consteval bool is_variably_modified_extent(info type);
-consteval auto variably_modified_extent(info type) -> size_t (*)(void);
+class variably_modified_extent_t {
+    friend consteval variably_modified_extent_t
+                        variably_modified_extent(info type);
+    size_t size_;
+    bool variable_;
+    constexpr variably_modified_extent_t(size_t size, bool variable)
+        : size_(size), variable_(variable) {}
+public:
+    constexpr size_t size(void) const;
+};
+consteval variably_modified_extent_t
+                variably_modified_extent(info type);
 
-size_t free_eval(void) {
+
+constexpr size_t variably_modified_size_of_t::size_of(void) const {
     if consteval {
-        throw "Don't use in consteval";
-        return 42;
-    }
-    return 1917;
-}
-
-#if !Clang_WORKAROUND
-    template<class T>
-    constexpr bool _detect_variably_modified;
-    consteval bool is_variably_modified(info type) {
-        if (can_substitute(^^_detect_variably_modified, {type})) {
-            (void)size_of(type);
-            (void)(0 == rank(type) || extent(type));
-            #if 1  // TODO: gcc strange or?
-                for (;;) {
-                    if (rank(type)) {
-                        type = remove_extent(type);
-                    } else if (is_pointer_type(type)) {
-                        type = remove_pointer(type);
-                    } else {
-                        break;
-                    }
-                    if (!can_substitute(^^_detect_variably_modified, {type})) {
-                        return true;
-                    }
-                    (void)size_of(type);
-                    (void)(0 == rank(type) || extent(type));
-                }
-            #endif
-            return false;
+        if (variable_) {
+            throw std::logic_error("Can't use variable size at compile time");
         }
-        return true;
     }
-#else
-    consteval bool is_variably_modified(info type) { return false; }
-#endif
-consteval bool is_variably_modified_size_of(info type) {
-    return is_variably_modified(type);
+    return size_of_;
 }
-consteval auto variably_modified_size_of(info type) -> size_t (*)(void) {
-    return free_eval;
+consteval bool is_variably_modified_size_of(info type) {
+    #if !Clang_WORKAROUND
+        return !is_pointer_type(type) &&
+               !can_substitute(^^std::extent_v, {type});  // TODO: VLA of ZLA
+    #else
+        return false;
+    #endif
+}
+static_assert(!is_variably_modified_size_of(^^decltype(a7)));
+static_assert(!is_variably_modified_size_of(^^decltype(z0)));
+consteval variably_modified_size_of_t
+                variably_modified_size_of(info type) {
+    if (!is_variably_modified_size_of(type)) {
+        return variably_modified_size_of_t(size_of(type), false);
+    }
+    return variably_modified_size_of_t(1917, true);  // TODO: Implementation defined
+}
+static_assert(sizeof(a7) ==
+                variably_modified_size_of(^^decltype(a7)).size_of());
+static_assert(0 == variably_modified_size_of(^^decltype(z0)).size_of());
+
+constexpr size_t variably_modified_extent_t::size(void) const {
+    if consteval {
+        if (variable_) {
+            throw std::logic_error("Can't use variable size at compile time");
+        }
+    }
+    return size_;
 }
 consteval bool is_variably_modified_extent(info type) {
-    return is_variably_modified(type);
+    #if !Clang_WORKAROUND
+        return !can_substitute(^^std::extent_v, {type});
+    #else
+        return false;
+    #endif
 }
-consteval auto variably_modified_extent(info type) -> size_t (*)(void) {
-    return free_eval;
+static_assert(!is_variably_modified_extent(^^decltype(a7)));
+static_assert(!is_variably_modified_extent(^^decltype(z0)));
+consteval variably_modified_extent_t
+                variably_modified_extent(info type) {
+    if (!is_variably_modified_extent(type)) {
+        return variably_modified_extent_t(
+                    extract<size_t>(substitute(^^std::extent_v, {type})),
+                    false);
+    }
+    return variably_modified_extent_t(1917, true);  // TODO: Implementation defined
 }
+static_assert(7 == variably_modified_extent(^^decltype(a7)).size());
+static_assert(0 == variably_modified_extent(^^decltype(z0)).size());
+
+
 
 int main(void) {
     printf("countof_26(a7) = %zu\n",
@@ -348,47 +379,77 @@ int main(void) {
 //     printf("typeid(fv02).name()=%s\n",
 //             typeid(fv02).name());
 
-    printf("is_variably_modified(^^decltype(a00)) = %d\n",
-            is_variably_modified(^^decltype(a00)));
-    printf("is_variably_modified(^^decltype(v20)) = %d\n",
-            is_variably_modified(^^decltype(v20)));
-    printf("is_variably_modified(^^decltype(v00)) = %d\n",
-            is_variably_modified(^^decltype(v00)));
-    printf("is_variably_modified(^^decltype(v02)) = %d\n",
-            is_variably_modified(^^decltype(v02)));
-    printf("is_variably_modified(^^decltype(vf20)) = %d\n",
-            is_variably_modified(^^decltype(vf20)));
-    printf("is_variably_modified(^^decltype(vf00)) = %d\n",
-            is_variably_modified(^^decltype(vf00)));
-    printf("is_variably_modified(^^decltype(vf02)) = %d\n",
-            is_variably_modified(^^decltype(vf02)));
-    printf("is_variably_modified(^^decltype(fv20)) = %d\n",
-            is_variably_modified(^^decltype(fv20)));
-    printf("is_variably_modified(^^decltype(fv00)) = %d\n",
-            is_variably_modified(^^decltype(fv00)));
-    printf("is_variably_modified(^^decltype(fv02)) = %d\n",
-            is_variably_modified(^^decltype(fv02)));
+    printf("is_variably_modified_extent(^^decltype(a00)) = %d\n",
+            is_variably_modified_extent(^^decltype(a00)));
+    printf("is_variably_modified_extent(^^decltype(v20)) = %d\n",
+            is_variably_modified_extent(^^decltype(v20)));
+    printf("is_variably_modified_extent(^^decltype(v00)) = %d\n",
+            is_variably_modified_extent(^^decltype(v00)));
+    printf("is_variably_modified_extent(^^decltype(v02)) = %d\n",
+            is_variably_modified_extent(^^decltype(v02)));
+    printf("is_variably_modified_extent(^^decltype(vf20)) = %d\n",
+            is_variably_modified_extent(^^decltype(vf20)));
+    printf("is_variably_modified_extent(^^decltype(vf00)) = %d\n",
+            is_variably_modified_extent(^^decltype(vf00)));
+    printf("is_variably_modified_extent(^^decltype(vf02)) = %d\n",
+            is_variably_modified_extent(^^decltype(vf02)));
+    printf("is_variably_modified_extent(^^decltype(fv20)) = %d\n",
+            is_variably_modified_extent(^^decltype(fv20)));
+    printf("is_variably_modified_extent(^^decltype(fv00)) = %d\n",
+            is_variably_modified_extent(^^decltype(fv00)));
+    printf("is_variably_modified_extent(^^decltype(fv02)) = %d\n",
+            is_variably_modified_extent(^^decltype(fv02)));
 
-    printf("is_variably_modified(^^decltype(&a00)) = %d\n",
-            is_variably_modified(^^decltype(&a00)));
-    printf("is_variably_modified(^^decltype(&v20)) = %d\n",
-            is_variably_modified(^^decltype(&v20)));
-    printf("is_variably_modified(^^decltype(&v00)) = %d\n",
-            is_variably_modified(^^decltype(&v00)));
-    printf("is_variably_modified(^^decltype(&v02)) = %d\n",
-            is_variably_modified(^^decltype(&v02)));
-    printf("is_variably_modified(^^decltype(&vf20)) = %d\n",
-            is_variably_modified(^^decltype(&vf20)));
-    printf("is_variably_modified(^^decltype(&vf00)) = %d\n",
-            is_variably_modified(^^decltype(&vf00)));
-    printf("is_variably_modified(^^decltype(&vf02)) = %d\n",
-            is_variably_modified(^^decltype(&vf02)));
-    printf("is_variably_modified(^^decltype(&fv20)) = %d\n",
-            is_variably_modified(^^decltype(&fv20)));
-    printf("is_variably_modified(^^decltype(&fv00)) = %d\n",
-            is_variably_modified(^^decltype(&fv00)));
-    printf("is_variably_modified(^^decltype(&fv02)) = %d\n",
-            is_variably_modified(^^decltype(&fv02)));
+    printf("is_variably_modified_size_of(^^decltype(&a00)) = %d\n",
+            is_variably_modified_size_of(^^decltype(&a00)));
+    printf("is_variably_modified_size_of(^^decltype(&v20)) = %d\n",
+            is_variably_modified_size_of(^^decltype(&v20)));
+    printf("is_variably_modified_size_of(^^decltype(&v00)) = %d\n",
+            is_variably_modified_size_of(^^decltype(&v00)));
+    printf("is_variably_modified_size_of(^^decltype(&v02)) = %d\n",
+            is_variably_modified_size_of(^^decltype(&v02)));
+    printf("is_variably_modified_size_of(^^decltype(&vf20)) = %d\n",
+            is_variably_modified_size_of(^^decltype(&vf20)));
+    printf("is_variably_modified_size_of(^^decltype(&vf00)) = %d\n",
+            is_variably_modified_size_of(^^decltype(&vf00)));
+    printf("is_variably_modified_size_of(^^decltype(&vf02)) = %d\n",
+            is_variably_modified_size_of(^^decltype(&vf02)));
+    printf("is_variably_modified_size_of(^^decltype(&fv20)) = %d\n",
+            is_variably_modified_size_of(^^decltype(&fv20)));
+    printf("is_variably_modified_size_of(^^decltype(&fv00)) = %d\n",
+            is_variably_modified_size_of(^^decltype(&fv00)));
+    printf("is_variably_modified_size_of(^^decltype(&fv02)) = %d\n",
+            is_variably_modified_size_of(^^decltype(&fv02)));
+
+    printf("size_of(^^decltype(a00)) = %zu\n",
+            size_of(^^decltype(a00)));
+#if Clang_WORKAROUND
+    printf("bug size_of(^^decltype(v22)) = %zu\n",
+            size_of(^^decltype(v22)));
+    assert(sizeof(v22) != size_of(^^decltype(v22)));
+    printf("bug size_of(^^decltype(v20)) = %zu\n",
+            size_of(^^decltype(v20)));
+    printf("bug size_of(^^decltype(v00)) = %zu\n",
+            size_of(^^decltype(v00)));
+    printf("bug size_of(^^decltype(v02)) = %zu\n",
+            size_of(^^decltype(v02)));
+#endif
+    printf("size_of(^^decltype(vf20)) = %zu\n",
+            size_of(^^decltype(vf20)));
+    assert(sizeof(vf20) == size_of(^^decltype(vf20)));
+    printf("size_of(^^decltype(vf00)) = %zu\n",
+            size_of(^^decltype(vf00)));
+    assert(sizeof(vf00) == size_of(^^decltype(vf00)));
+#if Clang_WORKAROUND
+    printf("bug size_of(^^decltype(vf02)) = %zu\n",
+            size_of(^^decltype(vf02)));
+    printf("bug size_of(^^decltype(fv20)) = %zu\n",
+            size_of(^^decltype(fv20)));
+    printf("size_of(^^decltype(fv00)) = %zu\n",
+            size_of(^^decltype(fv00)));
+    printf("size_of(^^decltype(fv02)) = %zu\n",
+            size_of(^^decltype(fv02)));
+#endif
 
     printf("Ok __GNUC__=%d  __VERSION__='%s'\n",
             __GNUC__, __VERSION__);

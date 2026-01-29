@@ -662,11 +662,20 @@ constexpr static size_t cnt_size(...) { return unthinkable; }
 Наверное, было бы неплохо, что бы для изменяемых типов были бы функции вида:
 <!-- example: "c++26.cpp" -->
 ```c++
-consteval bool is_variably_modified(info type);
 consteval bool is_variably_modified_size_of(info type);
-consteval auto variably_modified_size_of(info type) -> size_t (*)(void);
+class variably_modified_size_of_t {
+public:
+    constexpr size_t size_of(void) const;
+};
+consteval variably_modified_size_of_t
+                variably_modified_size_of(info type);
 consteval bool is_variably_modified_extent(info type);
-consteval auto variably_modified_extent(info type) -> size_t (*)(void);
+class variably_modified_extent_t {
+public:
+    constexpr size_t size(void) const;
+};
+consteval variably_modified_extent_t
+                variably_modified_extent(info type);
 ```
 <!-- endexample: "c++26.cpp" -->
 , но, увы, пока ничего похожего нет, ни в проекте C++26, ни в расширениях Clang или GNU (в принципе, у Clang есть встроенная функция `__array_extent()`, но для VLA она возвращает 0).
