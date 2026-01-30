@@ -6,27 +6,25 @@
 
 set(countof_ns_builtin_c_options_MSVC
     "/std:clatest" "/wd4116" "/we4047" "/we4048"
-    "/FI_countof_ns_ptr_compatible_type_msvc.h")
+    "/FI_countof_ns_must_compatible_msvc.h")
 
 set(countof_ns_builtin_c_options_SunPro
     "-errwarn=E_BAD_POINTER_SUBTRACTION"
-    "-D_countof_ns_ptr_compatible_type(p,t)=(0==0*sizeof((p)-(t)(p)))")
-   #"-D_countof_ns_compatible_type(p,t1,t2)=(0==0*sizeof((t1)(p)-(t2)(p)))")
+    "-D_countof_ns_must_compatible(p,t1,t2)=(0*sizeof((t1)(p)-(t2)(p)))")
 
 set(countof_ns_builtin_c_options_XL
     "-qlanglvl=extc1x" "-qhaltonmsg=1506-068"
-    "-qinclude=_countof_ns_ptr_compatible_type_xl.h")
+    "-qinclude=_countof_ns_must_compatible_xl.h")
 
 # For _COUNTOF_NS_BROKEN_BUILTIN_TYPES_COMPATIBLE_P, with check sizes
 if (TAC_EXTRA_USER_BUILTINS)
     set(countof_ns_builtin_options_Intel
         "-diag-error=1121"
-        "-D_countof_ns_ptr_compatible_type(p,t)=(0==0*sizeof((p)-(t)(p)))"
-        )
+        "-D_countof_ns_must_compatible(p,t1,t2)=(0*sizeof((t1)(p)-(t2)(p)))")
 
     set(countof_ns_builtin_options_NVHPC
         "--diag_error=nonstandard_ptr_minus_ptr"
-        "-D_countof_ns_ptr_compatible_type(p,t)=(0==0*sizeof((p)-(t)(p)))")
+        "-D_countof_ns_must_compatible(p,t1,t2)=(0*sizeof((t1)(p)-(t2)(p)))")
 
     if (FALSE)
         set(countof_ns_builtin_options_LCC

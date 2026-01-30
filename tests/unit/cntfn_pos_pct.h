@@ -5,5 +5,5 @@ size_t TU_UNIT(void) {
     typedef int a_t[1917];
     a_t *pa;
     TU_STATIC_ASSERT_AND_RETURN(1, (size_t)(
-                0 != _countof_ns_ptr_compatible_type(&pa, a_t **)));
+            0 == _countof_ns_must_compatible(&pa, int (**)[1917], a_t **)));
 }

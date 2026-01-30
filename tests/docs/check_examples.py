@@ -44,7 +44,7 @@ class MdExamples:
             self.examples[bm.group(1)].append(md.content[b + 1:e])
             bm = None
 
-ce_comment = re.compile(r'//.*')
+ce_comment = re.compile(r'\s*//.*')
 
 def check_example(name: str, body: list[str], content: list[str]) -> bool:
     ret = True
