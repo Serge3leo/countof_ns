@@ -184,22 +184,22 @@ static_assert(1 == countof_26(arr1));
 static_assert(has_exception([]() consteval { (void)countof_26(&p); }));
 
 consteval bool is_variably_modified_size_of(info type);
+consteval bool is_variably_modified_extent(info type);
 class variably_modified_size_of {
     const bool variable_;
     const size_t size_of_;
     variably_modified_size_of() = delete;
  public:
     consteval variably_modified_size_of(info type);
-    constexpr size_t size_of(void) const;
+    constexpr size_t size_of(void);
 };
-consteval bool is_variably_modified_extent(info type);
 class variably_modified_extent {
     const bool variable_;
     const size_t size_;
     variably_modified_extent() = delete;
  public:
     consteval variably_modified_extent(info type);
-    constexpr size_t size(void) const;
+    constexpr size_t size(void);
 };
 
 consteval bool is_variably_modified_size_of(info type) {
@@ -218,7 +218,7 @@ consteval variably_modified_size_of::variably_modified_size_of(info type)
       size_of_(!variable_ ? std::meta::size_of(type)
                           : 1917)  // TODO: Implementation defined
 {}
-constexpr size_t variably_modified_size_of::size_of(void) const {
+constexpr size_t variably_modified_size_of::size_of(void) {
     if consteval {
         if (variable_) {
             throw std::logic_error(
@@ -259,7 +259,7 @@ consteval variably_modified_extent::variably_modified_extent(info type)
         #endif
     }
 }
-constexpr size_t variably_modified_extent::size(void) const {
+constexpr size_t variably_modified_extent::size(void) {
     if consteval {
         if (variable_) {
             throw std::logic_error(

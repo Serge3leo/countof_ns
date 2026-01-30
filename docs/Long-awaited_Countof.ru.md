@@ -663,14 +663,14 @@ constexpr static size_t cnt_size(...) { return unthinkable; }
 <!-- example: "c++26.cpp" -->
 ```c++
 consteval bool is_variably_modified_size_of(info type);
+consteval bool is_variably_modified_extent(info type);
 class variably_modified_size_of {
     consteval variably_modified_size_of(info type);
-    constexpr size_t size_of(void) const;
+    constexpr size_t size_of(void);
 };
-consteval bool is_variably_modified_extent(info type);
 class variably_modified_extent {
     consteval variably_modified_extent(info type);
-    constexpr size_t size(void) const;
+    constexpr size_t size(void);
 };
 ```
 <!-- endexample: "c++26.cpp" -->
