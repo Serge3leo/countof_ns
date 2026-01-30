@@ -666,11 +666,11 @@ consteval bool is_variably_modified_size_of(info type);
 consteval bool is_variably_modified_extent(info type);
 class variably_modified_size_of {
     consteval variably_modified_size_of(info type);
-    constexpr size_t size_of(void);
+    constexpr size_t size_of(void) const;
 };
 class variably_modified_extent {
     consteval variably_modified_extent(info type);
-    constexpr size_t size(void);
+    constexpr size_t size(void) const;
 };
 ```
 <!-- endexample: "c++26.cpp" -->
