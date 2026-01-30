@@ -601,13 +601,13 @@ consteval bool _not_vmt(info type) {
     // Проверка, что аргумент - VLA
 consteval size_t _must_vla(info type) {
     if (!_not_vmt(type) && 0 == rank(type)) {
-        throw exception(u8"Must be VLA", ^^type);
+        throw exception("Must be VLA", ^^type);
     }
     do {
         type = remove_extent(type);
         if (_not_vmt(type) && 0 == size_of(type)) {
-            throw exception(u8"VLA has zero size elements,"
-							u8" 0==debug_level", ^^type);
+            throw exception("VLA has zero size elements,"
+							" 0==debug_level", ^^type);
         }
     } while (rank(type));
     return 0;
@@ -638,7 +638,7 @@ consteval size_t count_of(bool not_vmt, info type) {
         if (1 <= rank(type)) {
 			return extent(type);
         } else if(!has_size(not_vmt, type)) {
-            throw exception(u8"Must be array or container", ^^type);
+            throw exception("Must be array or container", ^^type);
         }
     }
     return unthinkable;
@@ -663,19 +663,15 @@ constexpr static size_t cnt_size(...) { return unthinkable; }
 <!-- example: "c++26.cpp" -->
 ```c++
 consteval bool is_variably_modified_size_of(info type);
-class variably_modified_size_of_t {
-public:
+class variably_modified_size_of {
+    consteval variably_modified_size_of(info type);
     constexpr size_t size_of(void) const;
 };
-consteval variably_modified_size_of_t
-                variably_modified_size_of(info type);
 consteval bool is_variably_modified_extent(info type);
-class variably_modified_extent_t {
-public:
+class variably_modified_extent {
+    consteval variably_modified_extent(info type);
     constexpr size_t size(void) const;
 };
-consteval variably_modified_extent_t
-                variably_modified_extent(info type);
 ```
 <!-- endexample: "c++26.cpp" -->
 , но, увы, пока ничего похожего нет, ни в проекте C++26, ни в расширениях Clang или GNU (в принципе, у Clang есть встроенная функция `__array_extent()`, но для VLA она возвращает 0).

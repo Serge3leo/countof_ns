@@ -71,18 +71,18 @@ Stack dump:
         // Проверка, что аргумент - VLA
     consteval size_t _must_vla(info type) {
         if (!_not_vmt(type) && 0 == rank(type)) {
-            throw exception(u8"Must be VLA", ^^type);
+            throw exception("Must be VLA", ^^type);
         }
         int debug_level = 0;
         do {
             type = remove_extent(type);
             if (_not_vmt(type) && 0 == size_of(type)) {
                 if (debug_level) {
-                    throw exception(u8"VLA has zero size elements,"
-                                    u8" debug_level>0", ^^type);
+                    throw exception("VLA has zero size elements,"
+                                    " debug_level>0", ^^type);
                 }
-                throw exception(u8"VLA has zero size elements,"
-                                u8" 0==debug_level", ^^type);
+                throw exception("VLA has zero size elements,"
+                                " 0==debug_level", ^^type);
             }
             debug_level++;
         } while (rank(type));
@@ -144,7 +144,7 @@ consteval size_t count_of(bool not_vmt, info type) {
             #endif
         } else if(!has_size(not_vmt, type)) {
             #if !Clang_WORKAROUND
-                throw exception(u8"Must be array or container", ^^type);
+                throw exception("Must be array or container", ^^type);
             #else
                 throw "Must be array or container";
             #endif
@@ -184,41 +184,24 @@ static_assert(1 == countof_26(arr1));
 static_assert(has_exception([]() consteval { (void)countof_26(&p); }));
 
 consteval bool is_variably_modified_size_of(info type);
-class variably_modified_size_of_t {
-    friend consteval variably_modified_size_of_t
-                        variably_modified_size_of(info type);
-    size_t size_of_;
-    bool variable_;
-    constexpr variably_modified_size_of_t(size_t size_of, bool variable)
-        : size_of_(size_of), variable_(variable) {}
-public:
+class variably_modified_size_of {
+    const bool variable_;
+    const size_t size_of_;
+    variably_modified_size_of() = delete;
+ public:
+    consteval variably_modified_size_of(info type);
     constexpr size_t size_of(void) const;
 };
-consteval variably_modified_size_of_t
-                variably_modified_size_of(info type);
 consteval bool is_variably_modified_extent(info type);
-class variably_modified_extent_t {
-    friend consteval variably_modified_extent_t
-                        variably_modified_extent(info type);
-    size_t size_;
-    bool variable_;
-    constexpr variably_modified_extent_t(size_t size, bool variable)
-        : size_(size), variable_(variable) {}
-public:
+class variably_modified_extent {
+    const bool variable_;
+    const size_t size_;
+    variably_modified_extent() = delete;
+ public:
+    consteval variably_modified_extent(info type);
     constexpr size_t size(void) const;
 };
-consteval variably_modified_extent_t
-                variably_modified_extent(info type);
 
-
-constexpr size_t variably_modified_size_of_t::size_of(void) const {
-    if consteval {
-        if (variable_) {
-            throw std::logic_error("Can't use variable size at compile time");
-        }
-    }
-    return size_of_;
-}
 consteval bool is_variably_modified_size_of(info type) {
     #if !Clang_WORKAROUND
         return !is_pointer_type(type) &&
@@ -229,25 +212,25 @@ consteval bool is_variably_modified_size_of(info type) {
 }
 static_assert(!is_variably_modified_size_of(^^decltype(a7)));
 static_assert(!is_variably_modified_size_of(^^decltype(z0)));
-consteval variably_modified_size_of_t
-                variably_modified_size_of(info type) {
-    if (!is_variably_modified_size_of(type)) {
-        return variably_modified_size_of_t(size_of(type), false);
+
+consteval variably_modified_size_of::variably_modified_size_of(info type)
+    : variable_(is_variably_modified_size_of(type)),
+      size_of_(!variable_ ? std::meta::size_of(type)
+                          : 1917)  // TODO: Implementation defined
+{}
+constexpr size_t variably_modified_size_of::size_of(void) const {
+    if consteval {
+        if (variable_) {
+            throw std::logic_error(
+                    "Can't use variable size at compile time");
+        }
     }
-    return variably_modified_size_of_t(1917, true);  // TODO: Implementation defined
+    return size_of_;
 }
 static_assert(sizeof(a7) ==
                 variably_modified_size_of(^^decltype(a7)).size_of());
 static_assert(0 == variably_modified_size_of(^^decltype(z0)).size_of());
 
-constexpr size_t variably_modified_extent_t::size(void) const {
-    if consteval {
-        if (variable_) {
-            throw std::logic_error("Can't use variable size at compile time");
-        }
-    }
-    return size_;
-}
 consteval bool is_variably_modified_extent(info type) {
     #if !Clang_WORKAROUND
         return !can_substitute(^^std::extent_v, {type});
@@ -257,18 +240,36 @@ consteval bool is_variably_modified_extent(info type) {
 }
 static_assert(!is_variably_modified_extent(^^decltype(a7)));
 static_assert(!is_variably_modified_extent(^^decltype(z0)));
-consteval variably_modified_extent_t
-                variably_modified_extent(info type) {
-    if (!is_variably_modified_extent(type)) {
-        return variably_modified_extent_t(
-                    extract<size_t>(substitute(^^std::extent_v, {type})),
-                    false);
+
+consteval variably_modified_extent::variably_modified_extent(info type)
+    : variable_(is_variably_modified_extent(type)),
+      size_(!variable_
+        #if !GNU_WORKAROUND
+              ? extent(type)
+        #else
+              ? extract<size_t>(substitute(^^std::extent_v, {type}))
+        #endif
+              : 1917)  // TODO: Implementation defined
+{
+    if (0 >= rank(type)) {
+        #if !Clang_WORKAROUND
+            throw exception("Must be array", ^^type);
+        #else
+            throw "Must be array";
+        #endif
     }
-    return variably_modified_extent_t(1917, true);  // TODO: Implementation defined
+}
+constexpr size_t variably_modified_extent::size(void) const {
+    if consteval {
+        if (variable_) {
+            throw std::logic_error(
+                    "Can't use variable size at compile time");
+        }
+    }
+    return size_;
 }
 static_assert(7 == variably_modified_extent(^^decltype(a7)).size());
 static_assert(0 == variably_modified_extent(^^decltype(z0)).size());
-
 
 
 int main(void) {
