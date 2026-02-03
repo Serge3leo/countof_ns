@@ -6,5 +6,6 @@ size_t TU_UNIT(void) {
     volatile int **vpp;
     // A compilation error is also allowed instead of returning 0.
     TU_STATIC_ASSERT_AND_RETURN(0, (size_t)(
-                0 == _countof_ns_ptr_compatible_type(&vpp, vp_t **)));
+                0 != _countof_ns_must_compatible(&vpp,
+                                volatile int ***, vp_t **)));
 }

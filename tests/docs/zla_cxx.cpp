@@ -6,7 +6,7 @@
 #include <type_traits>
 
 int zla[0];
-#if __NVCOMPILER || __SUNPRO_CC || (__clang__ && \
+#if __NVCOMPILER_MAJOR__ > 21 || __SUNPRO_CC || (__clang__ && \
     __clang_major__ <= 18 && !__apple_build_version__ && !__INTEL_COMPILER)
     static_assert(std::is_array<decltype(zla)>::value, "std::is_array_v<>");
 #else
