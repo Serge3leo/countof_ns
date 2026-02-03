@@ -183,7 +183,7 @@ static_assert(1 == countof_26(arr1));
 static_assert(has_exception([]() consteval { (void)countof_26(&p); }));
 
 consteval bool has_known_constant_size(info type);
-consteval bool has_variably_modified_extent(info type);
+consteval bool has_known_constant_extent(info type);
 class variably_modified_size_of {
     const bool variable_;
     const size_t size_of_;
@@ -230,18 +230,18 @@ static_assert(sizeof(a7) ==
                 variably_modified_size_of(^^decltype(a7)).size_of());
 static_assert(0 == variably_modified_size_of(^^decltype(z0)).size_of());
 
-consteval bool has_variably_modified_extent(info type) {
+consteval bool has_known_constant_extent(info type) {
     #if !Clang_WORKAROUND
-        return !can_substitute(^^std::extent_v, {type});
+        return can_substitute(^^std::extent_v, {type});
     #else
-        return false;
+        return true;
     #endif
 }
-static_assert(!has_variably_modified_extent(^^decltype(a7)));
-static_assert(!has_variably_modified_extent(^^decltype(z0)));
+static_assert(has_known_constant_extent(^^decltype(a7)));
+static_assert(has_known_constant_extent(^^decltype(z0)));
 
 consteval variably_modified_extent::variably_modified_extent(info type)
-    : variable_(has_variably_modified_extent(type)),
+    : variable_(!has_known_constant_extent(type)),
       size_(!variable_
         #if !GNU_WORKAROUND
               ? extent(type)
@@ -379,26 +379,26 @@ int main(void) {
 //     printf("typeid(fv02).name()=%s\n",
 //             typeid(fv02).name());
 
-    printf("has_variably_modified_extent(^^decltype(a00)) = %d\n",
-            has_variably_modified_extent(^^decltype(a00)));
-    printf("has_variably_modified_extent(^^decltype(v20)) = %d\n",
-            has_variably_modified_extent(^^decltype(v20)));
-    printf("has_variably_modified_extent(^^decltype(v00)) = %d\n",
-            has_variably_modified_extent(^^decltype(v00)));
-    printf("has_variably_modified_extent(^^decltype(v02)) = %d\n",
-            has_variably_modified_extent(^^decltype(v02)));
-    printf("has_variably_modified_extent(^^decltype(vf20)) = %d\n",
-            has_variably_modified_extent(^^decltype(vf20)));
-    printf("has_variably_modified_extent(^^decltype(vf00)) = %d\n",
-            has_variably_modified_extent(^^decltype(vf00)));
-    printf("has_variably_modified_extent(^^decltype(vf02)) = %d\n",
-            has_variably_modified_extent(^^decltype(vf02)));
-    printf("has_variably_modified_extent(^^decltype(fv20)) = %d\n",
-            has_variably_modified_extent(^^decltype(fv20)));
-    printf("has_variably_modified_extent(^^decltype(fv00)) = %d\n",
-            has_variably_modified_extent(^^decltype(fv00)));
-    printf("has_variably_modified_extent(^^decltype(fv02)) = %d\n",
-            has_variably_modified_extent(^^decltype(fv02)));
+    printf("has_known_constant_extent(^^decltype(a00)) = %d\n",
+            has_known_constant_extent(^^decltype(a00)));
+    printf("has_known_constant_extent(^^decltype(v20)) = %d\n",
+            has_known_constant_extent(^^decltype(v20)));
+    printf("has_known_constant_extent(^^decltype(v00)) = %d\n",
+            has_known_constant_extent(^^decltype(v00)));
+    printf("has_known_constant_extent(^^decltype(v02)) = %d\n",
+            has_known_constant_extent(^^decltype(v02)));
+    printf("has_known_constant_extent(^^decltype(vf20)) = %d\n",
+            has_known_constant_extent(^^decltype(vf20)));
+    printf("has_known_constant_extent(^^decltype(vf00)) = %d\n",
+            has_known_constant_extent(^^decltype(vf00)));
+    printf("has_known_constant_extent(^^decltype(vf02)) = %d\n",
+            has_known_constant_extent(^^decltype(vf02)));
+    printf("has_known_constant_extent(^^decltype(fv20)) = %d\n",
+            has_known_constant_extent(^^decltype(fv20)));
+    printf("has_known_constant_extent(^^decltype(fv00)) = %d\n",
+            has_known_constant_extent(^^decltype(fv00)));
+    printf("has_known_constant_extent(^^decltype(fv02)) = %d\n",
+            has_known_constant_extent(^^decltype(fv02)));
 
     printf("has_known_constant_size(^^decltype(&a00)) = %d\n",
             has_known_constant_size(^^decltype(&a00)));
