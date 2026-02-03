@@ -81,8 +81,7 @@ Stack dump:
                     throw exception("VLA has zero size elements,"
                                     " debug_level>0", ^^type);
                 }
-                throw exception("VLA has zero size elements,"
-                                " 0==debug_level", ^^type);
+                throw exception("VLA has zero size elements", ^^type);
             }
             debug_level++;
         } while (rank(type));
@@ -183,8 +182,8 @@ static_assert(0 == countof_26(z0));
 static_assert(1 == countof_26(arr1));
 static_assert(has_exception([]() consteval { (void)countof_26(&p); }));
 
-consteval bool is_variably_modified_size_of(info type);
-consteval bool is_variably_modified_extent(info type);
+consteval bool has_known_constant_size(info type);
+consteval bool has_variably_modified_extent(info type);
 class variably_modified_size_of {
     const bool variable_;
     const size_t size_of_;
@@ -202,19 +201,19 @@ class variably_modified_extent {
     constexpr size_t size(void) const;
 };
 
-consteval bool is_variably_modified_size_of(info type) {
+consteval bool has_known_constant_size(info type) {
     #if !Clang_WORKAROUND
-        return !is_pointer_type(type) &&
-               !can_substitute(^^std::extent_v, {type});  // TODO: VLA of ZLA
+        return !is_array_type(type) ||
+               can_substitute(^^std::extent_v, {type});  // TODO: VLA of ZLA
     #else
-        return false;
+        return true;
     #endif
 }
-static_assert(!is_variably_modified_size_of(^^decltype(a7)));
-static_assert(!is_variably_modified_size_of(^^decltype(z0)));
+static_assert(has_known_constant_size(^^decltype(a7)));
+static_assert(has_known_constant_size(^^decltype(z0)));
 
 consteval variably_modified_size_of::variably_modified_size_of(info type)
-    : variable_(is_variably_modified_size_of(type)),
+    : variable_(!has_known_constant_size(type)),
       size_of_(!variable_ ? std::meta::size_of(type)
                           : 1917)  // TODO: Implementation defined
 {}
@@ -231,18 +230,18 @@ static_assert(sizeof(a7) ==
                 variably_modified_size_of(^^decltype(a7)).size_of());
 static_assert(0 == variably_modified_size_of(^^decltype(z0)).size_of());
 
-consteval bool is_variably_modified_extent(info type) {
+consteval bool has_variably_modified_extent(info type) {
     #if !Clang_WORKAROUND
         return !can_substitute(^^std::extent_v, {type});
     #else
         return false;
     #endif
 }
-static_assert(!is_variably_modified_extent(^^decltype(a7)));
-static_assert(!is_variably_modified_extent(^^decltype(z0)));
+static_assert(!has_variably_modified_extent(^^decltype(a7)));
+static_assert(!has_variably_modified_extent(^^decltype(z0)));
 
 consteval variably_modified_extent::variably_modified_extent(info type)
-    : variable_(is_variably_modified_extent(type)),
+    : variable_(has_variably_modified_extent(type)),
       size_(!variable_
         #if !GNU_WORKAROUND
               ? extent(type)
@@ -380,47 +379,47 @@ int main(void) {
 //     printf("typeid(fv02).name()=%s\n",
 //             typeid(fv02).name());
 
-    printf("is_variably_modified_extent(^^decltype(a00)) = %d\n",
-            is_variably_modified_extent(^^decltype(a00)));
-    printf("is_variably_modified_extent(^^decltype(v20)) = %d\n",
-            is_variably_modified_extent(^^decltype(v20)));
-    printf("is_variably_modified_extent(^^decltype(v00)) = %d\n",
-            is_variably_modified_extent(^^decltype(v00)));
-    printf("is_variably_modified_extent(^^decltype(v02)) = %d\n",
-            is_variably_modified_extent(^^decltype(v02)));
-    printf("is_variably_modified_extent(^^decltype(vf20)) = %d\n",
-            is_variably_modified_extent(^^decltype(vf20)));
-    printf("is_variably_modified_extent(^^decltype(vf00)) = %d\n",
-            is_variably_modified_extent(^^decltype(vf00)));
-    printf("is_variably_modified_extent(^^decltype(vf02)) = %d\n",
-            is_variably_modified_extent(^^decltype(vf02)));
-    printf("is_variably_modified_extent(^^decltype(fv20)) = %d\n",
-            is_variably_modified_extent(^^decltype(fv20)));
-    printf("is_variably_modified_extent(^^decltype(fv00)) = %d\n",
-            is_variably_modified_extent(^^decltype(fv00)));
-    printf("is_variably_modified_extent(^^decltype(fv02)) = %d\n",
-            is_variably_modified_extent(^^decltype(fv02)));
+    printf("has_variably_modified_extent(^^decltype(a00)) = %d\n",
+            has_variably_modified_extent(^^decltype(a00)));
+    printf("has_variably_modified_extent(^^decltype(v20)) = %d\n",
+            has_variably_modified_extent(^^decltype(v20)));
+    printf("has_variably_modified_extent(^^decltype(v00)) = %d\n",
+            has_variably_modified_extent(^^decltype(v00)));
+    printf("has_variably_modified_extent(^^decltype(v02)) = %d\n",
+            has_variably_modified_extent(^^decltype(v02)));
+    printf("has_variably_modified_extent(^^decltype(vf20)) = %d\n",
+            has_variably_modified_extent(^^decltype(vf20)));
+    printf("has_variably_modified_extent(^^decltype(vf00)) = %d\n",
+            has_variably_modified_extent(^^decltype(vf00)));
+    printf("has_variably_modified_extent(^^decltype(vf02)) = %d\n",
+            has_variably_modified_extent(^^decltype(vf02)));
+    printf("has_variably_modified_extent(^^decltype(fv20)) = %d\n",
+            has_variably_modified_extent(^^decltype(fv20)));
+    printf("has_variably_modified_extent(^^decltype(fv00)) = %d\n",
+            has_variably_modified_extent(^^decltype(fv00)));
+    printf("has_variably_modified_extent(^^decltype(fv02)) = %d\n",
+            has_variably_modified_extent(^^decltype(fv02)));
 
-    printf("is_variably_modified_size_of(^^decltype(&a00)) = %d\n",
-            is_variably_modified_size_of(^^decltype(&a00)));
-    printf("is_variably_modified_size_of(^^decltype(&v20)) = %d\n",
-            is_variably_modified_size_of(^^decltype(&v20)));
-    printf("is_variably_modified_size_of(^^decltype(&v00)) = %d\n",
-            is_variably_modified_size_of(^^decltype(&v00)));
-    printf("is_variably_modified_size_of(^^decltype(&v02)) = %d\n",
-            is_variably_modified_size_of(^^decltype(&v02)));
-    printf("is_variably_modified_size_of(^^decltype(&vf20)) = %d\n",
-            is_variably_modified_size_of(^^decltype(&vf20)));
-    printf("is_variably_modified_size_of(^^decltype(&vf00)) = %d\n",
-            is_variably_modified_size_of(^^decltype(&vf00)));
-    printf("is_variably_modified_size_of(^^decltype(&vf02)) = %d\n",
-            is_variably_modified_size_of(^^decltype(&vf02)));
-    printf("is_variably_modified_size_of(^^decltype(&fv20)) = %d\n",
-            is_variably_modified_size_of(^^decltype(&fv20)));
-    printf("is_variably_modified_size_of(^^decltype(&fv00)) = %d\n",
-            is_variably_modified_size_of(^^decltype(&fv00)));
-    printf("is_variably_modified_size_of(^^decltype(&fv02)) = %d\n",
-            is_variably_modified_size_of(^^decltype(&fv02)));
+    printf("has_known_constant_size(^^decltype(&a00)) = %d\n",
+            has_known_constant_size(^^decltype(&a00)));
+    printf("has_known_constant_size(^^decltype(&v20)) = %d\n",
+            has_known_constant_size(^^decltype(&v20)));
+    printf("has_known_constant_size(^^decltype(&v00)) = %d\n",
+            has_known_constant_size(^^decltype(&v00)));
+    printf("has_known_constant_size(^^decltype(&v02)) = %d\n",
+            has_known_constant_size(^^decltype(&v02)));
+    printf("has_known_constant_size(^^decltype(&vf20)) = %d\n",
+            has_known_constant_size(^^decltype(&vf20)));
+    printf("has_known_constant_size(^^decltype(&vf00)) = %d\n",
+            has_known_constant_size(^^decltype(&vf00)));
+    printf("has_known_constant_size(^^decltype(&vf02)) = %d\n",
+            has_known_constant_size(^^decltype(&vf02)));
+    printf("has_known_constant_size(^^decltype(&fv20)) = %d\n",
+            has_known_constant_size(^^decltype(&fv20)));
+    printf("has_known_constant_size(^^decltype(&fv00)) = %d\n",
+            has_known_constant_size(^^decltype(&fv00)));
+    printf("has_known_constant_size(^^decltype(&fv02)) = %d\n",
+            has_known_constant_size(^^decltype(&fv02)));
 
     printf("size_of(^^decltype(a00)) = %zu\n",
             size_of(^^decltype(a00)));
