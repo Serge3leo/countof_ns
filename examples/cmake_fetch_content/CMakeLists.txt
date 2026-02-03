@@ -8,14 +8,14 @@ project(example_fetch_content_countof_ns
     DESCRIPTION "Example use countof_ns with cmake FetchContent"
     LANGUAGES C)
 
-set(CMAKE_C_STANDARD_REQUIRED 99)  # With C extension `__typeof__()` et al.
+set(CMAKE_C_STANDARD_REQUIRED 11)  # With C extension `__typeof__()` et al.
 set(CMAKE_C_STANDARD 23)
 
 include(FetchContent)
 FetchContent_Declare(
     CountofNS
     GIT_REPOSITORY https://github.com/Serge3leo/countof_ns.git
-    GIT_TAG  e6b8a03f5c62a0866dda910379240f18d9082e0f # v0.6.0-pre-examples
+    GIT_TAG  411dceb5934ac86fac3de44b11ec47167835cf82 # v0.6.0-pre-examples
         # This is not the last tag, it is the tag immediately preceding the
         # v0.6.0-pre tag.
 )

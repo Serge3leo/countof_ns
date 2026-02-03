@@ -12,7 +12,7 @@ add_library(CountofNS INTERFACE include/countof_ns/countof_ns.h)
 add_library(CountofNS::CountofNS ALIAS CountofNS)
 
 if (NOT DEFINED CMAKE_C_STANDARD_REQUIRED)
-    set(CMAKE_C_STANDARD_REQUIRED 99)  # With C extension `__typeof__()` et al.
+    set(CMAKE_C_STANDARD_REQUIRED 11)  # With C extension `__typeof__()` et al.
 endif ()
 if (NOT DEFINED CMAKE_C_STANDARD)
     set(CMAKE_C_STANDARD 23)
