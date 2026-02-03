@@ -6,7 +6,7 @@
 
 set(countof_ns_builtin_c_options_MSVC
     "/std:clatest" "/wd4116" "/we4047" "/we4048"
-    "/FI_countof_ns_must_compatible_msvc.h")
+    "/FIcountof_ns/_countof_ns_must_compatible_msvc.h")
 
 set(countof_ns_builtin_c_options_SunPro
     "-errwarn=E_BAD_POINTER_SUBTRACTION"
@@ -14,7 +14,7 @@ set(countof_ns_builtin_c_options_SunPro
 
 set(countof_ns_builtin_c_options_XL
     "-qlanglvl=extc1x" "-qhaltonmsg=1506-068"
-    "-qinclude=_countof_ns_must_compatible_xl.h")
+    "-qinclude=countof_ns/_countof_ns_must_compatible_xl.h")
 
 # For _COUNTOF_NS_BROKEN_BUILTIN_TYPES_COMPATIBLE_P, with check sizes
 if (TAC_EXTRA_USER_BUILTINS)

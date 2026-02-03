@@ -6,7 +6,7 @@
 //
 // Usage:
 //     $ xlc -qlanglvl=extc1x -qhaltonmsg=1506-068
-//           -qinclude=include/_countof_ns_must_compatible_xl.h
+//           -qinclude=countof_ns/_countof_ns_must_compatible_xl.h
 //           -D_COUNTOF_NS_WANT_VLA_BUILTIN ...
 
 #ifndef _COUNTOF_NS_MUST_COMPATIBLE_XL_H_2453

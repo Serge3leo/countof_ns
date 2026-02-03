@@ -5,10 +5,10 @@
 cmake_minimum_required (VERSION 3.25)
 project(countof_ns
     VERSION 0.6.0
-    DESCRIPTION "C2y countof() platform independent implementation C23/C++11"
+    DESCRIPTION "C2y countof() platform independent implementation C23/C++14"
     HOMEPAGE_URL https://github.com/Serge3leo/countof_ns.git
     LANGUAGES C CXX)
-add_library(CountofNS INTERFACE include/countof_ns.h)
+add_library(CountofNS INTERFACE include/countof_ns/countof_ns.h)
 add_library(CountofNS::CountofNS ALIAS CountofNS)
 
 if (NOT DEFINED CMAKE_C_STANDARD_REQUIRED)
@@ -18,15 +18,19 @@ if (NOT DEFINED CMAKE_C_STANDARD)
     set(CMAKE_C_STANDARD 23)
 endif ()
 if (NOT DEFINED CMAKE_CXX_STANDARD_REQUIRED)
-    set(CMAKE_CXX_STANDARD_REQUIRED 11)
+    set(CMAKE_CXX_STANDARD_REQUIRED 14)
 endif ()
 if (NOT DEFINED CMAKE_CXX_STANDARD)
     set(CMAKE_CXX_STANDARD 20)  # TODO: clang-14 <iostream> from godbolt_cxx.cpp
 endif ()
-if (CMAKE_C_STANDARD_REQUIRED MATCHES "[78].*|9[0-8]" OR
-    CMAKE_C_STANDARD MATCHES "[78].*|9[0-8]" OR
-    CMAKE_CXX_STANDARD_REQUIRED LESS 11 OR CMAKE_CXX_STANDARD LESS 11)
-    message("Warning: countof_ns() recommended use for C11/C++11 or later"
+if ((CMAKE_C_STANDARD_REQUIRED GREATER 70 AND
+     CMAKE_C_STANDARD_REQUIRED LESS 99) OR
+    (CMAKE_C_STANDARD GREATER 70 AND CMAKE_C_STANDARD LESS 99) OR
+    CMAKE_CXX_STANDARD_REQUIRED LESS 14 OR
+    CMAKE_CXX_STANDARD_REQUIRED GREATER 70 OR
+    CMAKE_CXX_STANDARD LESS 14 OR
+    CMAKE_CXX_STANDARD_REQUIRED GREATER 70)
+    message("Warning: countof_ns() recommended use for C11/C++14 or later"
             "(strictly required C99 or later)")
 endif ()
 

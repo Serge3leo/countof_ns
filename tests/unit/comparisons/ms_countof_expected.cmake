@@ -165,6 +165,7 @@ endfunction ()
 tu_ms_countof_expected(tu_ms_countof_available
                            "${tu_pos_pos}" "${tu_neg_pos}")
 set(tu_ms_countof_params FALSE
-                          "ms_countof" "_comparisons/ms_countof.h"
+                          "ms_countof"
+                          "countof_ns/_comparisons/ms_countof.h"
                           tu_ms_countof_available)
 list(APPEND tu_params_list tu_ms_countof_params)

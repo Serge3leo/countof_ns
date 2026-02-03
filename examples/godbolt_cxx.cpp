@@ -17,7 +17,7 @@
     #define HAVE_ZLA  (1)
 #endif
 
-#include "countof_ns.h"
+#include "countof_ns/countof_ns.h"
 
 #include <stdio.h>  // clang-14 conflict with own libc++
 

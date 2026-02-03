@@ -284,6 +284,6 @@ function (tu_cntfn_expected expected pos_pos neg_pos)
 endfunction ()
 
 tu_cntfn_expected(tu_cntfn_available "${tu_pos_pos}" "${tu_neg_pos}")
-set(tu_cntfn_params TRUE "countof_ns" "countof_ns.h"
+set(tu_cntfn_params TRUE "countof_ns" "countof_ns/countof_ns.h"
                          tu_cntfn_available)
 list(APPEND tu_params_list tu_cntfn_params)

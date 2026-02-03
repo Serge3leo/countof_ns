@@ -2,7 +2,7 @@
 // SPDX-License-Identifier: BSD-2-Clause
 // SPDX-FileCopyrightText: 2025 Сергей Леонтьев (leo@sai.msu.ru)
 
-#include "countof_ns.h"
+#include "countof_ns/countof_ns.h"
 
 #include <assert.h>
 #include <stdio.h>

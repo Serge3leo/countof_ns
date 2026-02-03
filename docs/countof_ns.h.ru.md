@@ -34,12 +34,14 @@ $ clang-tidy -config="{
 ```
 ## Требования
 
-- С23 или C++14;
-- С99 для Clang (clang), GNU (gcc), классический Intel (icc), IntelLLVM (icx), LCC (MCST Elbrus), MSVC (Visual Studio), NVHPC (NVIDIA HPC Compiler), Pelles C, PGI (The Portland Group(?)), SunPro (Oracle Developer Studio), XL (IBM® XL C/C++ for AIX®), XLClang (IBM Clang-based XL).
+- С23;
+- C++14, для расширений VLA требуется встроенная функция `__is_same()`;
+- С11, требуется `__typeof__()` и, возможно, `__builtin_types_compatible_p()`;
+- Clang (clang), GNU (gcc), классический Intel (icc), IntelLLVM (icx), LCC (MCST Elbrus), MSVC (Visual Studio), NVHPC (NVIDIA HPC Compiler), Pelles C, PGI (The Portland Group(?)), SunPro (Oracle Developer Studio), XL (IBM® XL C/C++ for AIX®), XLClang (IBM Clang-based XL).
 
 ## Использование
 ```c
-#include "countof_ns.h"
+#include "countof_ns/countof_ns.h"
 ```
 
 До первого включения, при необходимости, можно определить следующие макросы в значение 1:

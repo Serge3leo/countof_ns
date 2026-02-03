@@ -20,7 +20,7 @@
     #define HAVE_BROKEN_VLA  (1)
 #endif
 
-#include "countof_ns.h"
+#include "countof_ns/countof_ns.h"
 
 #include <assert.h>
 #include <stdio.h>

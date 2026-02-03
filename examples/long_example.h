@@ -56,7 +56,7 @@
 //            tests/autoconf/no_have_broken_vla_cxx.cpp && ./a.out
 //
 
-#include "countof_ns.h"
+#include "countof_ns/countof_ns.h"
 #include "short_example.h"
 
 #if __cplusplus

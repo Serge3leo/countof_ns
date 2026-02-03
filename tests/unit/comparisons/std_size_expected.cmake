@@ -45,6 +45,7 @@ endfunction ()
 tu_std_size_expected(tu_std_size_available
                      "${tu_pos_pos}" "${tu_neg_pos}")
 set(tu_std_size_params FALSE
-                       "std_size" "_comparisons/std_size.h"
+                       "std_size"
+                       "countof_ns/_comparisons/std_size.h"
                        tu_std_size_available)
 list(APPEND tu_params_list tu_std_size_params)

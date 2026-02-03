@@ -21,7 +21,7 @@
 //  ...\examples>cl /std:clatest /I..\include /DEXAMPLE_FAIL short_example.c
 //  ...\examples>cl /Zc:__cplusplus /I..\include short_example_cxx.cpp
 
-#include "countof_ns.h"
+#include "countof_ns/countof_ns.h"
 
 #include <assert.h>
 #include <stdio.h>

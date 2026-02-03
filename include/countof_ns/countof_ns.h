@@ -56,7 +56,7 @@
 // Usage
 // =====
 //
-//    #include "countof_ns.h"
+//    #include "countof_ns/countof_ns.h"
 //
 // Before the first include, if necessary, you can define the following macros
 // to the value 1:
