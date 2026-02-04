@@ -1,7 +1,6 @@
 [![CMake on multiple platforms](https://github.com/Serge3leo/countof_ns/actions/workflows/cmake-multi-platform.yml/badge.svg)](https://github.com/Serge3leo/countof_ns/actions/workflows/cmake-multi-platform.yml)
 
 # Число элементов массива, C23/C++14 переносимая реализация
-
 Макрос `countof_ns(array)` возвращает количество элементов в своем операнде.
 Количество элементов определяется типом операнда. Результатом является целое
 число. Для массивов переменной длины (VLA) операнд вычисляется, в противном случае операнд не вычисляется, и результат является целым константным выражением.
@@ -9,26 +8,24 @@
 `countof_ns()` это переносимая реализация оператора `_Countf` (макроса
 `countof`), определённого в проекте стандарта C2y с небольшими синтаксическими и семантическим отличиями.
 
-Он реализован средствами стандартов C23/C++14 или с использованием расширений стандартов C11/C++14, которые поддерживаются большинством компиляторов. Неполный список совместимых компиляторов: Clang (clang), GNU (gcc), классический Intel (icc), IntelLLVM (icx), LCC (MCST Elbrus), MSVC (Visual Studio), NVHPC (NVIDIA HPC Compiler), Pelles C, PGI (The Portland Group(?)), SunPro (Oracle Developer Studio), XL (IBM® XL C/C++ for AIX®), XLClang (IBM Clang-based XL).
+Он реализован средствами стандартов C23/C++14 или с использованием расширений стандартов C11/C++14, которые поддерживаются большинством компиляторов.
 
+Неполный список совместимых компиляторов: Clang (clang), GNU (gcc), классический Intel (icc), IntelLLVM (icx), LCC (MCST Elbrus), MSVC (Visual Studio), NVHPC (NVIDIA HPC Compiler), Pelles C, PGI (The Portland Group(?)), SunPro (Oracle Developer Studio), XL (IBM® XL C/C++ for AIX®), XLClang (IBM Clang-based XL).
 ## Содержание
-
 - [Установка](#установка)
 - [Использование](#использование)
+- [Примеры и тесты](#примеры_и_тесты)
 - [Участие](#участие)
-- [Оговорка](#оговорка)
+- [Ссылки](#ссылки)
 - [Лицензия](#лицензия)
-
 ## Установка
-
 Реализация макроса `countof_ns()` состоит из одного, не имеющего зависимостей,
 файла [`include/countof_ns/countof_ns.h`](include/countof_ns/countof_ns.h).  Этот файл можно просто
 скопировать в необходимое место на путях поиска заголовочных файлов.
 
 Как альтернативный вариант, можно в вашем cmake проекте использовать
 `FetchContent`:
-
-```
+```cmake
 include(FetchContent)
 FetchContent_Declare(
     CountofNS
@@ -37,12 +34,38 @@ FetchContent_Declare(
 )
 FetchContent_MakeAvailable(CountofNS)
 ```
-
 Пример использования FetchContent в проекте cmake смотрите:
 [`examples/cmake_fetch_content/CMakeLists.txt`](examples/cmake_fetch_content/CMakeLists.txt).
+## Использование
+```c
+#include "countof_ns/countof_ns.h"
+```
+Более подробное описание использования смотрите: [`include/countof_ns/countof_ns.h`](include/countof_ns/countof_ns.h).
+### Использование с расширениями C/C++
 
+Макрос `countof_ns()` применим к любым массивам, в том числе, как к расширенным массивам нулевой длины, так и к массивам содержащим расширенные объекты нулевой длины ([пустые структуры](https://gcc.gnu.org/onlinedocs/gcc/Empty-Structures.html), [объединения c массивом неопределённого размера](https://gcc.gnu.org/onlinedocs/gcc/Flexible-Array-Members-in-Unions.html) или [структуры с единственным массивом неопределённого размера](https://gcc.gnu.org/onlinedocs/gcc/Flexible-Array-Members-alone-in-Structures.html)). К сожалению, в этих случаях `countof_ns()` отличается от `countof()`:
+<!-- example: "diff_countof.h" -->
+```c++
+int a07[0][7];
+int a00[0][0];
+int a70[7][0];
+volatile size_t n7 = 7;
+int v70[n7][0];
+
+assert(0 == countof_ns(a07));
+assert(0 == countof_ns(a00));  // Успешное разрешение неопределённости 0/0
+#if !__cplusplus
+		// C версия макроса не всегда может разрешить неопределённость 0/0
+	(void)countof_ns(a70);  // Ошибка компиляции
+#else
+	assert(7 == countof_ns(a70));
+#endif
+	// Для VLA, неопределённость 0/0 невозможно обнаружить при компиляции
+assert(0 == countof_ns(v70));  // Результат отличается от countof(v70)
+```
+<!-- endexample: "diff_countof.h" -->
+Обсуждение реализации смотрите статью: [Долгожданный оператор `_Countof`](docs/Long-awaited_Countof.ru.md#реализация-countof_ns).
 ## Примеры и тесты
-
 В основном этот проект состоит из примеров использования и тестов. Используется система сборки `cmake`, тесты `ctest`, на `GitHub Actions` тесты запускаются с генераторами `Unix Makefiles` (`gmake`) и `Visual Studio 17 2022` (`MSBuild`).
 
 Для ограниченного и упрощённого запуска сборки примеров и тестов:
@@ -63,14 +86,11 @@ VS. Каталог сборки: `build/<версия VS>`.  После сбор
 `RUN_TESTS`
 
 ### Примерные системные требования к тестам
-
 - cmake 3.25 или выше;
 - FreeBSD 14 или выше;
 - Linux Debian 12 (Bookworm) или выше;
 - Windows 10, Visual Studio 2022 (MSVC 19.44) или выше.
-
 ### Простой пример
-
 Исходный код [`examples/examples/short_example.h`](examples/short_example.h).
 Переменная `cmake` - `COUNTOF_NS_SHORT_EXAMPLE`, включена по умолчанию. Сборка
 и запуск:
@@ -88,7 +108,6 @@ $ ./examples-build.sh
 | `short_example_cxx`            | Файл короткого примера, собранного C++                                                                                     |
 | `short_example_cxx.build_fail` | В норме, файл не должен создаваться, т.к. при сборке определяется `-DEXAMPLE_FAIL` и должна происходить ошибка компиляции. |
 ### Сложный пример
-
 Исходный код [`examples/examples/long_example.h`](examples/long_example.h).
 Переменная `cmake` - `COUNTOF_NS_EXAMPLES`, по умолчанию. Сборка и запуск:
 
@@ -110,40 +129,15 @@ $ ./examples-build.sh -- -DCOUNTOF_NS_EXAMPLES=ON
 | `long_example_cxx.build_fail`      | В норме, файл не должен создаваться, т.к. при сборке определяется `-DEXAMPLE_FAIL` и должна происходить ошибка компиляции.      |
 | `long_example_cxx_bltn`            | Опциональный файл кайл короткого примера, собранного C++ с ключом EXAMPLE_VLA_BUILTIN_ENABLE, если компилятор поддерживает VLA. |
 | `long_example_cxx_bltn.build_fail` | В норме, файл не должен создаваться, т.к. при сборке определяется `-DEXAMPLE_FAIL` и должна происходить ошибка компиляции.      |
-## Использование
-
-### Использование с расширениями C/C++
-
-`countof_ns()` так же применима, как к расширенным массивам нулевой длины, так и к массивам содержащим расширенные объекты нулевой длины ( [пустые структуры](https://gcc.gnu.org/onlinedocs/gcc/Empty-Structures.html), [объединения c массивом неопределённого размера](https://gcc.gnu.org/onlinedocs/gcc/Flexible-Array-Members-in-Unions.html) или [структуры с единственным массивом неопределённого размера](https://gcc.gnu.org/onlinedocs/gcc/Flexible-Array-Members-alone-in-Structures.html)). У С реализации `countof_ns()` есть одно ограничение:
-
-```
-#if !__cplusplus
-    size_t a = countof_ns(int[0][0]);  // OK, =0
-    size_t b = countof_ns(int[0][5]);  // OK, =0
-    size_t c = countof_ns(int[5][0]);  // Compilation error
-    int n = 5;
-    size_t d = countof_ns(int[n][0]);  // Difference, for VLA of ZLA, return 0
-#else
-    static_assert(0 == countof_ns(int[0][0]));  // OK, =0
-    static_assert(0 == countof_ns(int[0][5]));  // OK, =0
-    static_assert(5 == countof_ns(int[5][0]));  // OK, =5
-#endif
-```
-
-С++ реализация `countof_ns()` выдаёт результаты идентичные `countof()`.
-
 ## Участие
-
-Замечания (issues), добавления или исправления (PR) - принимаются и
+Замечания (issues), добавления или исправления (pr) - принимаются и
 приветствуются.
-
-Небольшое примечание: При редактировании Readme, пожалуйста, придерживайтесь
-рекомендаций [standard-readme](https://github.com/RichardLitt/standard-readme).
-
-## Оговорка
-
-Извините, пока документ очень далёк от идеала. TODO
-
+## Ссылки
+- WG14: [N3369: The `_Lengthof` Operator](https://www.open-std.org/JTC1/SC22/WG14/www/docs/n3369.pdf);
+- WG14: [N3469: Big Array Size Survey](https://www.open-std.org/JTC1/SC22/WG14/www/docs/n3469.htm);
+- Stack Overflow (SO): [How do I determine the size of my array in C?](https://stackoverflow.com/questions/37538/how-do-i-determine-the-size-of-my-array-in-c);
+- SO: [Array-size macro that rejects pointers](https://stackoverflow.com/questions/19452971/array-size-macro-that-rejects-pointers);
+- SO: [Is there a way for countof() to test if its argument is an array?](https://stackoverflow.com/questions/44621553/is-there-a-way-for-countof-to-test-if-its-argument-is-an-array);
+- ruSO: [Как определить число элементов массива C?](https://ru.stackoverflow.com/q/1621716/430734).
 ## Лицензия
-
 [BSD-2-Clause © 2025 Сергей Леонтьев (leo@sai.msu.ru).](LICENSE)
