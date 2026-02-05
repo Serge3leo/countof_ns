@@ -256,11 +256,15 @@ int main(void) {
 ```
 , где многоточие надо будет заменить на что-то с интерфейсом стандартного макроса `countof()`. Вариантов замены немало.
 
-Во-первых, вместо многоточия можно использовать обычную классическую идиому. Сообщество BSD как раз примерно так и живёт, при использовании Сlang (`clang`), IntelLLVM (`icx`) или GNU (`gcc -Wall`)) будут выдаваться предупреждения или даже ошибки для большинства случаев некорректного использования.
+Во-первых, вместо многоточия можно использовать обычную классическую идиому. Сообщество BSD как раз примерно так и живёт, при использовании Сlang (`clang`), IntelLLVM (`icx`) или GNU (`gcc -Wall`)) будут выдаваться предупреждения для большинства случаев некорректного использования.
 
 Во-вторых, в самом предложении [N3369](https://www.open-std.org/JTC1/SC22/WG14/www/docs/n3369.pdf), есть макрос `NITEMS()`, который является вариацией макроса `ARRAY_SIZE()` сообщества Linux Kernel. Эти макросы используют достаточно широко распространённую  встроенную функцию `__builtin_types_compatible_p()`, которая имеется у многих компиляторов: Clang (clang), GNU (gcc), Intel (icc), IntelLLVM (icx), LCC (lcc), NVHPC (pgcc/nvc), XLClang (IBM xlclang) и др.
 
 Правда, при использовании этих двух вариантов, элементы нулевого размера всё равно придётся как-то из диеты исключить. Вероятно, постом и молитвой. Ключи вида `-Werror=division-by-zero`, `-Werror=div-by-zero`, `--diag_error divide_by_zero`, `-errwarn=E_DIVISION_BY_ZERO` и т.п., могут помочь, но гарантий не дают.  Поэтому необходимо следить за этим вопросом при рефакторинге.
+
+Далее рассмотрим иные варианты, которые, как минимум:
+- Вызывают ошибку компиляции в тех случаях, когда нарушаются ограничения (constraints) оператора `_Countof` ;
+- Гарантировано не вызывают деления на 0.
 ## Реализация `countof_ns()`
 ### Без поддержки С23 и расширения `__typeof__()`
 Такие компиляторы ещё существуют, как минимум, MS Visual Studio 2019 будет поддерживаться до 2029 года.
@@ -668,7 +672,7 @@ public:
 Примечание: ни один из компиляторов не смог собрать вышеприведённый код этого раздела полностью, где-то у одного ошибка, где-то у другого. Версии ещё предварительные и сырые, без помощи `#ifdef` и какой-то матери не обойтись.
 
 On-line вариант C++26 кода: https://godbolt.org/z/oPhe68adc
-### countof_ns()
+## Заключение
 **TODO**
 
 Поведение для аргументов с побочными эффектами не специфицировано. Для контроля можно использовать какие-нибудь анализаторы, к примеру, совместно с компилятором Clang можно использовать:
@@ -680,3 +684,13 @@ $ clang-tidy -config="{
     }
 }" ...
 ```
+# Ссылки
+- [countof_ns.h](https://github.com/Serge3leo/countof_ns/blob/main/include/countof_ns/countof_ns.h);
+- [C23/C++14 platform independent implementation of C2y countof()](https://github.com/Serge3leo/countof_ns/blob/main/README.ru.md);
+- WG14: [N3369: The `_Lengthof` Operator](https://www.open-std.org/JTC1/SC22/WG14/www/docs/n3369.pdf);
+- WG14: [N3469: Big Array Size Survey](https://www.open-std.org/JTC1/SC22/WG14/www/docs/n3469.htm);
+-  WG14: [N3783 working draft](https://www.open-std.org/jtc1/sc22/wg14/www/docs/n3783.pdf);
+- Stack Overflow (SO): [How do I determine the size of my array in C?](https://stackoverflow.com/questions/37538/how-do-i-determine-the-size-of-my-array-in-c);
+- SO: [Array-size macro that rejects pointers](https://stackoverflow.com/questions/19452971/array-size-macro-that-rejects-pointers);
+- SO: [Is there a way for countof() to test if its argument is an array?](https://stackoverflow.com/questions/44621553/is-there-a-way-for-countof-to-test-if-its-argument-is-an-array);
+- ruSO: [Как определить число элементов массива C?](https://ru.stackoverflow.com/q/1621716/430734).
