@@ -4,7 +4,7 @@
  -->
 # Сравнение методов получения числа элементов массива
 
-## Содержание
+# Содержание
 
 - [Ведение](#введение)
 - [Стандарт языка C](#стандарт-языка-c)
@@ -28,7 +28,7 @@
   - [Compiler ID](#compiler-id)
 - [Обсуждение](#обсуждение)
 
-## Введение
+# Введение
 
 Данные таблицы являются визуализацией ожидаемых результатов модульных тестов:
 - [`countof_ns_expected`](../tests/unit/countof_ns_expected.cmake);
@@ -39,7 +39,7 @@
 - [`LNX_ARRAY_SIZE_expected`](../tests/unit/comparisons/LNX_ARRAY_SIZE_expected.cmake);
 - [`N3369_NITEMS_expected`](../tests/unit/comparisons/N3369_NITEMS_expected.cmake).
 
-## Стандарт языка C
+# Стандарт языка C
 ### `countof_ns()`
 <!-- span: "c" keys: "Method", "ID" -->
 
@@ -92,7 +92,7 @@
 |                           | SunPro    | ✅⚠️<sub>TODO</sub> | ✅               | ✅                    | ✅              |                | ✅                  | ✅                  | ✅               | ⚠️<sub>C2Y</sub> | ⚠️<sub>C2Y</sub>      | ✅                  | ✅              | ✅                  | ⚠️<sub>C2Y</sub>       | ⚠️<sub>C2Y</sub>                    | ✅                          | ✅              | ⚠️<sub>C2Y</sub>⚠️<sub>eval+1</sub> | ⚠️<sub>C2Y</sub>⚠️<sub>eval+3</sub> | ⚠️<sub>C2Y</sub>⚠️<sub>eval+4</sub> | SunPro    |                     |                        |                     |                          |                       |                        |                       | ✅                   | ✅                   |
 | &nbsp;                    | **Hdrs:** | **`cntfn_dflt`**   | **`pos_array`** | **`pos_cv_array`**   | **`pos_file`** | **`pos_type`** | **`neg_ptr`**      | **`neg_cv_ptr`**   | **`neg_other`** | **`pos_vla`**    | **`pos_vla_cv`**      | **`neg_vla_ptr`**  | **`pos_func`** | **`neg_func`**     | **`pos_vla_func`**     | **`pos_vla_func2d`**                | **`neg_vla_func`**         | **`pos_eval`** | **`pos_vla_eval`**                  | **`pos_vla_vla_eval`**              | **`pos_fix_vla_eval`**              | &nbsp;    | **`cntfn_pos_pct`** | **`cntfn_pos_cv_pct`** | **`cntfn_neg_pct`** | **`cntfn_neg_size_pct`** | **`cntfn_neg_c_pct`** | **`cntfn_neg_cv_pct`** | **`cntfn_neg_v_pct`** | **`pos__selftest`** | **`neg__selftest`** |
 <!-- endspan: "c" -->
-### Сравнения
+## Сравнения
 <!-- span: "c" keys: "Method", "ID" -->
 
 | Method         | ID        | `pos_array`     | `pos_cv_array`       | `pos_file`     | `pos_type`                                           | `neg_ptr`          | `neg_cv_ptr`       | `neg_other`     | `pos_vla`     | `pos_vla_cv`          | `neg_vla_ptr`      | `pos_func`     | `neg_func`         | `pos_vla_func`         | `pos_vla_func2d`                    | `neg_vla_func`             | `pos_eval`     | `pos_vla_eval`      | `pos_vla_vla_eval`     | `pos_fix_vla_eval`     | ID        | `pos__selftest`     | `neg__selftest`     |
@@ -135,8 +135,8 @@
 |                | NVHPC     | ✅               | ✅                    | ✅              |                                                      | ✅                  | ✅                  | ✅               | ✅             | ✅                     | ✅                  | ✅              | ✅                  | ✅                      |                                     | ✅                          | ✅              | 🪲                  | 🪲                     | 🪲                     | NVHPC     | ✅                   | ✅                   |
 | &nbsp;         | **Hdrs:** | **`pos_array`** | **`pos_cv_array`**   | **`pos_file`** | **`pos_type`**                                       | **`neg_ptr`**      | **`neg_cv_ptr`**   | **`neg_other`** | **`pos_vla`** | **`pos_vla_cv`**      | **`neg_vla_ptr`**  | **`pos_func`** | **`neg_func`**     | **`pos_vla_func`**     | **`pos_vla_func2d`**                | **`neg_vla_func`**         | **`pos_eval`** | **`pos_vla_eval`**  | **`pos_vla_vla_eval`** | **`pos_fix_vla_eval`** | &nbsp;    | **`pos__selftest`** | **`neg__selftest`** |
 <!-- endspan: "c" -->
-## Расширения C
-### `countof_ns()`
+# Расширения C
+## `countof_ns()`
 <!-- span: "c" keys: "Method", "ID" -->
 
 | Method                    | ID         | `neg_alone_ptr`                        | `pos_zla_0n`     | `pos_zla_00`<br>`pos_zla_alone_00`<br>`pos_zla_struct_00`     | `pos_zla_n0`<br>`pos_alone_n0`<br>`pos_struct_n0`     | `neg_zla_ptr`      | `pos_vla_0n`     | `pos_vla_00`     | `pos_vla_n0`                      | `neg_zla_vla_ptr`     | `pos_vla_zla_0n`     | `pos_vla_zla_00`<br>`pos_vla_alone_00`<br>`pos_vla_struct_00`     | `pos_vla_zla_n0`<br>`pos_vla_alone_n0`<br>`pos_vla_struct_n0`     | `neg_vla_zla_ptr`     | ID        |
@@ -188,7 +188,7 @@
 |                           | SunPro     | ✅                                      |                  |                                                               |                                                       | ✅                  | ⚠️<sub>C2Y</sub> | ⚠️<sub>C2Y</sub> | ⚠️<sub>C2Y</sub>☸️<sub>Inv0</sub> | ✅                     |                      |                                                                   |                                                                   | ✅                     | SunPro    |
 | &nbsp;                    | **Hdvrs:** | **`neg_alone_ptr`**                    | **`pos_zla_0n`** | **`pos_zla_00`<br>`pos_zla_alone_00`<br>`pos_zla_struct_00`** | **`pos_zla_n0`<br>`pos_alone_n0`<br>`pos_struct_n0`** | **`neg_zla_ptr`**  | **`pos_vla_0n`** | **`pos_vla_00`** | **`pos_vla_n0`**                  | **`neg_zla_vla_ptr`** | **`pos_vla_zla_0n`** | **`pos_vla_zla_00`<br>`pos_vla_alone_00`<br>`pos_vla_struct_00`** | **`pos_vla_zla_n0`<br>`pos_vla_alone_n0`<br>`pos_vla_struct_n0`** | **`neg_vla_zla_ptr`** | &nbsp;    |
 <!-- endspan: "c" -->
-### Сравнения
+## Сравнения
 <!-- span: "c" keys: "Method", "ID" -->
 
 | Method         | ID        | `neg_alone_ptr`     | `pos_zla_0n`     | `pos_zla_00`<br>`pos_zla_alone_00`<br>`pos_zla_struct_00`     | `pos_zla_n0`<br>`pos_alone_n0`<br>`pos_struct_n0`     | `neg_zla_ptr`                                          | `pos_vla_0n`     | `pos_vla_00`                       | `pos_vla_n0`                       | `neg_zla_vla_ptr`                    | `pos_vla_zla_0n`     | `pos_vla_zla_00`<br>`pos_vla_alone_00`<br>`pos_vla_struct_00`         | `pos_vla_zla_n0`<br>`pos_vla_alone_n0`<br>`pos_vla_struct_n0`     | `neg_vla_zla_ptr`                    | ID        |
@@ -231,8 +231,8 @@
 |                | NVHPC     | ✅💣<sub>wDIV0</sub> | ✅                | ❌💣<sub>wDIV0</sub>                                           | ❌💣<sub>wDIV0</sub>                                   | ✅💣<sub>wDIV0</sub>                                    | 🪲               | ⚠️<sub>-Inv</sub>💥<sub>-FPE</sub> | ⚠️<sub>-Inv</sub>💥<sub>-FPE</sub> | ✅                                    | ✅                    | ⚠️<sub>-Inv</sub>💣<sub>wDIV0</sub>                                   | ⚠️<sub>-Inv</sub>💣<sub>wDIV0</sub>                               | ✅                                    | NVHPC     |
 | &nbsp;         | **Hdrs:** | **`neg_alone_ptr`** | **`pos_zla_0n`** | **`pos_zla_00`<br>`pos_zla_alone_00`<br>`pos_zla_struct_00`** | **`pos_zla_n0`<br>`pos_alone_n0`<br>`pos_struct_n0`** | **`neg_zla_ptr`**                                      | **`pos_vla_0n`** | **`pos_vla_00`**                   | **`pos_vla_n0`**                   | **`neg_zla_vla_ptr`**                | **`pos_vla_zla_0n`** | **`pos_vla_zla_00`<br>`pos_vla_alone_00`<br>`pos_vla_struct_00`**     | **`pos_vla_zla_n0`<br>`pos_vla_alone_n0`<br>`pos_vla_struct_n0`** | **`neg_vla_zla_ptr`**                | &nbsp;    |
 <!-- endspan: "c" -->
-## Стандарт языка C++
-### `countof_ns()`
+# Стандарт языка C++
+## `countof_ns()`
 <!-- span: "c++" keys: "Method", "ID" -->
 
 | Method                    | ID        | `cntfn_dflt`     | `pos_array`     | `pos_cv_array`       | `pos_file`     | `pos_type`     | `neg_ptr`     | `neg_cv_ptr`     | `neg_other`     | `pos_func`     | `neg_func`     | `pos_eval`     |           | `pos__selftest`     | `neg__selftest`     |
@@ -260,7 +260,7 @@
 |                           | SunPro    |                  | ✅               | ✅                    | ✅              |                | ✅             | ✅                | ✅               | ✅              | ✅              | ✅              | SunPro    | ✅                   | ✅                   |
 | &nbsp;                    | **Hdrs:** | **`cntfn_dflt`** | **`pos_array`** | **`pos_cv_array`**   | **`pos_file`** | **`pos_type`** | **`neg_ptr`** | **`neg_cv_ptr`** | **`neg_other`** | **`pos_func`** | **`neg_func`** | **`pos_eval`** |           | **`pos__selftest`** | **`neg__selftest`** |
 <!-- endspan: "c++" -->
-### Сравнения
+## Сравнения
 <!-- span: "c++" keys: "Method", "ID" -->
 
 | Method         | ID        | `pos_array`     | `pos_cv_array`       | `pos_file`     | `pos_type`     | `neg_ptr`     | `neg_cv_ptr`     | `neg_other`     | `pos_func`     | `neg_func`     | `pos_eval`          |           | `pos__selftest`     | `neg__selftest`     |
@@ -295,8 +295,8 @@
 |                | SunPro    | ✅               | ✅                    | ✅              |                | ✅             | ✅                | ✅               | ✅              | ✅              | ✅                   | SunPro    | ✅                   | ✅                   |
 | &nbsp;         | **Hdrs:** | **`pos_array`** | **`pos_cv_array`**   | **`pos_file`** | **`pos_type`** | **`neg_ptr`** | **`neg_cv_ptr`** | **`neg_other`** | **`pos_func`** | **`neg_func`** | **`pos_eval`**      |           | **`pos__selftest`** | **`neg__selftest`** |
 <!-- endspan: "c++" -->
-## Расширения C++
-### `countof_ns()`
+# Расширения C++
+## `countof_ns()`
 <!-- span: "c++" keys: "Method", "ID" -->
 
 | Method                    | ID        | `neg_alone_ptr`     | `pos_zla_0n`     | `pos_zla_00`<br>`pos_zla_alone_00`<br>`pos_zla_struct_00`     | `pos_zla_n0`<br>`pos_alone_n0`     | `pos_struct_n0`     | `neg_zla_ptr`     | `pos_vla`     | `pos_vla_cv`          | `neg_vla_ptr`     | `pos_vla_0n`     | `pos_vla_00`     | `pos_vla_n0`      | `neg_zla_vla_ptr`     | `pos_vla_zla_0n`     | `pos_vla_zla_00`<br>`pos_vla_alone_00`     | `pos_vla_struct_00`     | `pos_vla_zla_n0`<br>`pos_vla_alone_n0`     | `pos_vla_struct_n0`     | `neg_vla_zla_ptr`     | `pos_vla_func`        | `pos_vla_func2d`                    | `neg_vla_func`       | `pos_vla_eval`      | `pos_vla_vla_eval`     | `pos_fix_vla_eval`     | ID        |
@@ -324,7 +324,7 @@
 |                           | SunPro    | ✅                   |                  |                                                               |                                    |                     | ✅                 |               |                       | ✅                 |                  |                  | ☸️<sub>Inv0</sub> | ✅                     |                      |                                            |                         |                                            |                         | ✅                     |                       |                                     | ✅                    |                     |                        |                        | SunPro    |
 | &nbsp;                    | **Hdrs:** | **`neg_alone_ptr`** | **`pos_zla_0n`** | **`pos_zla_00`<br>`pos_zla_alone_00`<br>`pos_zla_struct_00`** | **`pos_zla_n0`<br>`pos_alone_n0`** | **`pos_struct_n0`** | **`neg_zla_ptr`** | **`pos_vla`** | **`pos_vla_cv`**      | **`neg_vla_ptr`** | **`pos_vla_0n`** | **`pos_vla_00`** | **`pos_vla_n0`**  | **`neg_zla_vla_ptr`** | **`pos_vla_zla_0n`** | **`pos_vla_zla_00`<br>`pos_vla_alone_00`** | **`pos_vla_struct_00`** | **`pos_vla_zla_n0`<br>`pos_vla_alone_n0`** | **`pos_vla_struct_n0`** | **`neg_vla_zla_ptr`** | **`pos_vla_func`**    | **`pos_vla_func2d`**                | **`neg_vla_func`**   | **`pos_vla_eval`**  | **`pos_vla_vla_eval`** | **`pos_fix_vla_eval`** | &nbsp;    |
 <!-- endspan: "c++" -->
-### Сравнения
+## Сравнения
 <!-- span: "c++" keys: "Method", "ID" -->
 
 | Method         | ID        | `neg_alone_ptr`     | `pos_zla_0n`     | `pos_zla_00`<br>`pos_zla_alone_00`<br>`pos_zla_struct_00`     | `pos_zla_n0`<br>`pos_alone_n0`     | `pos_struct_n0`     | `neg_zla_ptr`     | `pos_vla`     | `pos_vla_cv`          | `neg_vla_ptr`     | `pos_vla_0n`     | `pos_vla_00`     | `pos_vla_n0`     | `neg_zla_vla_ptr`     | `pos_vla_zla_0n`     | `pos_vla_zla_00`<br>`pos_vla_alone_00`     | `pos_vla_struct_00`     | `pos_vla_zla_n0`<br>`pos_vla_alone_n0`     | `pos_vla_struct_n0`     | `neg_vla_zla_ptr`     | `pos_vla_func`        | `pos_vla_func2d`                    | `neg_vla_func`       | `pos_vla_eval`     | `pos_vla_vla_eval`     | `pos_fix_vla_eval`     | ID        |
@@ -359,9 +359,9 @@
 |                | SunPro    | ✅                   | ✅                | ✅                                                             | ❌                                  | ✅                   | ✅                 |               |                       | ✅                 |                  |                  |                  | ✅                     |                      |                                            |                         |                                            |                         | ✅                     |                       |                                     | ✅                    |                    |                        |                        | SunPro    |
 | &nbsp;         | **Hdrs:** | **`neg_alone_ptr`** | **`pos_zla_0n`** | **`pos_zla_00`<br>`pos_zla_alone_00`<br>`pos_zla_struct_00`** | **`pos_zla_n0`<br>`pos_alone_n0`** | **`pos_struct_n0`** | **`neg_zla_ptr`** | **`pos_vla`** | **`pos_vla_cv`**      | **`neg_vla_ptr`** | **`pos_vla_0n`** | **`pos_vla_00`** | **`pos_vla_n0`** | **`neg_zla_vla_ptr`** | **`pos_vla_zla_0n`** | **`pos_vla_zla_00`<br>`pos_vla_alone_00`** | **`pos_vla_struct_00`** | **`pos_vla_zla_n0`<br>`pos_vla_alone_n0`** | **`pos_vla_struct_n0`** | **`neg_vla_zla_ptr`** | **`pos_vla_func`**    | **`pos_vla_func2d`**                | **`neg_vla_func`**   | **`pos_vla_eval`** | **`pos_vla_vla_eval`** | **`pos_fix_vla_eval`** | &nbsp;    |
 <!-- endspan: "c++" -->
-## Определения
+# Определения
 
-### Методы
+## Методы
 <!-- span: "methods" keys: "Name<br>(with link to code)", "Language" -->
 
 | Name<br>(with link to code)                                | Language | Описание                                                                                                                                                   |
@@ -375,7 +375,7 @@
 | [N3369_NITEMS](../include/_comparisons/N3369_NITEMS.h)     | С        | [N3369](https://www.open-std.org/JTC1/SC22/WG14/www/docs/n3369.pdf), ответ [alx - recommends codidact](https://stackoverflow.com/a/57537491/8585880) на SO |
 | [ms_countof](../include/_comparisons/ms_countof.h)         | C/C++    | Макет реализации  `_countof()` [MSVC](https://learn.microsoft.com/cpp/c-runtime-library/reference/countof-macro?view=msvc-170)                             |
 <!-- endspan: "methods" -->
-### Тесты
+## Тесты
 <!-- span: "cases" keys: "Legend<br>(with link to code)" -->
 
 | Legend<br>(with link to code)                                                                                                                                                                                                                    | Type     | Описание                                                                                                                                                                                                                                                                                                                                                                                                                          |
@@ -421,7 +421,7 @@
 | [`cntfn_neg_cv_pct`](../tests/unit/cntfn_neg_cv_pct.h)                                                                                                                                                                                           | Negative |                                                                                                                                                                                                                                                                                                                                                                                                                                   |
 | [`cntfn_neg_v_pct`](../tests/unit/cntfn_neg_v_pct.h)                                                                                                                                                                                             | Negative |                                                                                                                                                                                                                                                                                                                                                                                                                                   |
 <!-- endspan: "cases" -->
-### Результаты
+## Результаты
 <!-- span: "result" keys: "Legend&nbsp;&nbsp;",  "Test names" -->
 
 | Legend&nbsp;&nbsp;  | Test names                                               | Описание                                                                                                                                           |
@@ -438,7 +438,7 @@
 | 💣<sub>wDIV0</sub>  | `(pos\|neg).*\.build_DIV0`<br>`(pos\|neg).*\.run_DIV0`   | Предупреждение компилятора: "division by zero"                                                                                                     |
 | 🪲                  | `(pos\|neg).*\.compiler_bug`                             | Ошибка компилятора (крах) при компиляции теста                                                                                                     |
 <!-- endspan: "result" -->
-### Версии компиляторов и поддерживаемые расширения
+## Версии компиляторов и поддерживаемые расширения
 <!-- span: "compiler-versions-and-extensions" keys: "ID" -->
 
 | ID        | Max               | Extensions max                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                  | Min           | Extensions min                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                          |
@@ -457,7 +457,7 @@
 | XL        |                   |                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                 | 16.1.0        | `HAVE___TYPEOF__`<br>HAVE_HIDDEN_BUILTIN_CONSTANT_P_CXX<br>HAVE_VLA0<br>HAVE_VLA0_CXX<br>HAVE_VLA_CXX<br>NO_ERROR_ON_SIZEOF_POINTER_SUBTRACTION                                                                                                                                                                                                                                                                                                                                                                                                                         |
 | XLClang   |                   |                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                 | 16.1.0        | HAVE_TYPEOF<br>`HAVE___TYPEOF__`<br>HAVE_BUILTIN_CONSTANT_P_CXX<br>HAVE_HIDDEN_BUILTIN_TYPES_COMPATIBLE_P<br>HAVE_HIDDEN_IS_ARRAY_CXX<br>HAVE_HIDDEN_IS_SAME_CXX<br>HAVE_EMPTY_STRUCTURE<br>HAVE_VLA0<br>HAVE_VLA0_CXX<br>HAVE_VLA_CXX<br>HAVE_ZLA<br>HAVE_ZLA_EMPTY_INITIALIZER<br>HAVE_ZLA_EMPTY_INITIALIZER_CXX<br>HAVE_ZLA_ZLA                                                                                                                                                                                                                                      |
 <!-- endspan: "compiler-versions-and-extensions" -->
-#### Описание расширений
+### Описание расширений
 <!-- span: "extensions" keys: "Extension" -->
 
 | Extension                                                                                                                                                                                                                                                                                                                                                                                   | Language | Описание                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                       |
@@ -484,7 +484,7 @@
 | [HAVE_ZLA_ZLA](../tests/autoconf/have_zla_zla.c)                                                                                                                                                                                                                                                                                                                                            | С/С++    | ZLA может быть элементом                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                       |
 | [WARN_ERROR_ON_STRUCT_BIT_FIELD](../tests/autoconf/error_on_struct_bit_field.c)<br>[WARN_ERROR_ON_STRUCT_STATIC_ASSERT](../tests/autoconf/error_on_struct_static_assert.c)                                                                                                                                                                                                                  | C        | Странное поведение MSVC в части предупреждения [C4116](https://learn.microsoft.com/en-us/cpp/error-messages/compiler-warnings/compiler-warning-level-1-c4116?view=msvc-180)                                                                                                                                                                                                                                                                                                                                                                                                                                    |
 <!-- endspan: "extensions" -->
-### Compiler ID
+## Compiler ID
 <!-- span: "compiler-id" keys: "ID", "CC", "CXX" -->
 
 | ID        | CC      | CXX       | Description                                                                                               |
@@ -503,7 +503,7 @@
 | XL        | xlc     | xlc++     | IBM® XL C/C++ for AIX®                                                                                    |
 | XLClang   | xlclang | xlclang++ | IBM Clang-based XL                                                                                        |
 <!-- endspan: "compiler-id" -->
-## Обсуждение
+# Обсуждение
 
 ### Поддержка массивов и типов данных
 
@@ -511,17 +511,17 @@
 - ZLA (Zero Length Arrays)- 6 из 10, поддерживают ZLA, как для C, так и для C++;
 - Объекты нулевого размера, кроме ZLA - 6 из 10 поддерживают какой-либо тип в языке C. Но такие расширения C++ встречаются реже - 3 из 10.
 - NVHPC не имеет определения `__STDC_NO_VLA__` и, синтаксически, VLA массивы принимаются, но полностью корректно не работают. Одномерные VLA размерности 0  принимаются, многомерные - нет;
-### Нарушение ограничений (вызов ошибки компиляции)
+## Нарушение ограничений (вызов ошибки компиляции)
 
 - В 5 из 10 случаев, нарушения ограничений C11 на вычитание указателей, по умолчанию, приводит лишь выдаче предупреждения;
 - Можно так же отметить странное поведение MSVC в части предупреждения [C4116](https://learn.microsoft.com/en-us/cpp/error-messages/compiler-warnings/compiler-warning-level-1-c4116?view=msvc-180);
-- У LCC нет управления предупреждениями (TODO: уточнить у производителя и сравнить с gcc-9).
+- У LCC нет управления предупреждениями (TODO: уточнить у производителя и сравнить его с gcc-9).
 
 Итого, без предупреждений и ошибок доступны:
 - ERROR_ON_GENERIC;
 - ERROR_ON_NEGATIVE_ARRAY_SIZE (возможно, в сочетании с `_Generic()`).
 
-### Анализ типов и/или данных C
+## Анализ типов и/или данных C
 
 Реализация получения числа элементов массива, и в случае VLA, возможна в рамках стандарта C23 (или C11 с общепринятыми расширениями). Но она, обычно, зависит от флагов компилятора. Поэтому желательно иметь вариант реализации с использованием встроенной функции:  `__builtin_types_compatible_p()`.
 
@@ -534,11 +534,9 @@
 - PGI (TODO: непонятно);
 - SunPro - простой случай сведения к настройке компилятора: `-errwarn=E_BAD_POINTER_SUBTRACTION "-D_countof_ns_ptr_compatible_type(p,t)=(0==0*sizeof((p)-(t)(p)))"`;
 
-### Анализ типов и/или данных C++
+## Анализ типов и/или данных C++
 
-Как я понимаю (TODO), в случае VLA реализация получения числа элементов массива невозможна на чистом C++, требуются встроенные функции `__builtin_constant_p()` и `__is_same()`.
-
-`__builtin_constant_p()` поддерживают все C++ компиляторы, которые поддерживают VLA (8 из 9, все, кроме MSVC). С поддержкой `__is_same()` немного хуже - 6 из 9:
+Как я понимаю, в случае VLA реализация получения числа элементов массива невозможна на чистом C++ (до C++26), требуется встроенная функция `__is_same()`, которая поддерживается 6 из 9 компиляторов:
 - MSVC - нет VLA, нет проблем, достаточно обычных шаблонов;
 - PGI (TODO: непонятно);
-- SunPro - поскольку имеет самые либеральные ограничения реализации VLA, вероятно можно реализовать вычитанием указателей.
+- SunPro - для VLA работают стандартные шаблоны.

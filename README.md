@@ -8,13 +8,13 @@ by means of the C23/C++14 standards or using extensions of the C language
 standards of previous editions, which are supported by most compilers.
 
 Incomplete list of supported compilers: Clang (clang), GNU (gcc), classic Intel (icc), IntelLLVM (icx), LCC (MCST Elbrus), MSVC (Visual Studio), NVHPC (NVIDIA HPC Compiler), Pelles C, PGI (The Portland Group(?)), SunPro (Oracle Developer Studio), XL (IBM® XL C/C++ for AIX®), XLClang (IBM Clang-based XL).
-## Table of Contents
+# Table of Contents
 - [Install](#install)
 - [Usage](#usage)
 - [Contributing](#contributing)
 - [Links](#links)
 - [License](#license)
-## Install
+# Install
 Implementing the macro `countofi_ns()` consists of a single, dependency-free
 file [`include/countof_ns.h`](include/countof_ns.h).  You can simply copy this file to the desired location on the header search paths.
 
@@ -29,12 +29,12 @@ FetchContent_Declare(
 FetchContent_MakeAvailable(CountofNS)
 ```
 See the example: [`examples/cmake_fetch_content/CMakeLists.txt`](examples/cmake_fetch_content/CMakeLists.txt).
-## Usage
+# Usage
 ```c
 #include "countof_ns/countof_ns.h"
 ```
 For a more detailed description of the usage, see: [`include/countof_ns/countof_ns.h`](include/countof_ns/countof_ns.h).
-### Use with C/C++ extensions
+## Use with C/C++ extensions
 The macro `countof_ns()` is applicable to any arrays, including both extended zero-length arrays and arrays containing extended zero-length objects ([empty structures](https://gcc.gnu.org/onlinedocs/gcc/Empty-Structures.html ), [joins with an array of indeterminate size](https://gcc.gnu.org/onlinedocs/gcc/Flexible-Array-Members-in-Unions.html ) or [structures with a single array of indeterminate size](https://gcc.gnu.org/onlinedocs/gcc/Flexible-Array-Members-alone-in-Structures.html )). Unfortunately, in these cases, `countof_ns()` is different from `countof()`:
 <!-- example: "diff_countof.h" -->
 ```c++
@@ -57,17 +57,17 @@ assert(0 == countof_ns(v70));  // The result differs from countof(v70)
 ```
 <!-- endexample: "diff_countof.h" -->
 For a discussion of the implementation, see the article: [The long-awaited operator `_Countof`](docs/Long-awaited_Countof.ru.md#реализация-countof_ns) (in Russian).
-## Contributing
+# Contributing
 Issues or PRs are accepted and welcome.
-## Disclaimer
+# Disclaimer
 Sorry for my best English. Alas, this file is actually a yandex translation of
 [README.ru.md](README.ru.md) with minimal editorial changes.
-## Links
+# Links
 - WG14: [N3369: The `_Lengthof` Operator](https://www.open-std.org/JTC1/SC22/WG14/www/docs/n3369.pdf);
 - WG14: [N3469: Big Array Size Survey](https://www.open-std.org/JTC1/SC22/WG14/www/docs/n3469.htm);
 - Stack Overflow (SO): [How do I determine the size of my array in C?](https://stackoverflow.com/questions/37538/how-do-i-determine-the-size-of-my-array-in-c);
 - SO: [Array-size macro that rejects pointers](https://stackoverflow.com/questions/19452971/array-size-macro-that-rejects-pointers);
 - SO: [Is there a way for countof() to test if its argument is an array?](https://stackoverflow.com/questions/44621553/is-there-a-way-for-countof-to-test-if-its-argument-is-an-array);
 - ruSO: [How can I determine the number of elements of an array C?](https://ru.stackoverflow.com/q/1621716/430734) (in Russian).
-## License
+# License
 [BSD-2-Clause © 2025 Сергей Леонтьев (leo@sai.msu.ru).](LICENSE)
