@@ -13,6 +13,7 @@ clipboard() {
 cvt2habr() {
     sed '1,/<!-- Habr cut -->/d
         /<!-- Habr cut -->/,/<!-- Habr cut -->/d
+        /<!-- Habr \(<.*>\) -->/s//\n\1\n/g
         /^```c[[:space:]]*$/s//```cpp/
         /^```c++[[:space:]]*$/s//```cpp/
         /^```sh[[:space:]]*$/s//```bash/
@@ -53,7 +54,7 @@ cvt2habr() {
 \
 <anchor>переход-к-countof</anchor>\
 
-        /^# Реализация `countof_ns()`/i\
+        /^# Реализация `countof_ns()`[[:space:]]*$/i\
 \
 <anchor>реализация-countof_ns</anchor>\
 
