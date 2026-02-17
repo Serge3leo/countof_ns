@@ -31,7 +31,7 @@
 - [Заключение](#заключение)
 - [Ссылки](#ссылки)
 # Оператор `_Countof`
-Формально представим виновника торжества, согласно п. 6.5.4.5 [N3685](https://www.open-std.org/jtc1/sc22/wg14/www/docs/n3685.pdf).
+Формально представим виновника торжества, согласно п. 6.5.4.5 [N3783](https://open-std.org/jtc1/sc22/wg14/www/docs/n3783.pdf).
 
 Оператор `_Countof` применятся к выражению, имеющему полностью определённый тип массива, или к имени такого типа, заключенному в круглые скобки.
 
@@ -721,7 +721,7 @@ $ clang-tidy -config="{
 - GitHub: [C23/C++14 platform independent implementation of C2y countof()](https://github.com/Serge3leo/countof_ns/blob/main/README.ru.md);
 - WG14: [N3369: The `_Lengthof` Operator](https://www.open-std.org/JTC1/SC22/WG14/www/docs/n3369.pdf);
 - WG14: [N3469: Big Array Size Survey](https://www.open-std.org/JTC1/SC22/WG14/www/docs/n3469.htm);
--  WG14: [N3783 working draft](https://www.open-std.org/jtc1/sc22/wg14/www/docs/n3783.pdf);
+-  WG14: [N3783 working draft](https://open-std.org/jtc1/sc22/wg14/www/docs/n3783.pdf);
 - Stack Overflow (SO): [How do I determine the size of my array in C?](https://stackoverflow.com/questions/37538/how-do-i-determine-the-size-of-my-array-in-c);
 - SO: [Array-size macro that rejects pointers](https://stackoverflow.com/questions/19452971/array-size-macro-that-rejects-pointers);
 - SO: [Is there a way for countof() to test if its argument is an array?](https://stackoverflow.com/questions/44621553/is-there-a-way-for-countof-to-test-if-its-argument-is-an-array);
