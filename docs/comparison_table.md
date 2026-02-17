@@ -5,7 +5,7 @@
 
 # Comparison of methods for obtaining the number of array elements
 
-## Table of Contents
+# Table of Contents
 
 - [Introduction](#introduction)
 - [C language standard](#c-language-standard)
@@ -28,7 +28,7 @@
     - [Extension legend](#extension-legend)
   - [Compiler ID](#compiler-id)
 
-## Introduction
+# Introduction
 
 These tables are a visualization of the expected results of unit tests:
 - [`countof_ns_expected`](../tests/unit/countof_ns_expected.cmake);
@@ -39,8 +39,8 @@ These tables are a visualization of the expected results of unit tests:
 - [`LNX_ARRAY_SIZE_expected`](../tests/unit/comparisons/LNX_ARRAY_SIZE_expected.cmake);
 - [`N3369_NITEMS_expected`](../tests/unit/comparisons/N3369_NITEMS_expected.cmake).
 
-## C language standard
-### `countof_ns()`
+# C language standard
+## `countof_ns()`
 <!-- span: "c" keys: "Method", "ID" -->
 
 | Method                    | ID        | `cntfn_dflt`       | `pos_array`     | `pos_cv_array`       | `pos_file`     | `pos_type`     | `neg_ptr`          | `neg_cv_ptr`       | `neg_other`     | `pos_vla`        | `pos_vla_cv`          | `neg_vla_ptr`      | `pos_func`     | `neg_func`         | `pos_vla_func`         | `pos_vla_func2d`                    | `neg_vla_func`             | `pos_eval`     | `pos_vla_eval`                      | `pos_vla_vla_eval`                  | `pos_fix_vla_eval`                  | ID        | `cntfn_pos_pct`     | `cntfn_pos_cv_pct`     | `cntfn_neg_pct`     | `cntfn_neg_size_pct`     | `cntfn_neg_c_pct`     | `cntfn_neg_cv_pct`     | `cntfn_neg_v_pct`     | `pos__selftest`     | `neg__selftest`     |
@@ -92,7 +92,7 @@ These tables are a visualization of the expected results of unit tests:
 |                           | SunPro    | ✅⚠️<sub>TODO</sub> | ✅               | ✅                    | ✅              |                | ✅                  | ✅                  | ✅               | ⚠️<sub>C2Y</sub> | ⚠️<sub>C2Y</sub>      | ✅                  | ✅              | ✅                  | ⚠️<sub>C2Y</sub>       | ⚠️<sub>C2Y</sub>                    | ✅                          | ✅              | ⚠️<sub>C2Y</sub>⚠️<sub>eval+1</sub> | ⚠️<sub>C2Y</sub>⚠️<sub>eval+3</sub> | ⚠️<sub>C2Y</sub>⚠️<sub>eval+4</sub> | SunPro    |                     |                        |                     |                          |                       |                        |                       | ✅                   | ✅                   |
 | &nbsp;                    | **Hdrs:** | **`cntfn_dflt`**   | **`pos_array`** | **`pos_cv_array`**   | **`pos_file`** | **`pos_type`** | **`neg_ptr`**      | **`neg_cv_ptr`**   | **`neg_other`** | **`pos_vla`**    | **`pos_vla_cv`**      | **`neg_vla_ptr`**  | **`pos_func`** | **`neg_func`**     | **`pos_vla_func`**     | **`pos_vla_func2d`**                | **`neg_vla_func`**         | **`pos_eval`** | **`pos_vla_eval`**                  | **`pos_vla_vla_eval`**              | **`pos_fix_vla_eval`**              | &nbsp;    | **`cntfn_pos_pct`** | **`cntfn_pos_cv_pct`** | **`cntfn_neg_pct`** | **`cntfn_neg_size_pct`** | **`cntfn_neg_c_pct`** | **`cntfn_neg_cv_pct`** | **`cntfn_neg_v_pct`** | **`pos__selftest`** | **`neg__selftest`** |
 <!-- endspan: "c" -->
-### Comparisons
+## Comparisons
 <!-- span: "c" keys: "Method", "ID" -->
 
 | Method         | ID        | `pos_array`     | `pos_cv_array`       | `pos_file`     | `pos_type`                                           | `neg_ptr`          | `neg_cv_ptr`       | `neg_other`     | `pos_vla`     | `pos_vla_cv`          | `neg_vla_ptr`      | `pos_func`     | `neg_func`         | `pos_vla_func`         | `pos_vla_func2d`                    | `neg_vla_func`             | `pos_eval`     | `pos_vla_eval`      | `pos_vla_vla_eval`     | `pos_fix_vla_eval`     | ID        | `pos__selftest`     | `neg__selftest`     |
@@ -135,8 +135,8 @@ These tables are a visualization of the expected results of unit tests:
 |                | NVHPC     | ✅               | ✅                    | ✅              |                                                      | ✅                  | ✅                  | ✅               | ✅             | ✅                     | ✅                  | ✅              | ✅                  | ✅                      |                                     | ✅                          | ✅              | 🪲                  | 🪲                     | 🪲                     | NVHPC     | ✅                   | ✅                   |
 | &nbsp;         | **Hdrs:** | **`pos_array`** | **`pos_cv_array`**   | **`pos_file`** | **`pos_type`**                                       | **`neg_ptr`**      | **`neg_cv_ptr`**   | **`neg_other`** | **`pos_vla`** | **`pos_vla_cv`**      | **`neg_vla_ptr`**  | **`pos_func`** | **`neg_func`**     | **`pos_vla_func`**     | **`pos_vla_func2d`**                | **`neg_vla_func`**         | **`pos_eval`** | **`pos_vla_eval`**  | **`pos_vla_vla_eval`** | **`pos_fix_vla_eval`** | &nbsp;    | **`pos__selftest`** | **`neg__selftest`** |
 <!-- endspan: "c" -->
-## Extensions of C language
-### `countof_ns()`
+# Extensions of C language
+## `countof_ns()`
 <!-- span: "c" keys: "Method", "ID" -->
 
 | Method                    | ID         | `neg_alone_ptr`                        | `pos_zla_0n`     | `pos_zla_00`<br>`pos_zla_alone_00`<br>`pos_zla_struct_00`     | `pos_zla_n0`<br>`pos_alone_n0`<br>`pos_struct_n0`     | `neg_zla_ptr`      | `pos_vla_0n`     | `pos_vla_00`     | `pos_vla_n0`                      | `neg_zla_vla_ptr`     | `pos_vla_zla_0n`     | `pos_vla_zla_00`<br>`pos_vla_alone_00`<br>`pos_vla_struct_00`     | `pos_vla_zla_n0`<br>`pos_vla_alone_n0`<br>`pos_vla_struct_n0`     | `neg_vla_zla_ptr`     | ID        |
@@ -188,7 +188,7 @@ These tables are a visualization of the expected results of unit tests:
 |                           | SunPro     | ✅                                      |                  |                                                               |                                                       | ✅                  | ⚠️<sub>C2Y</sub> | ⚠️<sub>C2Y</sub> | ⚠️<sub>C2Y</sub>☸️<sub>Inv0</sub> | ✅                     |                      |                                                                   |                                                                   | ✅                     | SunPro    |
 | &nbsp;                    | **Hdvrs:** | **`neg_alone_ptr`**                    | **`pos_zla_0n`** | **`pos_zla_00`<br>`pos_zla_alone_00`<br>`pos_zla_struct_00`** | **`pos_zla_n0`<br>`pos_alone_n0`<br>`pos_struct_n0`** | **`neg_zla_ptr`**  | **`pos_vla_0n`** | **`pos_vla_00`** | **`pos_vla_n0`**                  | **`neg_zla_vla_ptr`** | **`pos_vla_zla_0n`** | **`pos_vla_zla_00`<br>`pos_vla_alone_00`<br>`pos_vla_struct_00`** | **`pos_vla_zla_n0`<br>`pos_vla_alone_n0`<br>`pos_vla_struct_n0`** | **`neg_vla_zla_ptr`** | &nbsp;    |
 <!-- endspan: "c" -->
-### Comparisons
+## Comparisons
 <!-- span: "c" keys: "Method", "ID" -->
 
 | Method         | ID        | `neg_alone_ptr`     | `pos_zla_0n`     | `pos_zla_00`<br>`pos_zla_alone_00`<br>`pos_zla_struct_00`     | `pos_zla_n0`<br>`pos_alone_n0`<br>`pos_struct_n0`     | `neg_zla_ptr`                                          | `pos_vla_0n`     | `pos_vla_00`                       | `pos_vla_n0`                       | `neg_zla_vla_ptr`                    | `pos_vla_zla_0n`     | `pos_vla_zla_00`<br>`pos_vla_alone_00`<br>`pos_vla_struct_00`         | `pos_vla_zla_n0`<br>`pos_vla_alone_n0`<br>`pos_vla_struct_n0`     | `neg_vla_zla_ptr`                    | ID        |
@@ -231,8 +231,8 @@ These tables are a visualization of the expected results of unit tests:
 |                | NVHPC     | ✅💣<sub>wDIV0</sub> | ✅                | ❌💣<sub>wDIV0</sub>                                           | ❌💣<sub>wDIV0</sub>                                   | ✅💣<sub>wDIV0</sub>                                    | 🪲               | ⚠️<sub>-Inv</sub>💥<sub>-FPE</sub> | ⚠️<sub>-Inv</sub>💥<sub>-FPE</sub> | ✅                                    | ✅                    | ⚠️<sub>-Inv</sub>💣<sub>wDIV0</sub>                                   | ⚠️<sub>-Inv</sub>💣<sub>wDIV0</sub>                               | ✅                                    | NVHPC     |
 | &nbsp;         | **Hdrs:** | **`neg_alone_ptr`** | **`pos_zla_0n`** | **`pos_zla_00`<br>`pos_zla_alone_00`<br>`pos_zla_struct_00`** | **`pos_zla_n0`<br>`pos_alone_n0`<br>`pos_struct_n0`** | **`neg_zla_ptr`**                                      | **`pos_vla_0n`** | **`pos_vla_00`**                   | **`pos_vla_n0`**                   | **`neg_zla_vla_ptr`**                | **`pos_vla_zla_0n`** | **`pos_vla_zla_00`<br>`pos_vla_alone_00`<br>`pos_vla_struct_00`**     | **`pos_vla_zla_n0`<br>`pos_vla_alone_n0`<br>`pos_vla_struct_n0`** | **`neg_vla_zla_ptr`**                | &nbsp;    |
 <!-- endspan: "c" -->
-## C++ language standard
-### `countof_ns()`
+# C++ language standard
+## `countof_ns()`
 <!-- span: "c++" keys: "Method", "ID" -->
 
 | Method                    | ID        | `cntfn_dflt`     | `pos_array`     | `pos_cv_array`       | `pos_file`     | `pos_type`     | `neg_ptr`     | `neg_cv_ptr`     | `neg_other`     | `pos_func`     | `neg_func`     | `pos_eval`     |           | `pos__selftest`     | `neg__selftest`     |
@@ -260,7 +260,7 @@ These tables are a visualization of the expected results of unit tests:
 |                           | SunPro    |                  | ✅               | ✅                    | ✅              |                | ✅             | ✅                | ✅               | ✅              | ✅              | ✅              | SunPro    | ✅                   | ✅                   |
 | &nbsp;                    | **Hdrs:** | **`cntfn_dflt`** | **`pos_array`** | **`pos_cv_array`**   | **`pos_file`** | **`pos_type`** | **`neg_ptr`** | **`neg_cv_ptr`** | **`neg_other`** | **`pos_func`** | **`neg_func`** | **`pos_eval`** |           | **`pos__selftest`** | **`neg__selftest`** |
 <!-- endspan: "c++" -->
-### Comparisons
+## Comparisons
 <!-- span: "c++" keys: "Method", "ID" -->
 
 | Method         | ID        | `pos_array`     | `pos_cv_array`       | `pos_file`     | `pos_type`     | `neg_ptr`     | `neg_cv_ptr`     | `neg_other`     | `pos_func`     | `neg_func`     | `pos_eval`          |           | `pos__selftest`     | `neg__selftest`     |
@@ -295,8 +295,8 @@ These tables are a visualization of the expected results of unit tests:
 |                | SunPro    | ✅               | ✅                    | ✅              |                | ✅             | ✅                | ✅               | ✅              | ✅              | ✅                   | SunPro    | ✅                   | ✅                   |
 | &nbsp;         | **Hdrs:** | **`pos_array`** | **`pos_cv_array`**   | **`pos_file`** | **`pos_type`** | **`neg_ptr`** | **`neg_cv_ptr`** | **`neg_other`** | **`pos_func`** | **`neg_func`** | **`pos_eval`**      |           | **`pos__selftest`** | **`neg__selftest`** |
 <!-- endspan: "c++" -->
-## Extensions of C++ language
-### `countof_ns()`
+# Extensions of C++ language
+## `countof_ns()`
 <!-- span: "c++" keys: "Method", "ID" -->
 
 | Method                    | ID        | `neg_alone_ptr`     | `pos_zla_0n`     | `pos_zla_00`<br>`pos_zla_alone_00`<br>`pos_zla_struct_00`     | `pos_zla_n0`<br>`pos_alone_n0`     | `pos_struct_n0`     | `neg_zla_ptr`     | `pos_vla`     | `pos_vla_cv`          | `neg_vla_ptr`     | `pos_vla_0n`     | `pos_vla_00`     | `pos_vla_n0`      | `neg_zla_vla_ptr`     | `pos_vla_zla_0n`     | `pos_vla_zla_00`<br>`pos_vla_alone_00`     | `pos_vla_struct_00`     | `pos_vla_zla_n0`<br>`pos_vla_alone_n0`     | `pos_vla_struct_n0`     | `neg_vla_zla_ptr`     | `pos_vla_func`        | `pos_vla_func2d`                    | `neg_vla_func`       | `pos_vla_eval`      | `pos_vla_vla_eval`     | `pos_fix_vla_eval`     | ID        |
@@ -324,7 +324,7 @@ These tables are a visualization of the expected results of unit tests:
 |                           | SunPro    | ✅                   |                  |                                                               |                                    |                     | ✅                 |               |                       | ✅                 |                  |                  | ☸️<sub>Inv0</sub> | ✅                     |                      |                                            |                         |                                            |                         | ✅                     |                       |                                     | ✅                    |                     |                        |                        | SunPro    |
 | &nbsp;                    | **Hdrs:** | **`neg_alone_ptr`** | **`pos_zla_0n`** | **`pos_zla_00`<br>`pos_zla_alone_00`<br>`pos_zla_struct_00`** | **`pos_zla_n0`<br>`pos_alone_n0`** | **`pos_struct_n0`** | **`neg_zla_ptr`** | **`pos_vla`** | **`pos_vla_cv`**      | **`neg_vla_ptr`** | **`pos_vla_0n`** | **`pos_vla_00`** | **`pos_vla_n0`**  | **`neg_zla_vla_ptr`** | **`pos_vla_zla_0n`** | **`pos_vla_zla_00`<br>`pos_vla_alone_00`** | **`pos_vla_struct_00`** | **`pos_vla_zla_n0`<br>`pos_vla_alone_n0`** | **`pos_vla_struct_n0`** | **`neg_vla_zla_ptr`** | **`pos_vla_func`**    | **`pos_vla_func2d`**                | **`neg_vla_func`**   | **`pos_vla_eval`**  | **`pos_vla_vla_eval`** | **`pos_fix_vla_eval`** | &nbsp;    |
 <!-- endspan: "c++" -->
-### Comparisons
+## Comparisons
 <!-- span: "c++" keys: "Method", "ID" -->
 
 | Method         | ID        | `neg_alone_ptr`     | `pos_zla_0n`     | `pos_zla_00`<br>`pos_zla_alone_00`<br>`pos_zla_struct_00`     | `pos_zla_n0`<br>`pos_alone_n0`     | `pos_struct_n0`     | `neg_zla_ptr`     | `pos_vla`     | `pos_vla_cv`          | `neg_vla_ptr`     | `pos_vla_0n`     | `pos_vla_00`     | `pos_vla_n0`     | `neg_zla_vla_ptr`     | `pos_vla_zla_0n`     | `pos_vla_zla_00`<br>`pos_vla_alone_00`     | `pos_vla_struct_00`     | `pos_vla_zla_n0`<br>`pos_vla_alone_n0`     | `pos_vla_struct_n0`     | `neg_vla_zla_ptr`     | `pos_vla_func`        | `pos_vla_func2d`                    | `neg_vla_func`       | `pos_vla_eval`     | `pos_vla_vla_eval`     | `pos_fix_vla_eval`     | ID        |
@@ -359,9 +359,9 @@ These tables are a visualization of the expected results of unit tests:
 |                | SunPro    | ✅                   | ✅                | ✅                                                             | ❌                                  | ✅                   | ✅                 |               |                       | ✅                 |                  |                  |                  | ✅                     |                      |                                            |                         |                                            |                         | ✅                     |                       |                                     | ✅                    |                    |                        |                        | SunPro    |
 | &nbsp;         | **Hdrs:** | **`neg_alone_ptr`** | **`pos_zla_0n`** | **`pos_zla_00`<br>`pos_zla_alone_00`<br>`pos_zla_struct_00`** | **`pos_zla_n0`<br>`pos_alone_n0`** | **`pos_struct_n0`** | **`neg_zla_ptr`** | **`pos_vla`** | **`pos_vla_cv`**      | **`neg_vla_ptr`** | **`pos_vla_0n`** | **`pos_vla_00`** | **`pos_vla_n0`** | **`neg_zla_vla_ptr`** | **`pos_vla_zla_0n`** | **`pos_vla_zla_00`<br>`pos_vla_alone_00`** | **`pos_vla_struct_00`** | **`pos_vla_zla_n0`<br>`pos_vla_alone_n0`** | **`pos_vla_struct_n0`** | **`neg_vla_zla_ptr`** | **`pos_vla_func`**    | **`pos_vla_func2d`**                | **`neg_vla_func`**   | **`pos_vla_eval`** | **`pos_vla_vla_eval`** | **`pos_fix_vla_eval`** | &nbsp;    |
 <!-- endspan: "c++" -->
-## Terms and definitions
+# Terms and definitions
 
-### Methods
+## Methods
 <!-- span: "methods" keys: "Name<br>(with link to code)", "Language" -->
 
 | Name<br>(with link to code)                                | Language | Description                                                                                                                                                      |
@@ -375,7 +375,7 @@ These tables are a visualization of the expected results of unit tests:
 | [N3369_NITEMS](../include/_comparisons/N3369_NITEMS.h)     | С        | [N3369](https://www.open-std.org/JTC1/SC22/WG14/www/docs/n3369.pdf), implementation by [alx - recommends codidact](https://stackoverflow.com/a/57537491/8585880) |
 | [ms_countof](../include/_comparisons/ms_countof.h)         | C/C++    | Implementation of `_countof()` [MSVC](https://learn.microsoft.com/cpp/c-runtime-library/reference/countof-macro?view=msvc-170)                                   |
 <!-- endspan: "methods" -->
-### Test cases legend
+## Test cases legend
 <!-- span: "cases" keys: "Legend<br>(with link to code)" -->
 
 | Legend<br>(with link to code)                                                                                                                                                                                                                    | Type     | Description                                                                                                                                                                                                                                                                                                                                                                                                             |
@@ -421,7 +421,7 @@ These tables are a visualization of the expected results of unit tests:
 | [`cntfn_neg_cv_pct`](../tests/unit/cntfn_neg_cv_pct.h)                                                                                                                                                                                           | Negative |                                                                                                                                                                                                                                                                                                                                                                                                                         |
 | [`cntfn_neg_v_pct`](../tests/unit/cntfn_neg_v_pct.h)                                                                                                                                                                                             | Negative |                                                                                                                                                                                                                                                                                                                                                                                                                         |
 <!-- endspan: "cases" -->
-### Test results legend
+## Test results legend
 <!-- span: "result" keys: "Legend&nbsp;&nbsp;",  "Test names" -->
 
 | Legend&nbsp;&nbsp;  | Test names                                               | Description                                                                                                      |
@@ -438,7 +438,7 @@ These tables are a visualization of the expected results of unit tests:
 | 💣<sub>wDIV0</sub>  | `(pos\|neg).*\.build_DIV0`<br>`(pos\|neg).*\.run_DIV0`   | A compile warning: "division by zero"                                                                            |
 | 🪲                  | `(pos\|neg).*\.compiler_bug`                             | Compiler bug (crash) for this test case                                                                          |
 <!-- endspan: "result" -->
-### Compiler versions and extensions
+## Compiler versions and extensions
 <!-- span: "compiler-versions-and-extensions" keys: "ID" -->
 
 | ID        | Max               | Extensions max                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                  | Min           | Extensions min                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                          |
@@ -457,7 +457,7 @@ These tables are a visualization of the expected results of unit tests:
 | XL        |                   |                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                 | 16.1.0        | `HAVE___TYPEOF__`<br>HAVE_HIDDEN_BUILTIN_CONSTANT_P_CXX<br>HAVE_VLA0<br>HAVE_VLA0_CXX<br>HAVE_VLA_CXX<br>NO_ERROR_ON_SIZEOF_POINTER_SUBTRACTION                                                                                                                                                                                                                                                                                                                                                                                                                         |
 | XLClang   |                   |                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                 | 16.1.0        | HAVE_TYPEOF<br>`HAVE___TYPEOF__`<br>HAVE_BUILTIN_CONSTANT_P_CXX<br>HAVE_HIDDEN_BUILTIN_TYPES_COMPATIBLE_P<br>HAVE_HIDDEN_IS_ARRAY_CXX<br>HAVE_HIDDEN_IS_SAME_CXX<br>HAVE_EMPTY_STRUCTURE<br>HAVE_VLA0<br>HAVE_VLA0_CXX<br>HAVE_VLA_CXX<br>HAVE_ZLA<br>HAVE_ZLA_EMPTY_INITIALIZER<br>HAVE_ZLA_EMPTY_INITIALIZER_CXX<br>HAVE_ZLA_ZLA                                                                                                                                                                                                                                      |
 <!-- endspan: "compiler-versions-and-extensions" -->
-#### Extension legend
+### Extension legend
 <!-- span: "extensions" keys: "Extension" -->
 
 | Extension                                                                                                                                                                                                                                                                                                                                                                                   | Language | Description                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                        |
@@ -484,7 +484,7 @@ These tables are a visualization of the expected results of unit tests:
 | [HAVE_ZLA_ZLA](../tests/autoconf/have_zla_zla.c)                                                                                                                                                                                                                                                                                                                                            | С/С++    | ZLA of ZLA                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                         |
 | [WARN_ERROR_ON_STRUCT_BIT_FIELD](../tests/autoconf/error_on_struct_bit_field.c)<br>[WARN_ERROR_ON_STRUCT_STATIC_ASSERT](../tests/autoconf/error_on_struct_static_assert.c)                                                                                                                                                                                                                  | C        | Strange behavior of MSVC regarding warning [C4116](https://learn.microsoft.com/en-us/cpp/error-messages/compiler-warnings/compiler-warning-level-1-c4116?view=msvc-180)                                                                                                                                                                                                                                                                                                                                                                                                                            |
 <!-- endspan: "extensions" -->
-### Compiler ID
+## Compiler ID
 <!-- span: "compiler-id" keys: "ID", "CC", "CXX" -->
 
 | ID        | CC      | CXX       | Description                                                                                               |

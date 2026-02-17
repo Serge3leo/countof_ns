@@ -143,6 +143,7 @@ endfunction ()
 tu_jzmg_array_len_expected(tu_jzmg_array_len_available
                            "${tu_pos_pos}" "${tu_neg_pos}")
 set(tu_jzmg_array_len_params FALSE
-                             "JZMG_ARRAY_LEN" "_comparisons/JZMG_ARRAY_LEN.h"
+                             "JZMG_ARRAY_LEN"
+                             "countof_ns/_comparisons/JZMG_ARRAY_LEN.h"
                              tu_jzmg_array_len_available)
 list(APPEND tu_params_list tu_jzmg_array_len_params)

@@ -108,6 +108,7 @@ endfunction ()
 tu_n3369_nitems_expected(tu_n3369_nitems_available
                          "${tu_pos_pos}" "${tu_neg_pos}")
 set(tu_n3369_nitems_params FALSE
-                          "N3369_NITEMS" "_comparisons/N3369_NITEMS.h"
+                          "N3369_NITEMS"
+                          "countof_ns/_comparisons/N3369_NITEMS.h"
                           tu_n3369_nitems_available)
 list(APPEND tu_params_list tu_n3369_nitems_params)

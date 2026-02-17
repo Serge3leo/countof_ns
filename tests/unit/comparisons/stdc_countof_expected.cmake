@@ -17,6 +17,7 @@ endfunction ()
 tu_stdc_countof_expected(tu_stdc_countof_available
                          "${tu_pos_pos}" "${tu_neg_pos}")
 set(tu_stdc_countof_params FALSE
-                           "stdc_countof" "_comparisons/stdc_countof.h"
+                           "stdc_countof"
+                           "countof_ns/_comparisons/stdc_countof.h"
                            tu_stdc_countof_available)
 list(APPEND tu_params_list tu_stdc_countof_params)

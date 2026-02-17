@@ -11,7 +11,7 @@
 #define TU_ASSERT_FAIL     (4)
 
 #ifndef TU_COUNTOF_INC
-    #define TU_COUNTOF_INC  "countof_ns.h"
+    #define TU_COUNTOF_INC  "countof_ns/countof_ns.h"
 #endif
 #ifndef TU_COUNTOF_FUNC
     #define TU_COUNTOF_FUNC  countof_ns

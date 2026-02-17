@@ -23,7 +23,7 @@
 
 - Для VLA, в случае `sizeof(*array) == 0`, всегда возвращает 0.
 
-Предупреждение: в случае многомерных VLA число вычислений аргумента зависит от компилятора и отличается от `countof()`. Для проверки можно использовать сторонние анализаторы, к примеру, совместно с компилятором Clang можно использовать:
+Предупреждение: в случае многомерных VLA число вычислений аргумента зависит от компилятора и отличается от `countof()`. Для проверки можно использовать сторонние анализаторы. К примеру, совместно с компилятором Clang можно использовать:
 ```sh
 $ clang-tidy -config="{
     Checks: bugprone-assert-side-effect,
@@ -32,14 +32,16 @@ $ clang-tidy -config="{
     }
 }" ...
 ```
-## Требования
+# Требования
 
-- С23 или C++14;
-- С99 для Clang (clang), GNU (gcc), классический Intel (icc), IntelLLVM (icx), LCC (MCST Elbrus), MSVC (Visual Studio), NVHPC (NVIDIA HPC Compiler), Pelles C, PGI (The Portland Group(?)), SunPro (Oracle Developer Studio), XL (IBM® XL C/C++ for AIX®), XLClang (IBM Clang-based XL).
+- С23;
+- C++14, для расширений VLA требуется встроенная функция `__is_same()`;
+- С11, требуется `__typeof__()` и, возможно, `__builtin_types_compatible_p()`;
+- Clang (clang), GNU (gcc), классический Intel (icc), IntelLLVM (icx), LCC (MCST Elbrus), MSVC (Visual Studio), NVHPC (NVIDIA HPC Compiler), Pelles C, PGI (The Portland Group(?)), SunPro (Oracle Developer Studio), XL (IBM® XL C/C++ for AIX®), XLClang (IBM Clang-based XL).
 
-## Использование
+# Использование
 ```c
-#include "countof_ns.h"
+#include "countof_ns/countof_ns.h"
 ```
 
 До первого включения, при необходимости, можно определить следующие макросы в значение 1:
@@ -68,7 +70,7 @@ $ clang-tidy -config="{
 - `_COUNTOF_NS_WANT_VLA_C11` - обеспечить поддержку VLA стандартными
   возможностями C11/C23, требует соответствия компилятора `6.5.6 Additive operators` C11 и выше, для всех типов аргументов. Для C, используется по умолчанию если определён символ `__POCC__` (Pelles C).
 
-### Сравнение опций поддержки VLA
+## Сравнение опций поддержки VLA
 
 - Если приоритет - минимизация ошибок компиляции на различных компиляторах, то при потребности в VLA, следует предпочесть `_COUNTOF_NS_WANT_VLA_C11`;
 
@@ -79,7 +81,7 @@ $ clang-tidy -config="{
 Так же макрос `_COUNTOF_NS_WANT_VLA_BUILTIN` позволяет документировать
 настройки компилятора:
 
-```
+```sh
 $ icc -diag-error=1121 \
     '-D_countof_ns_must_compatible(p,t1,t2)=(0*sizeof((t1)(p)-(t2)(p)))' \
     -D_COUNTOF_NS_WANT_VLA_BUILTIN ...
@@ -107,7 +109,7 @@ MSVC, но для тестирования, это тоже возможно:
 ```
 
 - В качестве альтернативы, для  Сlang, GNU и IntelLLVM возможно использование ключей: `-D_COUNTOF_NS_WANT_KR -Werror=sizeof-pointer-div -Werror=sizeof-array-decay -Werror=sizeof-array-argument`.
-### Статус поддержки VLA
+## Статус поддержки VLA
 
 Данный заголовочный файл определяет:
 

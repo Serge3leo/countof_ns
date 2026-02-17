@@ -6,11 +6,11 @@
 // Implementing the macro `countof()' C2y draft for C23/C++14
 // ==========================================================
 //
-// The macro `countof_ns(array)` returns the number of elements in its operand
-// (array or array type). The number of elements is determined by the type of
-// the operand. The result is an integer. For variable-length arrays (VLA), the
-// operand is evaluated, otherwise the operand is not evaluated, and the result
-// is an integer constant expression.
+// The macro `countof_ns(array)` returns the number of elements in its operand.
+// The number of elements is determined by the type of the operand. The result
+// is an integer. For variable-length arrays (VLA), the operand is evaluated,
+// otherwise the operand is not evaluated, and the result is an integer
+// constant expression.
 //
 // For standard C/C++14 arrays, the result is identical to `countof()`.
 // Otherwise, if the argument is not an array, a compilation error occurs,
@@ -56,7 +56,7 @@
 // Usage
 // =====
 //
-//    #include "countof_ns.h"
+//    #include "countof_ns/countof_ns.h"
 //
 // Before the first include, if necessary, you can define the following macros
 // to the value 1:
@@ -75,11 +75,11 @@
 //
 // - `_COUNTOF_NS_REFUSE_VLA` - no VLA support (VLA arguments cause a compile
 //   error). This is used by default if the symbols `__STDC_NO_VLA__` or
-//   `_MSC_VER` are defined (MS Visual Studio 2019 and later);
+//   `_MSC_VER` are defined (MS Visual Studio 2022 and later);
 //
 // - `_COUNTOF_NS_WANT_KR` - use the K&R idiom without using `__typeof__()',
 //   `typeof()' etc. For C, it is used by default if `_MSC_VER < 1939` (MS
-//   Visual Studio 2017 and earlier);
+//   Visual Studio 2019 and earlier);
 //
 // - `_COUNTOF_NS_WANT_STDC` - do not use extensions: `__typeof__()` and
 //   others;
@@ -188,7 +188,7 @@
         // Assume: __GNUC__ => has Conditionals with Omitted (?:)
         //         sizeof((a)[0]) == 0 => sizeof(a) == 0 or sizeof(void *)
     #define _countof_ns_unsafe(a)  \
-                        (sizeof(a)/(sizeof((a)[0]) ?: 2*sizeof(void *)))
+                        (sizeof(a)/( sizeof((a)[0]) ?: 2*sizeof(void *) ))
     #define _countof_ns_not_kr_idiom_  (1)
 #endif
 #if _COUNTOF_NS_WANT_KR || (_MSC_VER < 1939 && _MSC_VER && !__cplusplus)

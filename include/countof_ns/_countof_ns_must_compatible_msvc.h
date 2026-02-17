@@ -6,7 +6,7 @@
 //
 // Usage:
 //     > cl /std:clatest /wd4116 /we4047 ^
-//         /FI_countof_ns_must_compatible_msvc.h ^
+//         /FIcountof_ns/_countof_ns_must_compatible_msvc.h ^
 //         /D_COUNTOF_NS_WANT_VLA_BUILTIN ...
 
 #ifndef _COUNTOF_NS_TR_COMPATIBLE_TYPE_MSVC_H_1210

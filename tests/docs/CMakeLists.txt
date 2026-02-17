@@ -71,10 +71,26 @@ add_test(NAME check_examples
          COMMAND ${Python3_EXECUTABLE}
                  ${CMAKE_CURRENT_SOURCE_DIR}/check_examples.py
                  --verbose
-                 --examples-dir ${CMAKE_SOURCE_DIR}/include
+                 --examples-dir ${CMAKE_SOURCE_DIR}/include/countof_ns
                  countof_ns.h
                  warning.h countof_c.c sizeof_evaluate.h vla0.c zla.c div0.c
                  types_compatible_p.c zla_cxx.cpp c++26.cpp
+                 )
+
+add_test(NAME README_examples
+         COMMAND ${Python3_EXECUTABLE}
+                 ${CMAKE_CURRENT_SOURCE_DIR}/check_examples.py
+                 --verbose
+                 --file ${CMAKE_SOURCE_DIR}/README.md
+                 diff_countof.h
+                 )
+
+add_test(NAME READMEru_examples
+         COMMAND ${Python3_EXECUTABLE}
+                 ${CMAKE_CURRENT_SOURCE_DIR}/check_examples.py
+                 --verbose
+                 --file ${CMAKE_SOURCE_DIR}/README.ru.md
+                 diff_countof.h
                  )
 
 set(gcc_warn "stringop-overflow")
@@ -169,6 +185,19 @@ endif ()
 if (HAVE_COUNTOF)
     add_executable(countof_c "countof_c.c")
     add_test(NAME countof_c COMMAND countof_c)
+endif ()
+if (HAVE_ZLA AND HAVE_VLA_ZLA)
+    add_executable(diff_countof_c "diff_countof_c.c" "diff_countof.h")
+    target_link_libraries(diff_countof_c PRIVATE CountofNS::CountofNS)
+    add_test(NAME diff_countof_c COMMAND diff_countof_c)
+    add_executable(diff_countof_cxx "diff_countof_cxx.cpp" "diff_countof.h")
+    if (CMAKE_CXX_COMPILER_ID MATCHES "GNU")
+            # TODO XXX countof_ns.h:322, struct has_size
+            # sorry, unimplemented: mangling save_expr (all gcc 11...16)
+        target_compile_options(diff_countof_cxx PRIVATE "-std=c++14")
+    endif ()
+    target_link_libraries(diff_countof_cxx PRIVATE CountofNS::CountofNS)
+    add_test(NAME diff_countof_cxx COMMAND diff_countof_cxx)
 endif ()
 
 enable_testing()

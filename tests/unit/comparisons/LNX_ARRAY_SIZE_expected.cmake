@@ -104,6 +104,7 @@ endfunction ()
 tu_lnx_array_size_expected(tu_lnx_array_size_available
                            "${tu_pos_pos}" "${tu_neg_pos}")
 set(tu_lnx_array_size_params FALSE
-                             "LNX_ARRAY_SIZE" "_comparisons/lnx_array_size.h"
+                             "LNX_ARRAY_SIZE"
+                             "countof_ns/_comparisons/lnx_array_size.h"
                              tu_lnx_array_size_available)
 list(APPEND tu_params_list tu_lnx_array_size_params)
