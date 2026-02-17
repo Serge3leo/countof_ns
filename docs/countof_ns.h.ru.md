@@ -81,7 +81,7 @@ $ clang-tidy -config="{
 Так же макрос `_COUNTOF_NS_WANT_VLA_BUILTIN` позволяет документировать
 настройки компилятора:
 
-```
+```sh
 $ icc -diag-error=1121 \
     '-D_countof_ns_must_compatible(p,t1,t2)=(0*sizeof((t1)(p)-(t2)(p)))' \
     -D_COUNTOF_NS_WANT_VLA_BUILTIN ...
