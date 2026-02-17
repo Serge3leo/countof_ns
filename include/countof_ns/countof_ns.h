@@ -188,7 +188,7 @@
         // Assume: __GNUC__ => has Conditionals with Omitted (?:)
         //         sizeof((a)[0]) == 0 => sizeof(a) == 0 or sizeof(void *)
     #define _countof_ns_unsafe(a)  \
-                        (sizeof(a)/(sizeof((a)[0]) ?: 2*sizeof(void *)))
+                        (sizeof(a)/( sizeof((a)[0]) ?: 2*sizeof(void *) ))
     #define _countof_ns_not_kr_idiom_  (1)
 #endif
 #if _COUNTOF_NS_WANT_KR || (_MSC_VER < 1939 && _MSC_VER && !__cplusplus)
