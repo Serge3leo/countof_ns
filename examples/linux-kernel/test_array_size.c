@@ -14,10 +14,19 @@ MODULE_VERSION("0.3");
 // Usage:
 //
 // Test fail for multidimensional VLA:
+// $ make
 // $ sudo insmod test_array_size.ko test=0
+// $ sudo reboot
 //
 // Test fail for array of zero size elenents:
 // $ sudo insmod test_array_size.ko test=-10
+// $ sudo reboot
+//
+// Test proposal:
+// $ make clean
+// $ make PROPOSAL_LINUX_ARRAY_SIZE=1
+// $ sudo insmod test_array_size.ko test=0
+// $ sudo -s sh -c 'echo -10 > /sys/module/test_array_size/parameters/test'
 
 #ifdef PROPOSAL_LINUX_ARRAY_SIZE
 	#undef ARRAY_SIZE
