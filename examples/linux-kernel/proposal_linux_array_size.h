@@ -11,7 +11,8 @@
  * ARRAY_SIZE - get the number of elements in array @arr
  * @arr: array to be sized
  */
-#if (defined(__GNUC__) && __GNUC__ >= 16) || \
+#if __STDC_VERSION__ >= 202601L || \
+    (defined(__GNUC__) && __GNUC__ >= 16) || \
     (defined(__clang_major__) && __clang_major__ >= 21) || \
     (defined(__INTEL_LLVM_COMPILER) && __INTEL_LLVM_COMPILER >= 20250300)
 	#define ARRAY_SIZE(arr)  (_Countof(arr))  // C2Y working draft
