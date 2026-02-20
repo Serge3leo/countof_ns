@@ -35,11 +35,11 @@ static int vf_test_set_int(const char *val, const struct kernel_param *kp)
 		} else if (-10 >= *pv) {
 			struct {} a[0];
 			pr_info("%zu, %zu, ARRAY_SIZE(a)=%zu\n",
-                                 sizeof(a), sizeof(a[0]), ARRAY_SIZE(a));
+				sizeof(a), sizeof(a[0]), ARRAY_SIZE(a));
 		} else {
 			int v[*pv][*pv][*pv];
 			pr_info("%zu, %zu, ARRAY_SIZE(v)=%zu\n",
-				 sizeof(v), sizeof(v[0]), ARRAY_SIZE(v));
+				sizeof(v), sizeof(v[0]), ARRAY_SIZE(v));
 		}
 	}
 	return res;
