@@ -39,7 +39,7 @@ static int vf_test_set_int(const char *val, const struct kernel_param *kp)
 		} else {
 			int v[*pv][*pv][*pv];
 			pr_info("%zu, %zu, ARRAY_SIZE(v)=%zu\n",
-			         sizeof(v), sizeof(v[0]), ARRAY_SIZE(v));
+				 sizeof(v), sizeof(v[0]), ARRAY_SIZE(v));
 		}
 	}
 	return res;
