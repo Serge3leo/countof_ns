@@ -16,10 +16,12 @@ MODULE_VERSION("0.3");
 // Test fail for multidimensional VLA:
 // $ make
 // $ sudo insmod test_array_size.ko test=0
+// $ sudo dmesg | tail -70
 // $ sudo reboot
 //
 // Test fail for array of zero size elenents:
 // $ sudo insmod test_array_size.ko test=-10
+// $ sudo dmesg | tail -70
 // $ sudo reboot
 //
 // Test proposal:
@@ -38,6 +40,12 @@ static int vf_test_set_int(const char *val, const struct kernel_param *kp)
 	int *pv = kp->arg;
 	int res = param_set_int(val, kp);
 	if (0 == res) {
+		#ifdef PROPOSAL_LINUX_ARRAY_SIZE
+			pr_info("%s: PROPOSAL_LINUX_ARRAY_SIZE\n", __func__);
+		#endif
+		#ifdef MIN_FIX
+			pr_info("%s: MIN_FIX\n", __func__);
+		#endif
 		pr_info("%s: *pv=%d\n", __func__, *pv);
 		if (0 < *pv) {
 			pr_info("%s: skip\n", __func__);
