@@ -14,15 +14,20 @@ int main(void) {
     volatile size_t n7 = 7;
     int v70[n7][0];
 
-    assert(0 == countof_ns(a07));
-    assert(0 == countof_ns(a00));  // Successful resolution of uncertainty 0/0
+    static_assert(0 == countof_ns(a07), "== сountof(a07)");
+    static_assert(0 == countof_ns(a00),
+        #if LANGUAGE_en
+                  "== сountof(a00), Successful resolution of uncertainty 0/0");
+        #else
+                  "== сountof(a00), Успешное разрешение неопределённости 0/0");
+        #endif
     #if !__cplusplus
         #if EXAMPLE_FAIL
                 // The C version of the macro may not always resolve the 0/0 uncertainty.
             (void)countof_ns(a70);  // Compilation error
         #endif
     #else
-        assert(7 == countof_ns(a70));
+        static_assert(7 == countof_ns(a70), "== сountof(a70)");
     #endif
         // For VLA, the 0/0 uncertainty cannot be detected during compilation.
     assert(0 == countof_ns(v70));  // The result differs from countof(v70)
