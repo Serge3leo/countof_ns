@@ -61,7 +61,7 @@
 #endif
 
 /**
- * __must_be_array_size - constraint `arr` is fixed array with `size` elements
+ * __must_be_array_size - constraint @arr is fixed array with @size elements
  *                        or VLA
  * @arr: array to be checked
  * @size: required number elements of array
