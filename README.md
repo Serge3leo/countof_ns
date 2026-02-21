@@ -48,12 +48,14 @@ static_assert(0 == countof_ns(a07), "== сountof(a07)");
 static_assert(0 == countof_ns(a00),
               "== сountof(a00), Successful resolution of uncertainty 0/0");
 #if !__cplusplus
-		// The C version of the macro may not always resolve the 0/0 uncertainty.
+		// C version of the macro, if 0/0 uncertainty is detected
+		// at compile time and it is impossible to resolution it,
+		// generates an error
 	(void)countof_ns(a70);  // Compilation error
 #else
 	static_assert(7 == countof_ns(a70), "== сountof(a70)");
 #endif
-	// For VLA, the 0/0 uncertainty cannot be detected during compilation.
+	// For VLA, the 0/0 uncertainty cannot be detected at compile time
 assert(0 == countof_ns(v70));  // The result differs from countof(v70)
 ```
 <!-- endexample: "diff_countof.h" -->

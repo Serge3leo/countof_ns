@@ -25,6 +25,8 @@ int main(void) {
         #if EXAMPLE_FAIL
                 // The C version of the macro may not always resolve the 0/0 uncertainty.
             (void)countof_ns(a70);  // Compilation error
+        #else
+            (void)a70;
         #endif
     #else
         static_assert(7 == countof_ns(a70), "== сountof(a70)");
