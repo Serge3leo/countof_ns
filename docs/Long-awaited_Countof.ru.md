@@ -319,18 +319,21 @@ int main(void) {
 
 К примеру, для файла `/usr/local/include/countof_ns/counof_ns.h` команда:
 ```sh
-$ gcc -D_COUNTOF_NS_WANT_KR bug.c
+$ gcc -Werror=sizeof-pointer-div -Werror=sizeof-array-argument \
+      -D_COUNTOF_NS_WANT_KR bug.c
 ```
-Завершится без ошибок. А команды:
+На Linux завершится без ошибок. А команды:
 ```sh
-$ gcc --include=/usr/local/include/countof_ns/counof_ns.h \
+$ gcc -Werror=sizeof-pointer-div -Werror=sizeof-array-argument \
+      -include /usr/local/include/countof_ns/counof_ns.h \
       -D_COUNTOF_NS_WANT_KR bug.c
 ```
 или
 ```sh
 $ mkdir -p /tmp/include/countof_ns
 $ cp /usr/local/include/countof_ns/counof_ns.h /tmp/include/countof_ns
-$ gcc -I/tmp/include -D_COUNTOF_NS_WANT_KR bug.c
+$ gcc -Werror=sizeof-pointer-div -Werror=sizeof-array-argument \
+      -I/tmp/include -D_COUNTOF_NS_WANT_KR bug.c
 ```
 Обнаружат имеющиеся ошибки.
 ### Производительность
