@@ -52,13 +52,14 @@ int a70[7][0];
 volatile size_t n7 = 7;
 int v70[n7][0];
 
-assert(0 == countof_ns(a07));
-assert(0 == countof_ns(a00));  // Успешное разрешение неопределённости 0/0
+static_assert(0 == countof_ns(a07), "== сountof(a07)");
+static_assert(0 == countof_ns(a00),
+              "== сountof(a00), Успешное разрешение неопределённости 0/0");
 #if !__cplusplus
 		// C версия макроса не всегда может разрешить неопределённость 0/0
 	(void)countof_ns(a70);  // Ошибка компиляции
 #else
-	assert(7 == countof_ns(a70));
+	static_assert(7 == countof_ns(a70), "== сountof(a70)");
 #endif
 	// Для VLA, неопределённость 0/0 невозможно обнаружить при компиляции
 assert(0 == countof_ns(v70));  // Результат отличается от countof(v70)
