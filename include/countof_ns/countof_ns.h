@@ -81,6 +81,13 @@
 //   `typeof()' etc. For C, it is used by default if `_MSC_VER < 1939` (MS
 //   Visual Studio 2019 and earlier);
 //
+//   WARNING: The GNU (gcc) warnings `-Wsizeof-pointer-div` and
+//            `-Wsizeof-array-argument` are disabled for system headers
+//            (located in `/usr/include` or `/usr/local/include`, depending on
+//            the system). The `countof_ns.h` header should be placed outside
+//            of them, or refer to it directly, for example with the option
+//            `--include`. Clang (clang) and IntelLLVM (icx) work fine.
+//
 // - `_COUNTOF_NS_WANT_STDC` - do not use extensions: `__typeof__()` and
 //   others;
 //
