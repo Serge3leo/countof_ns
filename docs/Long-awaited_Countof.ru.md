@@ -311,7 +311,7 @@ int main(void) {
 <!-- endexample: "countof_ns.h" -->
 В этом случае, член `(0*sizeof(sizeof(a)/sizeof((a)[0])))` обеспечивает сохранение выдачи предупреждений компиляторов, в части неоднозначного использования оператора `sizeof()`.
 
-К сожалению, оба этих варианта теряют предупреждения компиляторов о делении на 0, в случае известных нулевых размеров элементов. Если таковые предупреждения представляются достаточно ценными можно, либо сначала проверить `__builtin_constant_p(sizeof((a)[0]))`, а потом проверить `sizeof((a)[0])`, уже без нарушения константности выражения, и породить собственное предупреждение, либо воспользоваться другими реализациями, описанными ниже, у которых некорректное деление приводит к ошибке компиляции.
+К сожалению, оба этих варианта теряют предупреждения компиляторов о делении на 0, в случае известных нулевых размеров элементов. Если таковые предупреждения представляются достаточно ценными можно, либо сначала проверить `__builtin_constant_p(sizeof((a)[0]))`, а потом проверить `sizeof((a)[0])`, уже без нарушения константности выражения, и породить собственное предупреждение, либо воспользоваться другими реализациями, описанными ниже, у которых некорректное разрешение неопределённости 0 на 0 приводит к ошибке компиляции.
 
 При условии использовании ключей `-Werror=sizeof-pointer-div -Werror=sizeof-array-decay -Werror=sizeof-array-argument` этот способ не хуже остальных.
 ### Предупреждение насчёт `gcc`
@@ -319,18 +319,21 @@ int main(void) {
 
 К примеру, для файла `/usr/local/include/countof_ns/counof_ns.h` команда:
 ```sh
-$ gcc -D_COUNTOF_NS_WANT_KR bug.c
+$ gcc -Werror=sizeof-pointer-div -Werror=sizeof-array-argument \
+      -D_COUNTOF_NS_WANT_KR bug.c
 ```
-Завершится без ошибок. А команды:
+На Linux завершится без ошибок. А команды:
 ```sh
-$ gcc --include=/usr/local/include/countof_ns/counof_ns.h \
+$ gcc -Werror=sizeof-pointer-div -Werror=sizeof-array-argument \
+      -include /usr/local/include/countof_ns/counof_ns.h \
       -D_COUNTOF_NS_WANT_KR bug.c
 ```
 или
 ```sh
 $ mkdir -p /tmp/include/countof_ns
 $ cp /usr/local/include/countof_ns/counof_ns.h /tmp/include/countof_ns
-$ gcc -I/tmp/include -D_COUNTOF_NS_WANT_KR bug.c
+$ gcc -Werror=sizeof-pointer-div -Werror=sizeof-array-argument \
+      -I/tmp/include -D_COUNTOF_NS_WANT_KR bug.c
 ```
 Обнаружат имеющиеся ошибки.
 ### Производительность
