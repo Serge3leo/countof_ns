@@ -3,7 +3,10 @@
 # SPDX-FileCopyrightText: 2026 Сергей Леонтьев (leo@sai.msu.ru)
 
 ifdef PROPOSAL_LINUX_ARRAY_SIZE
-    CFLAGS_test_array_size.o = -DPROPOSAL_LINUX_ARRAY_SIZE=1
+    CFLAGS_test_array_size.o += -DPROPOSAL_LINUX_ARRAY_SIZE=1
+endif
+ifdef MIN_FIX
+    CFLAGS_test_array_size.o += -DMIN_FIX
 endif
 
 obj-m += test_array_size.o
@@ -15,3 +18,5 @@ all:
 
 clean:
 	make -C /lib/modules/$(shell uname -r)/build M=$(PWD) clean
+
+$(obj)/test_array_size.o: $(obj)/proposal_linux_array_size.h
