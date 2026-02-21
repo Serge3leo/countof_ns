@@ -3,7 +3,7 @@
  SPDX-FileCopyrightText: 2025 Сергей Леонтьев (leo@sai.msu.ru)
  -->
 
-# Русский вариант документации [`countof_ns.h`](../include/countof_ns.h)
+# Русский вариант документации [`countof_ns.h`](../include/countof_ns/countof_ns.h)
 
 # Реализация макроса `countof()` проекта C2y для C23/C++14
 

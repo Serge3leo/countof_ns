@@ -16,7 +16,7 @@ Incomplete list of supported compilers: Clang (clang), GNU (gcc), classic Intel 
 - [License](#license)
 # Install
 Implementing the macro `countofi_ns()` consists of a single, dependency-free
-file [`include/countof_ns.h`](include/countof_ns.h).  You can simply copy this file to the desired location on the header search paths.
+file [`include/countof_ns/countof_ns.h`](include/countof_ns/countof_ns.h).  You can simply copy this file to the desired location on the header search paths.
 
 Alternatively, you can use `FetchContent` in your cmake project:
 ```
