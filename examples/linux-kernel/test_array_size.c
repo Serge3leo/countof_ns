@@ -9,7 +9,7 @@
 MODULE_LICENSE("Dual BSD/GPL");
 MODULE_AUTHOR("Serguei E. Leontiev (leo@sai.msu.ru)");
 MODULE_DESCRIPTION("Test ARRAY_SIZE fail");
-MODULE_VERSION("0.3");
+MODULE_VERSION("0.4");
 
 // Usage:
 //
@@ -33,20 +33,22 @@ MODULE_VERSION("0.3");
 #ifdef PROPOSAL_LINUX_ARRAY_SIZE
 	#undef ARRAY_SIZE
 	#include "proposal_linux_array_size.h"
+
+	#ifdef MIN_FIX
+		#define TAS_VARIANT  ("MIN_FIX PROPOSAL_LINUX_ARRAY_SIZE")
+	#else
+		#define TAS_VARIANT  ("PROPOSAL_LINUX_ARRAY_SIZE")
+	#endif
+#else
+	#define TAS_VARIANT  ("")
 #endif
 
-static int vf_test_set_int(const char *val, const struct kernel_param *kp)
+static int tas_test_set_int(const char *val, const struct kernel_param *kp)
 {
 	int *pv = kp->arg;
 	int res = param_set_int(val, kp);
 	if (0 == res) {
-		#ifdef PROPOSAL_LINUX_ARRAY_SIZE
-			pr_info("%s: PROPOSAL_LINUX_ARRAY_SIZE\n", __func__);
-		#endif
-		#ifdef MIN_FIX
-			pr_info("%s: MIN_FIX\n", __func__);
-		#endif
-		pr_info("%s: *pv=%d\n", __func__, *pv);
+		pr_info("%s: *pv=%d %s\n", __func__, *pv, TAS_VARIANT);
 		if (0 < *pv) {
 			pr_info("%s: skip\n", __func__);
 		} else if (-10 >= *pv) {
@@ -62,25 +64,25 @@ static int vf_test_set_int(const char *val, const struct kernel_param *kp)
 	return res;
 }
 
-const struct kernel_param_ops vf_test_ops_int = {
-	.set = &vf_test_set_int,
+const struct kernel_param_ops tas_test_ops_int = {
+	.set = &tas_test_set_int,
 	.get = &param_get_int,
 };
 
 int test = 25;
-module_param_cb(test, &vf_test_ops_int, &test, 0644);
+module_param_cb(test, &tas_test_ops_int, &test, 0644);
 MODULE_PARM_DESC(test, "0 -> VLA of VLA0, -10 -> fix of zero size");
 
-static __init int vf_init(void)
+static __init int tas_init(void)
 {
 	pr_info("%s: test=%d\n", __func__, test);
 	return 0;
 }
 
-static void __exit vf_exit(void)
+static __exit void tas_exit(void)
 {
 	pr_info("%s: test=%d\n", __func__, test);
 }
 
-module_init(vf_init);
-module_exit(vf_exit);
+module_init(tas_init);
+module_exit(tas_exit);
