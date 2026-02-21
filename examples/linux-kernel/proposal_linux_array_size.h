@@ -40,6 +40,11 @@
 			  __must_be_array_size((arr),			\
 					       __unsafe_countof(arr)))
 
+/**
+ * __unsafe_countof - by estimating the number of array elements, avoids
+ *                    zero-by-zero uncertainty (in this case, it returns 0).
+ * @arr: array to be sized
+ */
 #if __STDC_VERSION__ >= 202601L || \
     (defined(__GNUC__) && __GNUC__ >= 16) || \
     (defined(__clang_major__) && __clang_major__ >= 21) || \
@@ -55,6 +60,12 @@
 					sizeof(arr) / sizeof((arr)[0]))
 #endif
 
+/**
+ * __must_be_array_size - constraint `arr` is fixed array with `size` elements
+ *                        or VLA
+ * @arr: array to be checked
+ * @size: required number elements of array
+ */
 #define __must_be_array_size(arr, size)  BUILD_BUG_ON_ZERO(		\
 				!__builtin_types_compatible_p(		\
 					typeof(&(arr)),			\
