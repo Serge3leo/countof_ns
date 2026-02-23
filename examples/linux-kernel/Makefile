@@ -2,6 +2,7 @@
 # SPDX-License-Identifier: BSD-2-Clause OR GPL-2.0
 # SPDX-FileCopyrightText: 2026 Сергей Леонтьев (leo@sai.msu.ru)
 
+CFLAGS_test_array_size.o += -O0  # For two dimensions test fails, without need 3
 ifdef PROPOSAL_LINUX_ARRAY_SIZE
     CFLAGS_test_array_size.o += -DPROPOSAL_LINUX_ARRAY_SIZE=1
 endif
