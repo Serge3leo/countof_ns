@@ -9,11 +9,11 @@ static size_t TU_UNIT(void) {
     int v[l][m][n];
     size_t i = 0;
     tu_assert(m*n*sizeof(int) == sizeof(v[i++]));
-    #if !__cplusplus
+    #if !__cplusplus && !HAVE_BROKEN_SIZEOF
         tu_assert(1 == i);
     #endif
     tu_assert(n*sizeof(int) == sizeof(v[i++][0]));
-    #if !__cplusplus
+    #if !__cplusplus && !HAVE_BROKEN_SIZEOF
         tu_assert(2 == i);
     #endif
     i = 0;

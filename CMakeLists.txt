@@ -17,11 +17,17 @@ endif ()
 if (NOT DEFINED CMAKE_C_STANDARD)
     set(CMAKE_C_STANDARD 23)
 endif ()
+if (CMAKE_C_COMPILER_ID STREQUAL OrangeC)  # Workaround CMake bug for OrangeC
+    string(APPEND CMAKE_C_FLAGS " -std=c23")
+endif ()
 if (NOT DEFINED CMAKE_CXX_STANDARD_REQUIRED)
     set(CMAKE_CXX_STANDARD_REQUIRED 14)
 endif ()
 if (NOT DEFINED CMAKE_CXX_STANDARD)
     set(CMAKE_CXX_STANDARD 20)  # TODO: clang-14 <iostream> from godbolt_cxx.cpp
+endif ()
+if (CMAKE_C_COMPILER_ID STREQUAL OrangeC AND NOT DEFINED CXX_ENABLED)
+    set(CXX_ENABLED FALSE)  # TODO OrangeC++ bugs workarounds and -std=c++14
 endif ()
 if ((CMAKE_C_STANDARD_REQUIRED GREATER 70 AND
      CMAKE_C_STANDARD_REQUIRED LESS 99) OR

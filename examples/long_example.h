@@ -59,6 +59,8 @@
 #include "countof_ns/countof_ns.h"
 #include "short_example.h"
 
+#include <string.h>
+
 #if __cplusplus
     #if !defined(HAVE_BROKEN_VLA) && \
         (defined(__NVCOMPILER) || defined(__POCC__))
@@ -424,6 +426,11 @@ static void std_size_example() {
 #endif
 }
 
+#define STR(A)  #A
+#define P(N)  ((void)(!strcmp(#N, STR(N)) ? 0 : printf("%s=%s ", #N, STR(N))))
+#define P2(N1, N2)  ((void)(!strcmp(#N1, STR(N1)) ? 0 : printf( \
+                                "%s.%s=%s.%s ", #N1, #N1, STR(N1), STR(N2))))
+
 static void long_example() {
     short_example();
     zla_example();
@@ -431,57 +438,47 @@ static void long_example() {
     cv_example();
     countof_example();
     std_size_example();
-    #ifdef __clang_major__
-        printf("__clang_major__.__clang_minor__ %d.%d ",
-                __clang_major__, __clang_minor__);
-    #endif
-    #ifdef __GNUC__
-        printf("__GNUC__.__GNUC_MINOR__ %d.%d ",
-                __GNUC__, __GNUC_MINOR__);
-    #endif
-    #ifdef __LCC__
-        printf("__LCC__.__LCC_MINOR__ %d.%d ",
-                __LCC__, __LCC_MINOR__);
-    #endif
-    #ifdef _MSC_VER  // Visual Studio 2022/2026
-        printf("_MSC_VER %d ", _MSC_VER);
-    #endif
-    #ifdef __POCC__  // Pelles C
-        printf("__POCC__ %d ", __POCC__);
-    #endif
-    #ifdef __SUNPRO_C  // Oracle Developer Studio
-        printf("__SUNPRO_C 0x%x ", __SUNPRO_C);
-    #endif
-    #ifdef __SUNPRO_CC  // Oracle Developer Studio
-        printf("__SUNPRO_CC 0x%x ", __SUNPRO_CC);
-    #endif
-    #ifdef __NVCC__  // NVIDIA HPC SDK
-        printf("__CUDACC_VER_MAJOR__.__CUDACC_VER_MINOR__ %d.%d ",
-                __CUDACC_VER_MAJOR__, __CUDACC_VER_MINOR__);
-    #endif
-    #ifdef __NVCOMPILER
-        printf("__NVCOMPILER_MAJOR__.__NVCOMPILER_MINOR__ %d.%d ",
-                __NVCOMPILER_MAJOR__, __NVCOMPILER_MINOR__);
-    #endif
-    #ifdef __INTEL_COMPILER
-        printf("__INTEL_COMPILER %d ", __INTEL_COMPILER);
-    #endif
-    #ifdef __INTEL_LLVM_COMPILER
-        printf("__INTEL_LLVM_COMPILER ", __INTEL_LLVM_COMPILER);
-    #endif
-    #ifdef __cplusplus
-        #ifdef __cpp_lib_nonmember_container_access
-            printf("__cpp_lib_nonmember_container_access %ld ",
-                  (long)__cpp_lib_nonmember_container_access);
-        #endif
-        printf("__cplusplus %ld\n", __cplusplus);
-    #else
-        #if _COUNTOF_NS_VLA_UNSUPPORTED
-            printf("_COUNTOF_NS_VLA_UNSUPPORTED ");
-        #endif
-        #ifdef __STDC_NO_VLA__
-            printf("__STDC_NO_VLA__ %d ", __STDC_NO_VLA__);
-        #endif
-        printf("__STDC_VERSION__ %ld\n", __STDC_VERSION__);
-    #endif
+
+    P2(__clang_major__, __clang_minor__);
+    P2(__GNUC__, __GNUC_MINOR__);
+    P(__INTEL_COMPILER);
+    P(__INTEL_LLVM_COMPILER);
+    P2(__LCC__, __LCC_MINOR__);
+    P(_MSC_VER);
+    P2(__CUDACC_VER_MAJOR__, __CUDACC_VER_MINOR__);
+    P2(__NVCOMPILER_MAJOR__, __NVCOMPILER_MINOR__);
+    P(__ORANGEC__);
+    P(__POCC__);
+    P(__SUNPRO_C);
+    P(__SUNPRO_CC);
+
+    P(HAVE_ALONE_FLEXIBLE_ARRAY);
+    P(HAVE_BROKEN_BUILTIN_TYPES_COMPATIBLE_P);
+    P(HAVE_BROKEN_VLA);
+    P(HAVE_BROKEN_VLA_CXX);
+    P(HAVE_COUNTOF);
+    P(HAVE_EMPTY_STRUCTURE);
+    P(HAVE_VLA_CXX);
+    P(HAVE_ZLA);
+    P(HAVE_ZLA_EMPTY_INITIALIZER);
+
+    P(_COUNTOF_NS_BROKEN_BUILTIN_TYPES_COMPATIBLE_P);
+    P(_COUNTOF_NS_BROKEN_TYPEOF);
+    P(_COUNTOF_NS_REFUSE_VLA);
+    P(_COUNTOF_NS_WANT_KR);
+    P(_COUNTOF_NS_WANT_STDC);
+    P(_COUNTOF_NS_WANT_VLA_BUILTIN);
+    P(_COUNTOF_NS_WANT_VLA_C11);
+
+    P(_COUNTOF_NS_USE_BUILTIN);
+    P(_COUNTOF_NS_USE_GENERIC);
+    P(_COUNTOF_NS_USE_SUBTRACTION);
+    P(_COUNTOF_NS_USE_TEMPLATE);
+    P(_COUNTOF_NS_VLA_UNSUPPORTED);
+
+    P(__cpp_lib_nonmember_container_access);
+    P(__cplusplus);
+    P(__STDC_NO_VLA__);
+    P(__STDC_VERSION__);
+    putchar('\n');
 }

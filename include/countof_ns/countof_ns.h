@@ -214,7 +214,7 @@
         #define _COUNTOF_NS_USE_BUILTIN  (1)
     #elif _COUNTOF_NS_REFUSE_VLA || __STDC_NO_VLA__
         #define _COUNTOF_NS_USE_GENERIC  (1)
-    #elif __SUNPRO_C || __IBMC__
+    #elif __IBMC__ || __SUNPRO_C
         #ifdef _countof_ns_must_compatible
             #define _COUNTOF_NS_USE_BUILTIN  (1)
         #else
@@ -246,7 +246,12 @@
             #define _countof_ns_must_compatible(p, t1, t2) \
                                         (0*sizeof((t1)(p) - (t2)(p)))
         #elif !defined(_countof_ns_must_compatible)
-            #ifdef __has_builtin
+            #if __ORANGEC__
+                #define _countof_ns_must_compatible(p, t1, t2) \
+                                               (!__is_same(t1, t2))
+                #define _countof_ns_must(c)  \
+                                (0*sizeof(struct{unsigned foo:(!(c));}))
+            #elif defined(__has_builtin)
                 #if __has_builtin(__builtin_types_compatible_p) && \
                     !__NVCOMPILER && !__LCC__ && \
                     !_COUNTOF_NS_BROKEN_BUILTIN_TYPES_COMPATIBLE_P || \
@@ -295,7 +300,9 @@
                         _countof_ns_typeof(a) **, \
                         _countof_ns_typeof(*(a))(**)[_countof_ns_unsafe(a)]))
     #else
-        #define _COUNTOF_NS_VLA_UNSUPPORTED  (1)
+        #if __STDC_VERSION__ < 202601L
+            #define _COUNTOF_NS_VLA_UNSUPPORTED  (1)
+        #endif
             // Constraints `a` is fixed array and have `_countof_ns_unsafe(a)`
             // elements (don't have variably modified type, i.e. not VLA, not
             // contains VLA etc).
@@ -308,7 +315,9 @@
     #include <type_traits>
     namespace _countof_ns_ {
 
-    #if _COUNTOF_NS_REFUSE_VLA || _MSC_VER
+    #if __ORANGEC__
+        #error "C++ version for OrangeC - unimplemented"
+    #elif _COUNTOF_NS_REFUSE_VLA || _MSC_VER
             // _MSC_VER is the only compiler without support for the C++
             // VLA extension.
         #define _COUNTOF_NS_USE_TEMPLATE  (1)

@@ -9,7 +9,7 @@ static size_t TU_UNIT(void) {
     int v[L][M][n];
     size_t i = 0;
     tu_assert(M*n*sizeof(int) == sizeof(v[i++]));
-    #if !__cplusplus
+    #if !__cplusplus && !HAVE_BROKEN_SIZEOF
         #if __SUNPRO_C  // TODO: Bug or change test?
             tu_assert(0 == i);
         #else
@@ -17,7 +17,7 @@ static size_t TU_UNIT(void) {
         #endif
     #endif
     tu_assert(n*sizeof(int) == sizeof(v[i++][0]));
-    #if !__cplusplus
+    #if !__cplusplus && !HAVE_BROKEN_SIZEOF
         #if __SUNPRO_C
             tu_assert(1 == i);
         #else

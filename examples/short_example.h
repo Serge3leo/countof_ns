@@ -60,9 +60,9 @@ static void short_example(void) {
 
     #ifndef __cplusplus
         example_assert(23 == countof_ns(*p1));
-        example_assert(12 == countof_ns(*(int (*)[12])&p2));
+        example_assert(12 == countof_ns(*(int (*)[12])p2));
         example_assert(3 == countof_ns(*(int (*)[3])p3));
-        example_assert(2 == countof_ns(*(int(*)[2][2])&p3));
+        example_assert(2 == countof_ns(*(int(*)[2][2])p3));
         int a3[2] = { 0 };
         struct {
             // int bits: sizeof(a3);  // OK

@@ -17,9 +17,20 @@ function (tu_jzmg_array_len_expected expected pos_pos neg_pos)
         elseif (b MATCHES "_[n0]0")
             list(APPEND pos_base ${b}.build_fail ${b}_cxx.build_fail)
         elseif (b MATCHES "_vla_vla_eval")
-            list(APPEND pos_base ${b}.run_eval_1)
+            if (NOT HAVE_BROKEN_SIZEOF OR CMAKE_C_COMPILER_ID STREQUAL NVHPC)
+                list(APPEND pos_base ${b}.run_eval_1)
+            else ()
+                list(APPEND pos_base ${b}.run_eval_-1)
+            endif ()
         elseif (b MATCHES "_fix_vla_eval")
-            list(APPEND pos_base ${b}.run_eval_2)
+            if (NOT HAVE_BROKEN_SIZEOF)
+                list(APPEND pos_base ${b}.run_eval_2)
+            else ()
+                list(APPEND pos_base ${b})
+            endif ()
+        elseif (b MATCHES "_vla_eval" AND HAVE_BROKEN_SIZEOF AND
+                NOT CMAKE_C_COMPILER_ID STREQUAL NVHPC)
+            list(APPEND pos_base ${b}.run_eval_-1)
         elseif (b MATCHES "_type")
             #silent skip list(APPEND pos_base ${b}.disable ${b}_cxx.disable)
         elseif (b MATCHES "_vla")
@@ -51,6 +62,19 @@ function (tu_jzmg_array_len_expected expected pos_pos neg_pos)
         string(REGEX REPLACE "(struct|zla)_00.run_fail"
                              "\\1_00.run_0_unexpected"
                              pos_base "${pos_base}")
+    endif ()
+    if (CMAKE_C_COMPILER_ID STREQUAL OrangeC AND HAVE_BROKEN_FUNC_PARAMETER)
+        string(REGEX REPLACE "(pos_(|vla_)func)(;|$)"
+                             "\\1.build_fail.compiler_bug\\3"
+                             pos_base "${pos_base}")
+        string(REGEX REPLACE "(neg_(|vla_)func\\.build_unexpected)"
+                             "\\1.compiler_bug"
+                             neg_base "${neg_base}")
+    endif ()
+    if (CMAKE_C_COMPILER_ID STREQUAL OrangeC)
+        string(REGEX REPLACE "(neg_alone_ptr)\\.build_unexpected"
+                             "\\1.build_fail"
+                             neg_base "${neg_base}")
     endif ()
     if (CMAKE_C_COMPILER_ID STREQUAL SunPro)
         string(REGEX REPLACE "(neg_(alone|zla)_ptr)\\.build_unexpected"
@@ -118,6 +142,7 @@ function (tu_jzmg_array_len_expected expected pos_pos neg_pos)
                                   neg_zla_ptr
                                   neg_zla_vla_ptr)
     endif ()
+    set(run_fpe_OrangeC pos_vla_00 pos_vla_n0)
     set(run_fpe_SunPro pos_vla_00 pos_vla_n0 neg_vla_zla_ptr neg_zla_vla_ptr)
     foreach (base IN ITEMS pos_base neg_base)
         foreach (b IN LISTS build_div0_${CMAKE_C_COMPILER_ID})
@@ -137,7 +162,16 @@ function (tu_jzmg_array_len_expected expected pos_pos neg_pos)
                    ${base} "${${base}}")
         endforeach ()
     endforeach ()
-    set(${expected} "${pos_base};${neg_base}" PARENT_SCOPE)
+    if (CXX_ENABLED)
+        set(expt "${pos_base};${neg_base}")
+    else ()
+        foreach (e IN LISTS pos_base neg_base)
+            if (NOT e MATCHES "_cxx(\\.|$)")
+                list(APPEND expt ${e})
+            endif ()
+        endforeach ()
+    endif ()
+    set(${expected} ${expt} PARENT_SCOPE)
 endfunction ()
 
 tu_jzmg_array_len_expected(tu_jzmg_array_len_available

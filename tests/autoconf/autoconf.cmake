@@ -10,6 +10,8 @@ option(TAC_POSITIVE_WERROR
        "Error positive test on warnings (for debug only)" OFF)
 option(TAC_VERBOSE
        "Print autoconf compiler&run output" OFF)
+option(TAC_PATTERN
+       "Pattern for force check" "NotForceCheck")
 # TODO: option(TAC_ALL_AUTOCONF
 # TODO:        "Check all autoconf tests, including unused ones" OFF)
 
@@ -32,6 +34,7 @@ else ()
 #
 # NO_ERROR_ON_STRUCT_STATIC_ASSERT - отсутствие ошибки без `-DTAC_DONT_FAIL`;
 # WARN_ERROR_ON_STRUCT_STATIC_ASSERT - предупреждений с `-DTAC_DONT_FAIL`;
+# BROKEN_ERROR_ON_GENERIC - ошибка с `-DTAC_DONT_FAIL`;
 # нет - отсутствие предупреждений с `-DTAC_DONT_FAIL` и ошибка без него;
 #
 # HAVE_VLA_CXX - тест C++ VLA прошёл без предупреждений;
@@ -41,21 +44,16 @@ else ()
 # HAVE_BROKEN_VLA - тест C VLA не прошёл;
 # WARN_HAVE_BROKEN_VLA - тест C VLA прошёл, но с предупреждениями;
 # нет - тест прошёл.
+
+set(CXX_ENABLED TRUE)
 if (MSVC)
     set(TAC_AC_WERROR -WX)
 else ()
     set(TAC_AC_WERROR -Werror)
 endif ()
-#if (CMAKE_C_COMPILER_ID STREQUAL Intel)
-#    # TODO: skip C++ for oldest Intel icpc, my local troubles XXX
-#    set(CXX_ENABLED FALSE)
-#else ()
-    set(CXX_ENABLED TRUE)
-#endif ()
-if (CMAKE_C_COMPILER_ID MATCHES "SunPro")
-    string(APPEND cmn_flags " -features=extensions,zla")
-    string(APPEND CMAKE_C_FLAGS " -erroff=E_ZERO_SIZED_STRUCT_UNION"
-                                ",E_EMPTY_INITIALIZER")
+if (CMAKE_C_COMPILER_ID STREQUAL OrangeC)
+    set(CXX_ENABLED FALSE)  # TODO
+    message("OrangeC: CXX_ENABLED=${CXX_ENABLED} CMAKE_C_FLAGS=${CMAKE_C_FLAGS}")
 endif ()
 if (MSVC)
     string(APPEND cmn_flags " -D_CRT_SECURE_NO_WARNINGS")
@@ -63,6 +61,11 @@ if (MSVC)
         # https://gitlab.kitware.com/cmake/cmake/-/issues/18837
         string(APPEND cmn_flags " /Zc:__cplusplus")
     endif ()
+endif ()
+if (CMAKE_C_COMPILER_ID MATCHES "SunPro")
+    string(APPEND cmn_flags " -features=extensions,zla")
+    string(APPEND CMAKE_C_FLAGS " -erroff=E_ZERO_SIZED_STRUCT_UNION"
+                                ",E_EMPTY_INITIALIZER")
 endif ()
 if (TAC_ENABLE_WARNINGS)
     if (CMAKE_C_COMPILER_ID MATCHES "Clang$" OR
@@ -123,7 +126,7 @@ set(tac_checks        have_typeof
                       have_broken___typeof__
                       have___typeof_unqual__
                       have_alone_flexible_array
-                      have_array_extent_cxx
+                      # have_array_extent_cxx
                       have_builtin_constant_p_cxx
                       have_hidden_builtin_constant_p_cxx
                       no_have_broken_builtin_constant_p_cxx
@@ -131,15 +134,18 @@ set(tac_checks        have_typeof
                       have_builtin_types_compatible_p
                       have_hidden_builtin_types_compatible_p
                       no_have_broken_builtin_types_compatible_p
-                      have_constexpr_statement_expression
+                      # have_constexpr_statement_expression
                       have_countof
                       have_countof_cxx
                       have_generic_c2y
+                      have_elvis
+                      have_broken_elvis
                       have_empty_structure
-                      have_is_array_cxx
-                      have_hidden_is_array_cxx
-                      have_is_same_as_cxx
-                      have_hidden_is_same_as_cxx
+                      no_have_broken_func_parameter
+                      # have_is_array_cxx
+                      # have_hidden_is_array_cxx
+                      # have_is_same_as_cxx
+                      # have_hidden_is_same_as_cxx
                       have_is_same_cxx
                       have_hidden_is_same_cxx
                       have_is_same
@@ -187,6 +193,9 @@ function (tac_report rep)
         if (${WARN_${CHK}})
             string(APPEND out "WARN_${CHK}\n")
         endif ()
+        if (${BROKEN_${CHK}})
+            string(APPEND out "BROKEN_${CHK}\n")
+        endif ()
         string(REGEX REPLACE "^NO_" "" NO_NO_CHK "${CHK}")
         if (${${NO_NO_CHK}})
             if (NOT CHK STREQUAL NO_NO_CHK)
@@ -197,7 +206,7 @@ function (tac_report rep)
     set("${rep}" "${out}" PARENT_SCOPE)
 endfunction ()
 
-foreach (cchk IN ITEMS ${tac_checks} ${tac_error_checks})
+foreach (cchk IN ITEMS ${tac_error_checks} ${tac_checks})
     if (cchk MATCHES "_cxx$")
         set(src "${TAC_SOURCE_DIR}/${cchk}.cpp")
     else ()
@@ -208,7 +217,8 @@ foreach (cchk IN ITEMS ${tac_checks} ${tac_error_checks})
         list(PREPEND cchks "have_${cchk}")
     endif ()
     foreach (chk IN ITEMS ${cchks})
-        if ("${compile_${chk}}" STREQUAL "")
+        if ("${compile_${chk}}" STREQUAL "" OR
+            "${cchk}" MATCHES "${TAC_PATTERN}")
             if ("${chk}" MATCHES "^have_")
                 set(df "${TAC_AC_WERROR} -DTAC_DONT_FAIL")
             else ()
@@ -249,6 +259,13 @@ foreach (cchk IN ITEMS ${tac_checks} ${tac_error_checks})
     endforeach ()
     string(TOUPPER "${cchk}" CCHK)
     if ("${cchk}" MATCHES "^error_")
+        if (TAC_VERBOSE)
+            message("FOR '^error_': compile_${cchk}=${compile_${cchk}}")
+            message("run_have_${cchk}=${run_have_${cchk}}"
+                    " compile_have_${cchk}=${compile_have_${cchk}}")
+            message("run_warn_have_${cchk}=${run_warn_have_${cchk}}"
+                    " compile_warn_have_${cchk}=${compile_warn_have_${cchk}}")
+        endif ()
         if ("${compile_${cchk}}")
             tac_register(NO_${CCHK})
         elseif (NOT "${run_have_${cchk}}" EQUAL 0 OR
@@ -257,7 +274,7 @@ foreach (cchk IN ITEMS ${tac_checks} ${tac_error_checks})
                 "${compile_warn_have_${cchk}}")
                 tac_register(WARN_${CCHK})
             else ()
-                tac_register(UNDETECTED_${CCHK})
+                tac_register(BROKEN_${CCHK})
             endif ()
         endif ()
     elseif (NOT cchk MATCHES "^no_")

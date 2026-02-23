@@ -12,7 +12,7 @@
 
 #define unsafe(a)  (sizeof(*(a)) ? sizeof(a)/sizeof(*(a)) : 0)
 #define g_bug_on_not_array(bt, a) _Generic(&(a), \
-                                            bt (*)[unsafe(a)]: 0)
+                                           bt (*)[unsafe(a)]: 0)
 
 typedef int base_t;
 typedef base_t array_t[42];
