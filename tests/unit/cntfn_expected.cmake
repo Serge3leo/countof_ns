@@ -10,13 +10,15 @@ function (tu_cntfn_expected expected pos_pos neg_pos)
                      ${b}.gen.run_fail.compiler_bug
                      ${b}.c11.run_fail.compiler_bug
                      ${b}.bltn.run_fail.compiler_bug
-                     ${b}_cxx.tmpl ${b}_cxx.bltn)
+                     ${b}_cxx.tmpl.run_fail.compiler_bug
+                     ${b}_cxx.bltn.run_fail.compiler_bug)
         elseif (b MATCHES "pos_vla_func$" AND HAVE_BROKEN_FUNC_PARAMETER)
             set(ints ${b}.kr.build_fail.compiler_bug
                      ${b}.gen.build_fail.compiler_bug
                      ${b}.c11.build_fail.compiler_bug
                      ${b}.bltn.build_fail.compiler_bug
-                     ${b}_cxx.tmpl ${b}_cxx.bltn)
+                     ${b}_cxx.tmpl.build_fail.compiler_bug
+                     ${b}_cxx.bltn.build_fail.compiler_bug)
         elseif (b MATCHES "pos_vla_func$" AND
                 NOT CMAKE_CXX_COMPILER_ID STREQUAL Intel AND
                 #NOT CMAKE_CXX_COMPILER_ID STREQUAL LCC AND
@@ -294,10 +296,13 @@ function (tu_cntfn_expected expected pos_pos neg_pos)
         string(REGEX REPLACE "(neg_alone_ptr\\.(kr|c11))\\.build_unexpected"
                              "\\1.build_fail"
                              neg_base "${neg_base}")
+        if (HAVE_BROKEN_FUNC_PARAMETER)
+            string(REGEX REPLACE
+            "(neg_(|vla_)func\\.(kr|bltn|c11|gen))\\.build_(fail|unexpected)"
+            "\\1.build_unexpected.compiler_bug"
+            neg_base "${neg_base}")
+        endif ()
         string(REGEX REPLACE "(neg_[^.]*\\.gen)\\.build_fail"
-                             "\\1.build_unexpected.compiler_bug"
-                             neg_base "${neg_base}")
-        string(REGEX REPLACE "(neg_(|vla_)func\\.bltn)\\.build_fail"
                              "\\1.build_unexpected.compiler_bug"
                              neg_base "${neg_base}")
             # TODO: XXX: Why !HAVE_BROKEN_BUILTIN_TYPES_COMPATIBLE_P ?

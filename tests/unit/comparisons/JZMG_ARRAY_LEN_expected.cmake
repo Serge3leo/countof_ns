@@ -65,8 +65,11 @@ function (tu_jzmg_array_len_expected expected pos_pos neg_pos)
     endif ()
     if (CMAKE_C_COMPILER_ID STREQUAL OrangeC AND HAVE_BROKEN_FUNC_PARAMETER)
         string(REGEX REPLACE "(pos_(|vla_)func)(;|$)"
-                             "\\1.compiler_bug.build_fail\\3"
+                             "\\1.build_fail.compiler_bug\\3"
                              pos_base "${pos_base}")
+        string(REGEX REPLACE "(neg_(|vla_)func\\.build_unexpected)"
+                             "\\1.compiler_bug"
+                             neg_base "${neg_base}")
     endif ()
     if (CMAKE_C_COMPILER_ID STREQUAL OrangeC)
         string(REGEX REPLACE "(neg_alone_ptr)\\.build_unexpected"
