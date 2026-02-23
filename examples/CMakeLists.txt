@@ -76,7 +76,7 @@ endfunction ()
 
 if (COUNTOF_NS_SHORT_EXAMPLE)
     example(short_example.c "" "" 1)
-    if (NOT CMAKE_C_COMPILER_ID STREQUAL OrangeC)  # TODO
+    if (CXX_ENABLED)
         example(short_example_cxx.cpp "" "" 1)
     endif ()
 endif ()

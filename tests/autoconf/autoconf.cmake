@@ -53,7 +53,6 @@ else ()
 endif ()
 if (CMAKE_C_COMPILER_ID STREQUAL OrangeC)
     set(CXX_ENABLED FALSE)  # TODO
-    string(APPEND CMAKE_C_FLAGS " -std=c23")
     message("OrangeC: CXX_ENABLED=${CXX_ENABLED} CMAKE_C_FLAGS=${CMAKE_C_FLAGS}")
 endif ()
 if (MSVC)

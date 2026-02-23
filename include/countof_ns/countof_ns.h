@@ -315,7 +315,9 @@
     #include <type_traits>
     namespace _countof_ns_ {
 
-    #if _COUNTOF_NS_REFUSE_VLA || _MSC_VER
+    #if __ORANGEC__
+        #error "C++ version for OrangeC - unimplemented"
+    #elif _COUNTOF_NS_REFUSE_VLA || _MSC_VER
             // _MSC_VER is the only compiler without support for the C++
             // VLA extension.
         #define _COUNTOF_NS_USE_TEMPLATE  (1)

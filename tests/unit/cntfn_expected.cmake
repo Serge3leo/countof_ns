@@ -328,8 +328,16 @@ function (tu_cntfn_expected expected pos_pos neg_pos)
             "\\1.compiler_bug\\4"
             pos_base "${pos_base}")
     endif ()
-
-    set(${expected} "${pos_base};${neg_base}" PARENT_SCOPE)
+    if (CXX_ENABLED)
+        set(expt "${pos_base};${neg_base}")
+    else ()
+        foreach (e IN LISTS pos_base neg_base)
+            if (NOT e MATCHES "_cxx(\\.|$)")
+                list(APPEND expt ${e})
+            endif ()
+        endforeach ()
+    endif ()
+    set(${expected} ${expt} PARENT_SCOPE)
 endfunction ()
 
 tu_cntfn_expected(tu_cntfn_available "${tu_pos_pos}" "${tu_neg_pos}")
