@@ -9,10 +9,16 @@
                             // 5 - on T (*)[0]  (ZLA)
                             // 6 - on T (*)[n]  (VLA)
                             // 7 - resolve the uncertain zero-by-zero for ZLA
-#if !defined(HAVE_ZLA) && !defined(_MSC_VER) && !defined(__POCC__) && \
-    !defined(__SUNPRO_C) && !defined(__IBMC__)
+#if !defined(HAVE_ZLA) && !defined(__IBMC__) && !defined(_MSC_VER) && \
+    !defined(__ORANGEC__) && !defined(__POCC__) && !defined(__SUNPRO_C)
     // To enable ZLA for SunPro, use: -features=zla -DHAVE_ZLA=1
     #define HAVE_ZLA  (1)
+#endif
+#if !defined(HAVE_ZLA) && (EXAMPLE_FAIL == 5 || EXAMPLE_FAIL == 7)
+    #error "!defined(HAVE_ZLA) && (EXAMPLE_FAIL == 5 || EXAMPLE_FAIL == 7)"
+#endif
+#if __STDC_NO_VLA__ && EXAMPLE_FAIL == 6
+    #error "__STDC_NO_VLA__ && EXAMPLE_FAIL == 6"
 #endif
 #if !defined(HAVE_BROKEN_VLA) && (defined(__NVCOMPILER) || defined(__POCC__))
     // NVHPC (pgcc) have broken VLA implementation
@@ -24,6 +30,7 @@
 
 #include <assert.h>
 #include <stdio.h>
+#include <string.h>
 
 #ifdef __has_include
     #if __has_include(<stdcountof.h>)
@@ -82,13 +89,12 @@
 #endif
 #if EXAMPLE_FAIL == 3
     #if !_MSC_VER
-        int bad1(size_t n, const int a[static n]) {  // Not VLA
+        size_t bad1(size_t n, const int a[static n]) {  // Not VLA
     #else
-        int bad1(size_t n, const int a[1917]) {  // Not VLA
+        size_t bad1(size_t n, const int a[1917]) {  // Not VLA
     #endif
         (void)stdc_countof(a);
-        (void)countof_ns(a);
-        return 1;
+        return countof_ns(a);
     }
 #endif
 
@@ -132,8 +138,14 @@ int main(void) {
     #endif
 
     #if EXAMPLE_FAIL == 3
-        (void)bad1(1917, a1);
-        printf("not pure array function argument - Fail\n");
+        size_t r_bad1 = bad1(countof_ns(a1), a1);
+        if (r_bad1 != countof_ns(a1)) {
+            printf("not pure array function argument - Fail: %zu\n", r_bad1);
+        } else {
+            printf("WARNING, OrangeC broken sizeof in function: %zu\n",
+                   r_bad1);
+            return 3;
+        }
     #endif
 
     #if EXAMPLE_FAIL == 4
@@ -188,56 +200,102 @@ int main(void) {
 
     #if !__STDC_NO_VLA__
         size_t n0 = 0;
-        for (size_t n = 0; n < 25; n++) {
-            int v[n];
+        #if !(__ORANGEC__ && HAVE_BROKEN_VLA)
+            for (size_t n = 0; n < 25; n++) {
+                int v[n];
 
-            assert(n*sizeof(v[0]) == sizeof(v));
-            countof_compare(n == countof(v));
-            assert(n == countof_ns(v));
+                assert(n*sizeof(v[0]) == sizeof(v));
+                countof_compare(n == countof(v));
+                assert(n == countof_ns(v));
 
-            int vn0[n][n0];  // Formally UB, but common C extensions...?
-            int v00[n0][n0];
-            int v0n[n0][n];
+                int vn0[n][n0];  // Formally UB, but common C extensions...?
+                int v00[n0][n0];
+                int v0n[n0][n];
 
-            assert(0 == sizeof(vn0));
-            countof_compare(n == countof(vn0));
-            // Current countof_ns(vn0), can't resolve the uncertain
-            // zero-by-zero
-            assert(0 == countof_ns(vn0));
+                assert(0 == sizeof(vn0));
+                countof_compare(n == countof(vn0));
+                // Current countof_ns(vn0), can't resolve the uncertain
+                // zero-by-zero
+                assert(0 == countof_ns(vn0));
 
-            assert(0 == sizeof(v00));
-            countof_compare(0  == countof(v00));
-            assert(0  == countof_ns(v00));
+                assert(0 == sizeof(v00));
+                countof_compare(0  == countof(v00));
+                assert(0  == countof_ns(v00));
 
-            assert(0 == sizeof(v0n));
-            countof_compare(0  == countof(v0n));
-            assert(0  == countof_ns(v0n));
+                assert(0 == sizeof(v0n));
+                countof_compare(0  == countof(v0n));
+                assert(0  == countof_ns(v0n));
 
+                #if EXAMPLE_FAIL == 6
+                    int (*vp)[n] = &vn0[0];
+                    (void)vp;
+                        // Compile-time constraint violation
+                    printf("int (*)[n] - Fail: %zu\n", countof_ns(vp));
+                #endif
+            }
+        #else
+            size_t n = 25;
+            int vn0[n][n0];
             #if EXAMPLE_FAIL == 6
                 int (*vp)[n] = &vn0[0];
                 (void)vp;
-                (void)countof_ns(vp);  // Compile-time constraint violation
-                printf("int (*)[n] - Fail\n");
+                    // Compile-time constraint violation
+                printf("int (*)[n] - Fail: %zu\n", countof_ns(vp));
             #endif
-        }
+        #endif
         printf("VLA - Ok\n");
     #endif
     #ifndef EXAMPLE_FAIL
-        printf("Ok");
+        printf("Ok\n");
     #else
-        printf("Fail, EXAMPLE_FAIL=%d", EXAMPLE_FAIL);
+        printf("Fail, EXAMPLE_FAIL=%d\n", EXAMPLE_FAIL);
     #endif
-    #if _COUNTOF_NS_VLA_UNSUPPORTED
-        printf(", _COUNTOF_NS_VLA_UNSUPPORTED");
-    #endif
-    #if HAVE_ZLA
-        printf(", HAVE_ZLA");
-    #endif
-    #if HAVE_BROKEN_VLA
-        printf(", HAVE_BROKEN_VLA");
-    #endif
-    #if __STDC_NO_VLA__
-        printf(", __STDC_NO_VLA__");
-    #endif
-    printf(", __STDC_VERSION__=%ld\n", __STDC_VERSION__);
+
+#define STR(A)  #A
+#define P(N)  ((void)(!strcmp(#N, STR(N)) ? 0 : printf("%s=%s ", #N, STR(N))))
+#define P2(N1, N2)  ((void)(!strcmp(#N1, STR(N1)) ? 0 : printf( \
+                                "%s.%s=%s.%s ", #N1, #N1, STR(N1), STR(N2))))
+
+    P2(__clang_major__, __clang_minor__);
+    P2(__GNUC__, __GNUC_MINOR__);
+    P(__INTEL_COMPILER);
+    P(__INTEL_LLVM_COMPILER);
+    P2(__LCC__, __LCC_MINOR__);
+    P(_MSC_VER);
+    P2(__CUDACC_VER_MAJOR__, __CUDACC_VER_MINOR__);
+    P2(__NVCOMPILER_MAJOR__, __NVCOMPILER_MINOR__);
+    P(__ORANGEC__);
+    P(__POCC__);
+    P(__SUNPRO_C);
+    P(__SUNPRO_CC);
+
+    P(HAVE_ALONE_FLEXIBLE_ARRAY);
+    P(HAVE_BROKEN_BUILTIN_TYPES_COMPATIBLE_P);
+    P(HAVE_BROKEN_VLA);
+    P(HAVE_BROKEN_VLA_CXX);
+    P(HAVE_COUNTOF);
+    P(HAVE_EMPTY_STRUCTURE);
+    P(HAVE_VLA_CXX);
+    P(HAVE_ZLA);
+    P(HAVE_ZLA_EMPTY_INITIALIZER);
+
+    P(_COUNTOF_NS_BROKEN_BUILTIN_TYPES_COMPATIBLE_P);
+    P(_COUNTOF_NS_BROKEN_TYPEOF);
+    P(_COUNTOF_NS_REFUSE_VLA);
+    P(_COUNTOF_NS_WANT_KR);
+    P(_COUNTOF_NS_WANT_STDC);
+    P(_COUNTOF_NS_WANT_VLA_BUILTIN);
+    P(_COUNTOF_NS_WANT_VLA_C11);
+
+    P(_COUNTOF_NS_USE_BUILTIN);
+    P(_COUNTOF_NS_USE_GENERIC);
+    P(_COUNTOF_NS_USE_SUBTRACTION);
+    P(_COUNTOF_NS_USE_TEMPLATE);
+    P(_COUNTOF_NS_VLA_UNSUPPORTED);
+
+    P(__cpp_lib_nonmember_container_access);
+    P(__cplusplus);
+    P(__STDC_NO_VLA__);
+    P(__STDC_VERSION__);
+    putchar('\n');
 }

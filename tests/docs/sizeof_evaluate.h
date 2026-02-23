@@ -7,6 +7,7 @@
 
 int main(void) {
     size_t r = 0;
+#if !HAVE_BROKEN_SIZEOF  // TODO __ORANGEC__
     int  a[1917][10];
     int  (*pa)[1917][10] = &a;
     r += sizeof(*pa++[0]);  // W: Clang/IntelLLVM: unevaluated-expression
@@ -27,5 +28,6 @@ int main(void) {
             (void)(&w != pw);
         #endif
     #endif
+#endif
     printf("Ok %zu\n", r);
 }

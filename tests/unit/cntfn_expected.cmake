@@ -5,10 +5,22 @@
 function (tu_cntfn_expected expected pos_pos neg_pos)
     set(pos_base "")
     foreach (b IN ITEMS ${pos_pos})
-        if (b MATCHES "pos_vla_func$" AND
-            NOT CMAKE_CXX_COMPILER_ID STREQUAL Intel AND
-            #NOT CMAKE_CXX_COMPILER_ID STREQUAL LCC AND
-            NOT CMAKE_CXX_COMPILER_ID STREQUAL SunPro)  # TODO HAVE_SPAN
+        if (b MATCHES "pos_func$" AND HAVE_BROKEN_FUNC_PARAMETER)
+            set(ints ${b}.kr.run_fail.compiler_bug
+                     ${b}.gen.run_fail.compiler_bug
+                     ${b}.c11.run_fail.compiler_bug
+                     ${b}.bltn.run_fail.compiler_bug
+                     ${b}_cxx.tmpl ${b}_cxx.bltn)
+        elseif (b MATCHES "pos_vla_func$" AND HAVE_BROKEN_FUNC_PARAMETER)
+            set(ints ${b}.kr.build_fail.compiler_bug
+                     ${b}.gen.build_fail.compiler_bug
+                     ${b}.c11.build_fail.compiler_bug
+                     ${b}.bltn.build_fail.compiler_bug
+                     ${b}_cxx.tmpl ${b}_cxx.bltn)
+        elseif (b MATCHES "pos_vla_func$" AND
+                NOT CMAKE_CXX_COMPILER_ID STREQUAL Intel AND
+                #NOT CMAKE_CXX_COMPILER_ID STREQUAL LCC AND
+                NOT CMAKE_CXX_COMPILER_ID STREQUAL SunPro)  # TODO HAVE_SPAN
             set(ints ${b}.kr ${b}.gen.run_c2y ${b}.c11 ${b}.bltn
                      ${b}_cxx.tmpl ${b}_cxx.bltn)
         elseif (b MATCHES "pos_eval$")
@@ -23,11 +35,16 @@ function (tu_cntfn_expected expected pos_pos neg_pos)
                          ${b}_cxx.tmpl ${b}_cxx.bltn)
             endif ()
         elseif (b MATCHES "pos_vla_eval$")
-            set(ints ${b}.kr ${b}.gen.run_c2y.run_eval_1)
-            if (CMAKE_C_COMPILER_ID STREQUAL SunPro)
-                list(APPEND ints ${b}.c11.run_eval_1 ${b}.bltn.run_eval_1)
+            if (HAVE_BROKEN_SIZEOF)
+                set(ints ${b}.kr.run_eval_-1 ${b}.gen.run_c2y.run_eval_1
+                         ${b}.c11.run_eval_-1 ${b}.bltn.run_eval_-1)
             else ()
-                list(APPEND ints ${b}.c11 ${b}.bltn)
+                set(ints ${b}.kr ${b}.gen.run_c2y.run_eval_1)
+                if (CMAKE_C_COMPILER_ID STREQUAL SunPro)
+                    list(APPEND ints ${b}.c11.run_eval_1 ${b}.bltn.run_eval_1)
+                else ()
+                    list(APPEND ints ${b}.c11 ${b}.bltn)
+                endif ()
             endif ()
             list(APPEND ints ${b}_cxx.tmpl.disable)
             if (CMAKE_CXX_COMPILER_ID STREQUAL GNU OR
@@ -37,21 +54,26 @@ function (tu_cntfn_expected expected pos_pos neg_pos)
                 list(APPEND ints ${b}_cxx.bltn)
             endif ()
         elseif (b MATCHES "pos_vla_vla_eval$")
-            if(CMAKE_C_COMPILER_ID STREQUAL Intel OR
-               CMAKE_C_COMPILER_ID STREQUAL LCC OR
-               CMAKE_C_COMPILER_ID STREQUAL SunPro)
-                set(ints ${b}.kr.run_eval_2)
+            if (HAVE_BROKEN_SIZEOF)
+                set(ints ${b}.kr.run_eval_-1 ${b}.gen.run_c2y.run_eval_3
+                         ${b}.c11.run_eval_-1 ${b}.bltn.run_eval_-1)
             else ()
-                set(ints ${b}.kr.run_eval_1)
-            endif ()
-            list(APPEND ints ${b}.gen.run_c2y.run_eval_3)
-            if (CMAKE_C_COMPILER_ID STREQUAL SunPro)
-                list(APPEND ints ${b}.c11.run_eval_5 ${b}.bltn.run_eval_5)
-            elseif (CMAKE_C_COMPILER_ID STREQUAL Intel OR
-                    CMAKE_C_COMPILER_ID STREQUAL LCC)
-                list(APPEND ints ${b}.c11.run_eval_2 ${b}.bltn.run_eval_2)
-            else ()
-                list(APPEND ints ${b}.c11.run_eval_1 ${b}.bltn.run_eval_1)
+                if(CMAKE_C_COMPILER_ID STREQUAL Intel OR
+                   CMAKE_C_COMPILER_ID STREQUAL LCC OR
+                   CMAKE_C_COMPILER_ID STREQUAL SunPro)
+                    set(ints ${b}.kr.run_eval_2)
+                else ()
+                    set(ints ${b}.kr.run_eval_1)
+                endif ()
+                list(APPEND ints ${b}.gen.run_c2y.run_eval_3)
+                if (CMAKE_C_COMPILER_ID STREQUAL SunPro)
+                    list(APPEND ints ${b}.c11.run_eval_5 ${b}.bltn.run_eval_5)
+                elseif (CMAKE_C_COMPILER_ID STREQUAL Intel OR
+                        CMAKE_C_COMPILER_ID STREQUAL LCC)
+                    list(APPEND ints ${b}.c11.run_eval_2 ${b}.bltn.run_eval_2)
+                else ()
+                    list(APPEND ints ${b}.c11.run_eval_1 ${b}.bltn.run_eval_1)
+                endif ()
             endif ()
             list(APPEND ints ${b}_cxx.tmpl.disable)
             if (CMAKE_CXX_COMPILER_ID STREQUAL Clang OR
@@ -70,8 +92,10 @@ function (tu_cntfn_expected expected pos_pos neg_pos)
             if(CMAKE_C_COMPILER_ID STREQUAL Intel OR
                CMAKE_C_COMPILER_ID STREQUAL LCC)
                 set(ints ${b}.kr.run_eval_3)
-            else ()
+            elseif (NOT HAVE_BROKEN_SIZEOF)
                 set(ints ${b}.kr.run_eval_2)
+            else ()
+                set(ints ${b}.kr.run_eval_0)
             endif ()
             list(APPEND ints ${b}.gen.run_c2y.run_eval_4)
             if (CMAKE_C_COMPILER_ID STREQUAL Intel OR
@@ -79,8 +103,10 @@ function (tu_cntfn_expected expected pos_pos neg_pos)
                 list(APPEND ints ${b}.c11.run_eval_3 ${b}.bltn.run_eval_3)
             elseif (CMAKE_C_COMPILER_ID STREQUAL SunPro)
                 list(APPEND ints ${b}.c11.run_eval_4 ${b}.bltn.run_eval_4)
-            else ()
+            elseif (NOT HAVE_BROKEN_SIZEOF)
                 list(APPEND ints ${b}.c11.run_eval_2 ${b}.bltn.run_eval_2)
+            else ()
+                list(APPEND ints ${b}.c11.run_eval_0 ${b}.bltn.run_eval_0)
             endif ()
             list(APPEND ints ${b}_cxx.tmpl.disable)
             if (CMAKE_CXX_COMPILER_ID STREQUAL Clang OR
@@ -260,6 +286,24 @@ function (tu_cntfn_expected expected pos_pos neg_pos)
         string(REGEX REPLACE "(pos_type\\.(c11|gen|bltn))"
                              "\\1.compiler_bug"  # TODO
                              pos_base "${pos_base}")
+    endif ()
+    if (CMAKE_C_COMPILER_ID STREQUAL OrangeC)
+        string(REGEX REPLACE "pos_vla_vla_eval.gen.run_c2y.run_eval_3"
+                             "pos_vla_vla_eval.gen.run_c2y.run_eval_1"
+                             pos_base "${pos_base}")
+        string(REGEX REPLACE "(neg_alone_ptr\\.(kr|c11))\\.build_unexpected"
+                             "\\1.build_fail"
+                             neg_base "${neg_base}")
+        string(REGEX REPLACE "(neg_[^.]*\\.gen)\\.build_fail"
+                             "\\1.build_unexpected.compiler_bug"
+                             neg_base "${neg_base}")
+        string(REGEX REPLACE "(neg_(|vla_)func\\.bltn)\\.build_fail"
+                             "\\1.build_unexpected.compiler_bug"
+                             neg_base "${neg_base}")
+            # TODO: XXX: Why !HAVE_BROKEN_BUILTIN_TYPES_COMPATIBLE_P ?
+        string(REGEX REPLACE "(cntfn_neg_size_pct.bltn)\\.build_fail"
+                             "\\1.build_unexpected"
+                             neg_base "${neg_base}")
     endif ()
     if (CMAKE_C_COMPILER_ID STREQUAL SunPro)
         # TODO Move up? I don't understand. Why?

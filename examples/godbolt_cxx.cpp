@@ -22,6 +22,7 @@
 #include <stdio.h>  // clang-14 conflict with own libc++
 
 #include <cassert>
+#include <cstring>
 #include <vector>
 #if __cplusplus >= 201703L || __cpp_lib_nonmember_container_access >= 201411L
     #define std_size_compare(e)  static_assert(e)
@@ -198,18 +199,56 @@ int main(void) {
     std::vector<int> vec(1917);
     assert(1917 == countof_ns(vec));
     #ifndef EXAMPLE_FAIL
-        printf("Ok");
+        printf("Ok\n");
     #else
-        printf("Fail, EXAMPLE_FAIL=%d", EXAMPLE_FAIL);
+        printf("Fail, EXAMPLE_FAIL=%di\n", EXAMPLE_FAIL);
     #endif
-    #if _COUNTOF_NS_VLA_UNSUPPORTED
-        printf(", _COUNTOF_NS_VLA_UNSUPPORTED");
-    #endif
-    #if HAVE_VLA_CXX
-        printf(", HAVE_VLA_CXX");
-    #endif
-    #if HAVE_ZLA
-        printf(", HAVE_ZLA");
-    #endif
-    printf(", __cplusplus=%ld\n", __cplusplus);
+
+#define STR(A)  #A
+#define P(N)  ((void)(!strcmp(#N, STR(N)) ? 0 : printf("%s=%s ", #N, STR(N))))
+#define P2(N1, N2)  ((void)(!strcmp(#N1, STR(N1)) ? 0 : printf( \
+                                "%s.%s=%s.%s ", #N1, #N1, STR(N1), STR(N2))))
+
+    P2(__clang_major__, __clang_minor__);
+    P2(__GNUC__, __GNUC_MINOR__);
+    P(__INTEL_COMPILER);
+    P(__INTEL_LLVM_COMPILER);
+    P2(__LCC__, __LCC_MINOR__);
+    P(_MSC_VER);
+    P2(__CUDACC_VER_MAJOR__, __CUDACC_VER_MINOR__);
+    P2(__NVCOMPILER_MAJOR__, __NVCOMPILER_MINOR__);
+    P(__ORANGEC__);
+    P(__POCC__);
+    P(__SUNPRO_C);
+    P(__SUNPRO_CC);
+
+    P(HAVE_ALONE_FLEXIBLE_ARRAY);
+    P(HAVE_BROKEN_BUILTIN_TYPES_COMPATIBLE_P);
+    P(HAVE_BROKEN_VLA);
+    P(HAVE_BROKEN_VLA_CXX);
+    P(HAVE_COUNTOF);
+    P(HAVE_EMPTY_STRUCTURE);
+    P(HAVE_VLA_CXX);
+    P(HAVE_ZLA);
+    P(HAVE_ZLA_EMPTY_INITIALIZER);
+
+    P(_COUNTOF_NS_BROKEN_BUILTIN_TYPES_COMPATIBLE_P);
+    P(_COUNTOF_NS_BROKEN_TYPEOF);
+    P(_COUNTOF_NS_REFUSE_VLA);
+    P(_COUNTOF_NS_WANT_KR);
+    P(_COUNTOF_NS_WANT_STDC);
+    P(_COUNTOF_NS_WANT_VLA_BUILTIN);
+    P(_COUNTOF_NS_WANT_VLA_C11);
+
+    P(_COUNTOF_NS_USE_BUILTIN);
+    P(_COUNTOF_NS_USE_GENERIC);
+    P(_COUNTOF_NS_USE_SUBTRACTION);
+    P(_COUNTOF_NS_USE_TEMPLATE);
+    P(_COUNTOF_NS_VLA_UNSUPPORTED);
+
+    P(__cpp_lib_nonmember_container_access);
+    P(__cplusplus);
+    P(__STDC_NO_VLA__);
+    P(__STDC_VERSION__);
+    putchar('\n');
 }

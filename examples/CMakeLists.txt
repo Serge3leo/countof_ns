@@ -63,7 +63,7 @@ function (example src opt fail_rex max_example_fail)
                  --build-nocmake
                  --build-noclean
                  --build-target ${build_fail}
-                 --test-command ${build_fail})
+                 --test-command "${CMAKE_CURRENT_BINARY_DIR}/${build_fail}")
         set_tests_properties(${run_fail} PROPERTIES
                              DEPEND ${build_fail}
                              # TODO Need inverse FIXTURES_REQUIRE ${tgt}.build_fail
@@ -76,7 +76,9 @@ endfunction ()
 
 if (COUNTOF_NS_SHORT_EXAMPLE)
     example(short_example.c "" "" 1)
-    example(short_example_cxx.cpp "" "" 1)
+    if (NOT CMAKE_C_COMPILER_ID STREQUAL OrangeC)  # TODO
+        example(short_example_cxx.cpp "" "" 1)
+    endif ()
 endif ()
 
 if (COUNTOF_NS_EXAMPLES)
@@ -113,6 +115,12 @@ if (COUNTOF_NS_EXAMPLES)
         endif ()
     else ()
         example(godbolt_c.c "${opt_c}" "${fail_rex}" 7)
+        if (HAVE_BROKEN_FUNC_PARAMETER)
+            message("godbolt_c.build_fail-3 - unexpected build due of"
+                    " broken sizeof functions arguments")
+            set_tests_properties("godbolt_c.build_fail-3" PROPERTIES
+                                 WILL_FAIL FALSE)
+        endif ()
     endif ()
     if (CXX_ENABLED)
         if (NOT HAVE_VLA_CXX)
