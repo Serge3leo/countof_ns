@@ -86,13 +86,13 @@ jobs:
     steps:
       - uses: actions/checkout@v6
 
-      - name: Setup OrangeC
-        if: ${{ matrix.c_compiler == 'cl' }}  # TODO: occ
-        uses: Serge3leo/orangec-msys2@v0
-
       - name: Setup Visual Studio
         if: ${{ matrix.c_compiler == 'cl' }}
         uses: ilammy/msvc-dev-cmd@v1
+
+      - name: Setup OrangeC
+        if: ${{ matrix.c_compiler == 'cl' }}  # TODO: occ
+        uses: Serge3leo/orangec-msys2@v0
 
       - name: Cache install oneAPI
         if: ${{ matrix.c_compiler == 'icx' }}
