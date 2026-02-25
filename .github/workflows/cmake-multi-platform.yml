@@ -199,7 +199,7 @@ jobs:
         if: ${{ matrix.platform == 'win32' }}
         shell: cmd
         run: |
-          examples-build.bat
+          call examples-build.bat
           .\examples\${{ matrix.build_type }}\short_example.exe
 
       - name: Windows FetchContent example
@@ -207,7 +207,7 @@ jobs:
         if: ${{ matrix.platform == 'win32' }}
         shell: cmd
         run: |
-          shortest-build.bat
+          call shortest-build.bat
           .\${{ matrix.build_type }}\shortest.exe
 
       - name: Windows long_example
