@@ -3,6 +3,7 @@ rem vim:set sw=4 ts=8 et fileencoding=utf8:
 rem SPDX-License-Identifier: BSD-2-Clause
 rem SPDX-FileCopyrightText: 2025 Сергей Леонтьев (leo@sai.msu.ru)
 
+set
 set cc=cl
 set cxx=cl
 if "%1"=="nmake" (

@@ -86,6 +86,10 @@ jobs:
     steps:
       - uses: actions/checkout@v6
 
+      - name: Setup Visual Studio
+        if: ${{ matrix.c_compiler == 'cl' }}
+        uses: microsoft/setup-msbuild@v2
+
       - name: Setup OrangeC
         if: ${{ matrix.c_compiler == 'cl' }}  # TODO: occ
         uses: Serge3leo/orangec-msys2@v0
