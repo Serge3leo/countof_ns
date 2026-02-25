@@ -22,11 +22,17 @@ set build_type=Release
 if "%1"=="nmake" (
     rem TODO XXX shift?
     cmake -G %generator% ..\.. %2 %3 %4 %5 %6 %7 %8 %9
+    if errorlevel 1 exit /b
     cmake --build .
+    if errorlevel 1 exit /b
     ctest
+    if errorlevel 1 exit /b
 ) else (
     cmake -B . -DCMAKE_CXX_COMPILER=cl -DCMAKE_C_COMPILER=cl ^
           -DCMAKE_BUILD_TYPE=%build_type% -S ..\.. %*
+    if errorlevel 1 exit /b
     cmake --build . --config %build_type%
+    if errorlevel 1 exit /b
     ctest --build-config %build_type%
+    if errorlevel 1 exit /b
 )

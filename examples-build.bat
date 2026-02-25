@@ -51,12 +51,18 @@ if not "%generator:~0,6%"=="Visual" (
     cmake -B . -DCMAKE_CXX_COMPILER=%cxx% -DCMAKE_C_COMPILER=%cc% ^
           -G "%generator%" ^
           -S ..\.. --preset %prst% %2 %3 %4 %5 %6 %7 %8 %9
+    if errorlevel 1 exit /b
     cmake --build .
+    if errorlevel 1 exit /b
     ctest --output-on-failure %CTEST_ARGS%
+    if errorlevel 1 exit /b
 ) else (
     cmake -B . -DCMAKE_CXX_COMPILER=%cxx% -DCMAKE_C_COMPILER=%cc% ^
           -G "%generator%" ^
           -DCMAKE_BUILD_TYPE=%build_type% -S ..\.. --preset %prst% %2 %3 %4 %5 %6 %7 %8 %9
+    if errorlevel 1 exit /b
     cmake --build . --config %build_type%
+    if errorlevel 1 exit /b
     ctest --output-on-failure --build-config %build_type% %CTEST_ARGS%
+    if errorlevel 1 exit /b
 )

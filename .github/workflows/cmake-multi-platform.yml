@@ -200,6 +200,7 @@ jobs:
         shell: cmd
         run: |
           examples-build.bat
+          .\examples\${{ matrix.build_type }}\short_example.exe
 
       - name: Windows FetchContent example
         working-directory: ${{ github.workspace }}/examples/cmake_fetch_content
@@ -207,6 +208,7 @@ jobs:
         shell: cmd
         run: |
           shortest-build.bat
+          .\${{ matrix.build_type }}\shortest.exe
 
       - name: Windows long_example
         if: ${{ matrix.platform == 'win32' }}
