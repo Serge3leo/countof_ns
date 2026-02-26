@@ -210,12 +210,12 @@ jobs:
         if: ${{ matrix.platform == 'win32' }}
         shell: cmd
         run: |
-          call examples-build.bat
+          call examples-build.bat ${{ matrix.c_compiler }}
           .\examples\${{ matrix.build_type }}\short_example.exe
 
       - name: Windows FetchContent example
         working-directory: ${{ github.workspace }}/examples/cmake_fetch_content
-        if: ${{ matrix.platform == 'win32' }}
+        if: ${{ matrix.platform == 'win32' && matrix.c_compiler == 'cl' }}
         shell: cmd
         run: |
           call shortest-build.bat
@@ -225,21 +225,21 @@ jobs:
         if: ${{ matrix.platform == 'win32' }}
         shell: cmd
         run: |
-          examples-build.bat -- ^
+          examples-build.bat ${{ matrix.c_compiler }} ^
               "-DCOUNTOF_NS_SHORT_EXAMPLE=OFF" "-DCOUNTOF_NS_EXAMPLES=ON"
 
       - name: Windows tests
         if: ${{ matrix.platform == 'win32' }}
         shell: cmd
         run: |
-          examples-build.bat -- ^
+          examples-build.bat ${{ matrix.c_compiler }} ^
               "-DCOUNTOF_NS_SHORT_EXAMPLE=OFF" "-DCOUNTOF_NS_TESTS=ON"
 
       - name: Windows comparisons
         if: ${{ matrix.platform == 'win32' }}
         shell: cmd
         run: |
-          examples-build.bat -- ^
+          examples-build.bat ${{ matrix.c_compiler }} ^
               "-DCOUNTOF_NS_SHORT_EXAMPLE=OFF" "-DCOUNTOF_NS_COMPARISONS=ON" ^
               "-DCOUNTOF_NS_DOCTESTS=ON"
 
