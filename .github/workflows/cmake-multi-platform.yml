@@ -46,20 +46,20 @@ jobs:
       # customize the build_type list.
 
       matrix:
-        c_compiler: [gcc, clang, cl, icx, lcc]
+        c_compiler: [cl, clang, gcc, icx, lcc, occ]
         os: [ubuntu-latest, windows-latest]
-        build_type: [Release]
         include:
           - c_compiler: cl
             cpp_compiler: cl
             os: windows-latest
             platform: "win32"
-          - c_compiler: gcc
-            cpp_compiler: g++
-            os: ubuntu-latest
-            platform: "linux"
+            build_type: "Release"
           - c_compiler: clang
             cpp_compiler: clang++
+            os: ubuntu-latest
+            platform: "linux"
+          - c_compiler: gcc
+            cpp_compiler: g++
             os: ubuntu-latest
             platform: "linux"
           - c_compiler: icx
@@ -71,20 +71,37 @@ jobs:
             cpp_compiler: l++
             os: ubuntu-latest
             platform: "e2k"
+          - c_compiler: occ
+            cpp_compiler: occ
+            os: windows-latest
+            platform: "win32"
+            build_type: ""  # TODO
         exclude:
-          - os: windows-latest
-            c_compiler: gcc
+          - os: ubuntu-latest
+            c_compiler: cl
+          - os: ubuntu-latest
+            c_compiler: occ
           - os: windows-latest
             c_compiler: clang
+          - os: windows-latest
+            c_compiler: gcc
           - os: windows-latest
             c_compiler: icx
           - os: windows-latest
             c_compiler: lcc
-          - os: ubuntu-latest
-            c_compiler: cl
 
     steps:
       - uses: actions/checkout@v6
+
+      - name: Setup Visual Studio
+        if: ${{ matrix.c_compiler == 'cl' }}
+        uses: ilammy/msvc-dev-cmd@v1
+
+      - name: Setup OrangeC
+        if: ${{ matrix.c_compiler == 'occ' }}
+        uses: Serge3leo/orangec-msys2@v0
+        with:  # TODO: boolean true/false?
+          verbose: on  # yamllint disable-line rule:truthy
 
       - name: Cache install oneAPI
         if: ${{ matrix.c_compiler == 'icx' }}
@@ -137,12 +154,14 @@ jobs:
         if: ${{ matrix.platform == 'linux' }}
         run: |
           ./examples-build.sh -c ${{ matrix.c_compiler }}
+          ./build/`uname -s`_${{ matrix.c_compiler }}_*/examples/short_example
 
       - name: Linux FetchContent example
         if: ${{ matrix.platform == 'linux' }}
         working-directory: ${{ github.workspace }}/examples/cmake_fetch_content
         run: |
           ./shortest-build.sh -c ${{ matrix.c_compiler }}
+          ./build/`uname -s`_${{ matrix.c_compiler }}/shortest
 
       - name: Linux long_example
         if: ${{ matrix.platform == 'linux' }}
@@ -167,6 +186,7 @@ jobs:
         if: ${{ matrix.platform == 'e2k' }}
         run: |
           ./examples/LCC_MCST_Elbrus_e2k-build.sh
+          e2k ./build/`uname -s`_lcc_l++/examples/short_example.elf
 
       - name: E2k long_example
         if: ${{ matrix.platform == 'e2k' }}
@@ -191,34 +211,36 @@ jobs:
         if: ${{ matrix.platform == 'win32' }}
         shell: cmd
         run: |
-          examples-build.bat
+          call examples-build.bat ${{ matrix.c_compiler }}
+          .\examples\${{ matrix.build_type }}\short_example.exe
 
       - name: Windows FetchContent example
         working-directory: ${{ github.workspace }}/examples/cmake_fetch_content
-        if: ${{ matrix.platform == 'win32' }}
+        if: ${{ matrix.platform == 'win32' && matrix.c_compiler == 'cl' }}
         shell: cmd
         run: |
-          shortest-build.bat
+          call shortest-build.bat
+          .\${{ matrix.build_type }}\shortest.exe
 
       - name: Windows long_example
         if: ${{ matrix.platform == 'win32' }}
         shell: cmd
         run: |
-          examples-build.bat -- ^
+          examples-build.bat ${{ matrix.c_compiler }} ^
               "-DCOUNTOF_NS_SHORT_EXAMPLE=OFF" "-DCOUNTOF_NS_EXAMPLES=ON"
 
       - name: Windows tests
         if: ${{ matrix.platform == 'win32' }}
         shell: cmd
         run: |
-          examples-build.bat -- ^
+          examples-build.bat ${{ matrix.c_compiler }} ^
               "-DCOUNTOF_NS_SHORT_EXAMPLE=OFF" "-DCOUNTOF_NS_TESTS=ON"
 
       - name: Windows comparisons
         if: ${{ matrix.platform == 'win32' }}
         shell: cmd
         run: |
-          examples-build.bat -- ^
+          examples-build.bat ${{ matrix.c_compiler }} ^
               "-DCOUNTOF_NS_SHORT_EXAMPLE=OFF" "-DCOUNTOF_NS_COMPARISONS=ON" ^
               "-DCOUNTOF_NS_DOCTESTS=ON"
 
