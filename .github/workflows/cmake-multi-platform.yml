@@ -145,12 +145,14 @@ jobs:
         if: ${{ matrix.platform == 'linux' }}
         run: |
           ./examples-build.sh -c ${{ matrix.c_compiler }}
+          ./build/`uname -s`_${{ matrix.c_compiler }}_*/examples/short_example
 
       - name: Linux FetchContent example
         if: ${{ matrix.platform == 'linux' }}
         working-directory: ${{ github.workspace }}/examples/cmake_fetch_content
         run: |
           ./shortest-build.sh -c ${{ matrix.c_compiler }}
+          ./build/`uname -s`_${{ matrix.c_compiler }}_*/shortest
 
       - name: Linux long_example
         if: ${{ matrix.platform == 'linux' }}
@@ -175,6 +177,7 @@ jobs:
         if: ${{ matrix.platform == 'e2k' }}
         run: |
           ./examples/LCC_MCST_Elbrus_e2k-build.sh
+          e2k ./build/`uname -s`_lcc_l++/examples/short_example.elf
 
       - name: E2k long_example
         if: ${{ matrix.platform == 'e2k' }}
