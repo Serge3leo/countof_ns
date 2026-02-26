@@ -152,7 +152,7 @@ jobs:
         working-directory: ${{ github.workspace }}/examples/cmake_fetch_content
         run: |
           ./shortest-build.sh -c ${{ matrix.c_compiler }}
-          ./build/`uname -s`_${{ matrix.c_compiler }}_*/shortest
+          ./build/`uname -s`_${{ matrix.c_compiler }}/shortest
 
       - name: Linux long_example
         if: ${{ matrix.platform == 'linux' }}
