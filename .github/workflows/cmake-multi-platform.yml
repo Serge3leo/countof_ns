@@ -211,7 +211,8 @@ jobs:
         shell: cmd
         run: |
           call examples-build.bat ${{ matrix.c_compiler }}
-          # .\examples\${{ matrix.build_type }}\short_example.exe
+
+        # .\examples\${{ matrix.build_type }}\short_example.exe
 
       - name: Windows FetchContent example
         working-directory: ${{ github.workspace }}/examples/cmake_fetch_content
