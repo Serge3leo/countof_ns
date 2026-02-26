@@ -46,7 +46,7 @@ jobs:
       # customize the build_type list.
 
       matrix:
-        c_compiler: [gcc, clang, cl, icx, lcc]
+        c_compiler: [cl, clang, gcc, icx, lcc, occ]
         os: [ubuntu-latest, windows-latest]
         build_type: [Release]
         include:
@@ -54,12 +54,12 @@ jobs:
             cpp_compiler: cl
             os: windows-latest
             platform: "win32"
-          - c_compiler: gcc
-            cpp_compiler: g++
-            os: ubuntu-latest
-            platform: "linux"
           - c_compiler: clang
             cpp_compiler: clang++
+            os: ubuntu-latest
+            platform: "linux"
+          - c_compiler: gcc
+            cpp_compiler: g++
             os: ubuntu-latest
             platform: "linux"
           - c_compiler: icx
@@ -71,17 +71,23 @@ jobs:
             cpp_compiler: l++
             os: ubuntu-latest
             platform: "e2k"
+          - c_compiler: occ
+            cpp_compiler: occ
+            os: windows-latest
+            platform: "win32"
         exclude:
-          - os: windows-latest
-            c_compiler: gcc
+          - os: ubuntu-latest
+            c_compiler: cl
+          - os: ubuntu-latest
+            c_compiler: occ
           - os: windows-latest
             c_compiler: clang
+          - os: windows-latest
+            c_compiler: gcc
           - os: windows-latest
             c_compiler: icx
           - os: windows-latest
             c_compiler: lcc
-          - os: ubuntu-latest
-            c_compiler: cl
 
     steps:
       - uses: actions/checkout@v6
@@ -91,8 +97,10 @@ jobs:
         uses: ilammy/msvc-dev-cmd@v1
 
       - name: Setup OrangeC
-        if: ${{ matrix.c_compiler == 'cl' }}  # TODO: occ
+        if: ${{ matrix.c_compiler == 'occ' }}
         uses: Serge3leo/orangec-msys2@v0
+        with:
+          verbose: on
 
       - name: Cache install oneAPI
         if: ${{ matrix.c_compiler == 'icx' }}

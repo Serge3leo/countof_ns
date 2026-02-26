@@ -5,25 +5,24 @@ rem SPDX-FileCopyrightText: 2025 Сергей Леонтьев (leo@sai.msu.ru)
 
 set cc=cl
 set cxx=cl
-if "%1"=="nmake" (
+set platform=vs%VisualStudioVersion%
+set generator=Visual Studio xx yyyy
+if "%1"=="%cc%" (
     rem TODO shift
-    set platform=vs%VisualStudioVersion%-nmake
-    set generator=NMake Makefiles
 ) else if "%1"=="--" (
     rem TODO shift
-    set platform=vs%VisualStudioVersion%
-    set generator=Visual Studio xx yyyy
 ) else if "%1"=="" (
-    set platform=vs%VisualStudioVersion%
-    set generator=Visual Studio xx yyyy
-) else if "%1"=="occ" (
     rem TODO shift
-    set platform=occ
-    set generator=MSYS Makefiles
+) else if "%1"=="nmake" (
+    set platform=vs%VisualStudioVersion%-nmake
+    set generator=NMake Makefiles
+) else if "%1"=="occ" (
     set cc=occ
     set cxx=occ
+    set platform=occ
+    set generator=MSYS Makefiles
 ) else (
-    echo "Usage: example-build.bat [[nmake|--|occ] [cmake args...]]"
+    echo "Usage: example-build.bat [[--|cl|nmake|occ] [cmake args...]]"
     echo     nmake - If exist, then use "NMake Makefiles" cmake generator
     echo     occ - Use OrangeC with "MSYS Makefiles" cmake generator
     echo .
