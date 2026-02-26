@@ -100,8 +100,8 @@ jobs:
       - name: Setup OrangeC
         if: ${{ matrix.c_compiler == 'occ' }}
         uses: Serge3leo/orangec-msys2@v0
-        with:
-          verbose: on
+        with:  # TODO: boolean true/false?
+          verbose: on  # yamllint disable-line rule:truthy
 
       - name: Cache install oneAPI
         if: ${{ matrix.c_compiler == 'icx' }}
