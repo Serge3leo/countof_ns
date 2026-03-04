@@ -9,9 +9,11 @@ project(countof_ns
     HOMEPAGE_URL https://github.com/Serge3leo/countof_ns.git
     LANGUAGES C)
 option(COUNTOF_NS_CXX_ENABLE "Enable use C++ compiler for tests" ON)
-if (COUNTOF_NS_CXX_ENABLE AND
-    NOT CMAKE_C_COMPILER_ID STREQUAL OrangeC AND  # TODO OrangeC++ bugs workarounds
-    NOT CMAKE_C_COMPILER_ID STREQUAL PellesC)
+if (CMAKE_C_COMPILER_ID STREQUAL OrangeC OR  # TODO OrangeC++ bugs workarounds
+    CMAKE_C_COMPILER_ID STREQUAL PellesC)
+    set(COUNTOF_NS_CXX_ENABLE OFF)
+endif ()
+if (COUNTOF_NS_CXX_ENABLE)
     enable_language(CXX)
 endif ()
 add_library(CountofNS INTERFACE include/countof_ns/countof_ns.h)

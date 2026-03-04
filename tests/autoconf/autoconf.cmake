@@ -52,7 +52,7 @@ if (MSVC)
     endif ()
 endif ()
 if (CMAKE_C_COMPILER_ID STREQUAL PellesC)
-    set(TAC_AC_WERROR '')
+    set(TAC_AC_WERROR "")
     set(COUNTOF_NS_CXX_ENABLE FALSE)  # TODO
     # string(APPEND cmn_flags " -Zx")
     message("PellesC: COUNTOF_NS_CXX_ENABLE=${COUNTOF_NS_CXX_ENABLE} CMAKE_C_FLAGS=${CMAKE_C_FLAGS}")
@@ -100,6 +100,8 @@ if (TAC_ENABLE_WARNINGS)
         # C4127 - conditional expression is constant
         # C4702 - unreachable code
         string(APPEND cmn_flags " /W4 /wd4127")
+    elseif (CMAKE_C_COMPILER_ID STREQUAL PellesC)
+        string(APPEND cmn_flags " -W2")
     elseif (CMAKE_C_COMPILER_ID MATCHES "SunPro")
         # string(APPEND TAC_AC_WERROR " -pedantic")
         string(APPEND cmn_flags " -Wall -Wextra -errtags")
