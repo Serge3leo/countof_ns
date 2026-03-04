@@ -157,6 +157,7 @@ function (tu_ms_countof_expected expected pos_pos neg_pos)
                                   neg_zla_vla_ptr)
     endif ()
     set(run_fpe_OrangeC pos_vla_00 pos_vla_n0)
+    set(run_fpe_PellesC pos_vla_00 pos_vla_n0)
     set(run_div0_SunPro pos_type)
     set(run_fpe_SunPro pos_vla_00 pos_vla_n0
                        pos_type

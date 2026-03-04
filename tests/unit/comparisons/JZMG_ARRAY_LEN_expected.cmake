@@ -76,6 +76,11 @@ function (tu_jzmg_array_len_expected expected pos_pos neg_pos)
                              "\\1.build_fail"
                              neg_base "${neg_base}")
     endif ()
+    if (CMAKE_C_COMPILER_ID STREQUAL PellesC)
+        string(REGEX REPLACE "(pos_vla_func2d)(;|$)"
+                             "\\1.run_fail.run_FPE.compiler_bug\\2"
+                             pos_base "${pos_base}")
+    endif ()
     if (CMAKE_C_COMPILER_ID STREQUAL SunPro)
         string(REGEX REPLACE "(neg_(alone|zla)_ptr)\\.build_unexpected"
                              "\\1.build_fail.build_DIV0"
@@ -143,6 +148,7 @@ function (tu_jzmg_array_len_expected expected pos_pos neg_pos)
                                   neg_zla_vla_ptr)
     endif ()
     set(run_fpe_OrangeC pos_vla_00 pos_vla_n0)
+    set(run_fpe_PellesC pos_vla_00 pos_vla_n0)
     set(run_fpe_SunPro pos_vla_00 pos_vla_n0 neg_vla_zla_ptr neg_zla_vla_ptr)
     foreach (base IN ITEMS pos_base neg_base)
         foreach (b IN LISTS build_div0_${CMAKE_C_COMPILER_ID})
