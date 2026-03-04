@@ -15,16 +15,6 @@ option(TAC_PATTERN
 # TODO: option(TAC_ALL_AUTOCONF
 # TODO:        "Check all autoconf tests, including unused ones" OFF)
 
-if (CMAKE_C_COMPILER_ID STREQUAL "") # TODO PellesC XXX Remove or?
-    set(CXX_ENABLED FALSE)
-    set(CMAKE_C_COMPILER_ID PellesC)
-    #set(CMAKE_C_COMPILER_FRONTEND_VARIANT "MSVC")
-    set(CMAKE_C_COMPILER_ID "${CMAKE_C_COMPILER_ID}")
-    set(CMAKE_C_COMPILER_FRONTEND_VARIANT
-        "${CMAKE_C_COMPILER_FRONTEND_VARIANT}")
-    message("WARNING: chage to CMAKE_C_COMPILER_ID=${CMAKE_C_COMPILER_ID} "
-     "CMAKE_C_COMPILER_FRONTEND_VARIANT=${CMAKE_C_COMPILER_FRONTEND_VARIANT}")
-else ()
 # При автоопределении, идеальный позитивный тест не должен порождать
 # предупреждений при вызове компилятора по умолчанию (или с запрошенными
 # ключами по TAC_ENABLE_WARNINGS).
@@ -45,15 +35,14 @@ else ()
 # WARN_HAVE_BROKEN_VLA - тест C VLA прошёл, но с предупреждениями;
 # нет - тест прошёл.
 
-set(CXX_ENABLED TRUE)
 if (MSVC)
     set(TAC_AC_WERROR -WX)
 else ()
     set(TAC_AC_WERROR -Werror)
 endif ()
 if (CMAKE_C_COMPILER_ID STREQUAL OrangeC)
-    set(CXX_ENABLED FALSE)  # TODO
-    message("OrangeC: CXX_ENABLED=${CXX_ENABLED} CMAKE_C_FLAGS=${CMAKE_C_FLAGS}")
+    set(COUNTOF_NS_CXX_ENABLE FALSE)  # TODO
+    message("OrangeC: COUNTOF_NS_CXX_ENABLE=${COUNTOF_NS_CXX_ENABLE} CMAKE_C_FLAGS=${CMAKE_C_FLAGS}")
 endif ()
 if (MSVC)
     string(APPEND cmn_flags " -D_CRT_SECURE_NO_WARNINGS")
@@ -61,6 +50,12 @@ if (MSVC)
         # https://gitlab.kitware.com/cmake/cmake/-/issues/18837
         string(APPEND cmn_flags " /Zc:__cplusplus")
     endif ()
+endif ()
+if (CMAKE_C_COMPILER_ID STREQUAL PellesC)
+    set(TAC_AC_WERROR '')
+    set(COUNTOF_NS_CXX_ENABLE FALSE)  # TODO
+    # string(APPEND cmn_flags " -Zx")
+    message("PellesC: COUNTOF_NS_CXX_ENABLE=${COUNTOF_NS_CXX_ENABLE} CMAKE_C_FLAGS=${CMAKE_C_FLAGS}")
 endif ()
 if (CMAKE_C_COMPILER_ID MATCHES "SunPro")
     string(APPEND cmn_flags " -features=extensions,zla")
@@ -119,7 +114,6 @@ if (TAC_ENABLE_WARNINGS)
 endif ()
 string(APPEND CMAKE_C_FLAGS " ${cmn_flags}")
 string(APPEND CMAKE_CXX_FLAGS " ${cmn_flags}")
-endif () # TODO PellesC XXX Remove or?
 
 set(tac_checks        have_typeof
                       have___typeof__
@@ -175,8 +169,8 @@ set(tac_error_checks  error_on_generic
 function (tac_register var)
     # TODO message("tac_register ${var}")
     set(${var} TRUE PARENT_SCOPE)
-    set(CMAKE_C_FLAGS "${CMAKE_C_FLAGS} -D${var}" PARENT_SCOPE)
-    set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -D${var}" PARENT_SCOPE)
+    set(CMAKE_C_FLAGS "${CMAKE_C_FLAGS} -D${var}=1" PARENT_SCOPE)
+    set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -D${var}=1" PARENT_SCOPE)
     # TODO list(APPEND COMPILE_DEFINITIONS ${CCHK})
     # TODO add_compile_definitions(${CCHK})
 endfunction ()
@@ -208,6 +202,9 @@ endfunction ()
 
 foreach (cchk IN ITEMS ${tac_error_checks} ${tac_checks})
     if (cchk MATCHES "_cxx$")
+        if (NOT COUNTOF_NS_CXX_ENABLE)
+            continue ()
+        endif ()
         set(src "${TAC_SOURCE_DIR}/${cchk}.cpp")
     else ()
         set(src "${TAC_SOURCE_DIR}/${cchk}.c")
@@ -220,7 +217,7 @@ foreach (cchk IN ITEMS ${tac_error_checks} ${tac_checks})
         if ("${compile_${chk}}" STREQUAL "" OR
             "${cchk}" MATCHES "${TAC_PATTERN}")
             if ("${chk}" MATCHES "^have_")
-                set(df "${TAC_AC_WERROR} -DTAC_DONT_FAIL")
+                set(df "${TAC_AC_WERROR} -DTAC_DONT_FAIL=1")
             else ()
                 set(df "")
             endif ()
@@ -244,7 +241,7 @@ foreach (cchk IN ITEMS ${tac_error_checks} ${tac_checks})
                 try_run(run_warn_${chk} compile_warn_${chk}
                         "${CMAKE_CURRENT_BINARY_DIR}"
                         SOURCES "${src}"
-                        COMPILE_DEFINITIONS "-DTAC_DONT_FAIL"
+                        COMPILE_DEFINITIONS "-DTAC_DONT_FAIL=1"
                         COMPILE_OUTPUT_VARIABLE cml_warn_out
                         RUN_OUTPUT_VARIABLE run_warn_out
                         )

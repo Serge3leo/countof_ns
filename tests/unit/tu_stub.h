@@ -68,8 +68,9 @@
 #define _TU_STR(S)  _TU_STR1(S)
 #define TU_REPORT()  do { \
             printf("%s:%d:%s:%s for %s:%s()%s, %s %s\n", \
-                    __FILE__, __LINE__, TU_UNIT_INC, _TU_STR(TU_UNIT), \
-                    TU_COUNTOF_INC, _TU_STR(TU_COUNTOF_FUNC), \
+                    __FILE__, __LINE__, \
+                    _TU_STR(TU_UNIT_INC), _TU_STR(TU_UNIT), \
+                    _TU_STR(TU_COUNTOF_INC), _TU_STR(TU_COUNTOF_FUNC), \
                     TU_C11_VLA, TU_LANG, _TU_STR(TU_LVER)); \
         } while(0)
 

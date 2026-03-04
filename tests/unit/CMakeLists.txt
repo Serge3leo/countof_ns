@@ -41,29 +41,31 @@ function (process_params params)
             set(src tu_stub.c)
         endif ()
         list(APPEND src tu_stub.h ${base}.h)
-        set(inc "-DTU_UNIT_INC=\"${base}.h\""
-                "-DTU_COUNTOF_FUNC=${tu_countof_func}"
-                "-DTU_COUNTOF_INC=\"${tu_countof_inc}\"")
         add_executable(${tgt} ${src} ${base}.h
                               "${CMAKE_SOURCE_DIR}/include/${tu_countof_inc}")
+            # PellesC have trouble with "-DTU_UNIT_INC=\"${base}.h\""
+        target_compile_options(${tgt} PRIVATE "-I${CMAKE_CURRENT_SOURCE_DIR}")
+        set(inc "-DTU_UNIT_INC=<${base}.h>"
+                "-DTU_COUNTOF_FUNC=${tu_countof_func}"
+                "-DTU_COUNTOF_INC=<${tu_countof_inc}>")
         target_link_libraries(${tgt} PRIVATE CountofNS::CountofNS)
         if (etgt MATCHES "\\.(gen|tmpl)")
             target_compile_definitions(${tgt} PRIVATE ${inc}
-                                       "_COUNTOF_NS_REFUSE_VLA")
+                                       "_COUNTOF_NS_REFUSE_VLA=1")
             set(vla_fail_regex
                 "(_COUNTOF_NS_USE_SUBTRACTION|_COUNTOF_NS_USE_BUILTIN)")
         elseif (etgt MATCHES "\\.kr")
             target_compile_definitions(${tgt} PRIVATE ${inc}
-                                        "_COUNTOF_NS_WANT_KR")
+                                        "_COUNTOF_NS_WANT_KR=1")
             target_compile_options(${tgt} PRIVATE
                     ${countof_ns_kr_c_options_${CMAKE_C_COMPILER_ID}})
         elseif (etgt MATCHES "\\.c11")
             target_compile_definitions(${tgt} PRIVATE ${inc}
-                                       "_COUNTOF_NS_WANT_VLA_C11")
+                                       "_COUNTOF_NS_WANT_VLA_C11=1")
             set(vla_fail_regex "_COUNTOF_NS_VLA_UNSUPPORTED")
         elseif (etgt MATCHES "\\.bltn")
             target_compile_definitions(${tgt} PRIVATE ${inc}
-                                       "_COUNTOF_NS_WANT_VLA_BUILTIN")
+                                       "_COUNTOF_NS_WANT_VLA_BUILTIN=1")
             if (etgt MATCHES "_cxx($|\\.)")
                 target_compile_options(${tgt} PRIVATE
                     ${countof_ns_builtin_cxx_options_${CMAKE_CXX_COMPILER_ID}})
