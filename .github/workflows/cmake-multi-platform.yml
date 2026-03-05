@@ -90,6 +90,10 @@ jobs:
           - os: windows-latest
             c_compiler: lcc
 
+    container:
+      if: ${{ matrix.c_compiler == 'icx' }}
+      image: intel/oneapi-hpckit:${{ matrix.oneapi }}
+
     steps:
       - uses: actions/checkout@v6
 
@@ -103,29 +107,6 @@ jobs:
         with:
           verbose: true
 
-      - name: Cache install oneAPI
-        if: ${{ matrix.c_compiler == 'icx' }}
-        id: cache-icx
-        uses: actions/cache@v5
-        with:
-          path: |
-            /opt/intel/oneapi
-          key: oneapi-${{ matrix.oneapi }}-apt
-
-      - name: Non-cache install oneAPI
-        if: ${{ matrix.c_compiler == 'icx' &&
-                ! steps.cache-icx.outputs.cache-hit }}
-        run: |
-          bash .github/workflows/oneapi_setup_apt_repo_linux.sh
-          sudo apt install --no-install-recommends \
-               intel-oneapi-compiler-dpcpp-cpp-${{ matrix.oneapi }}
-
-      - name: Setup Intel oneAPI environment
-        if: ${{ matrix.c_compiler == 'icx' }}
-        run: |
-          source /opt/intel/oneapi/setvars.sh
-          printenv >> $GITHUB_ENV
-
       - name: Install LCC MCST Elbrus e2k (internal caching)
         if: ${{ matrix.c_compiler == 'lcc' }}
         timeout-minutes: 3
@@ -135,18 +116,9 @@ jobs:
           lcc_tarname: cross-sp-1.29.12.e2k-v6.2c3.linux-6.1_64.tgz
           lcc_dirname: lcc-1.29.12.e2k-v6.2c3.linux-6.1
 
-      - uses: actions/setup-python@v6
-        with:
-          python-version: '3.13'
-
-      - name: Install python module
-        working-directory: ${{ github.workspace }}/tests/check_logs
-        run: |
-          python -c "import sys; print(sys.version); print(sys.executable)"
-          python -m pip install yamllint
-
       - name: Lint
         run: |
+          python -m pip install yamllint
           python -m yamllint --list-file .
           python -m yamllint .
 
@@ -243,8 +215,3 @@ jobs:
           examples-build.bat ${{ matrix.c_compiler }} ^
               "-DCOUNTOF_NS_SHORT_EXAMPLE=OFF" "-DCOUNTOF_NS_COMPARISONS=ON" ^
               "-DCOUNTOF_NS_DOCTESTS=ON"
-
-      - name: Exclude unused files from cache
-        if: ${{ matrix.c_compiler == 'icx' &&
-                ! steps.cache-icx.outputs.cache-hit }}
-        run: bash .github/workflows/oneapi_cache_exclude_linux.sh
