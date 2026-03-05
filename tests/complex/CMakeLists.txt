@@ -14,7 +14,7 @@ set(p_short_example "${p_sect}.*${p_sect}.*${p_sect}.*${p_sect}.*${p_sect}")
 foreach(t IN ITEMS short_example short_example_cxx  # TODO function?
                    long_example long_example_vla long_example_cxx)
                if((NOT ${t} MATCHES "_vla$" OR NOT HAVE___STDC_NO_VLA__)
-       AND (NOT ${t} MATCHES "_cxx$" OR CXX_ENABLED))
+       AND (NOT ${t} MATCHES "_cxx$" OR COUNTOF_NS_CXX_ENABLE))
         add_test(NAME "${t}" COMMAND "${t}")
         if(NOT CMAKE_C_COMPILER_ID STREQUAL "MSVC"  OR
                CMAKE_GENERATOR STREQUAL "NMake Makefiles")

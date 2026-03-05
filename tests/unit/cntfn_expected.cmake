@@ -62,6 +62,7 @@ function (tu_cntfn_expected expected pos_pos neg_pos)
             else ()
                 if(CMAKE_C_COMPILER_ID STREQUAL Intel OR
                    CMAKE_C_COMPILER_ID STREQUAL LCC OR
+                   CMAKE_C_COMPILER_ID STREQUAL PellesC OR
                    CMAKE_C_COMPILER_ID STREQUAL SunPro)
                     set(ints ${b}.kr.run_eval_2)
                 else ()
@@ -71,7 +72,8 @@ function (tu_cntfn_expected expected pos_pos neg_pos)
                 if (CMAKE_C_COMPILER_ID STREQUAL SunPro)
                     list(APPEND ints ${b}.c11.run_eval_5 ${b}.bltn.run_eval_5)
                 elseif (CMAKE_C_COMPILER_ID STREQUAL Intel OR
-                        CMAKE_C_COMPILER_ID STREQUAL LCC)
+                        CMAKE_C_COMPILER_ID STREQUAL LCC OR
+                        CMAKE_C_COMPILER_ID STREQUAL PellesC)
                     list(APPEND ints ${b}.c11.run_eval_2 ${b}.bltn.run_eval_2)
                 else ()
                     list(APPEND ints ${b}.c11.run_eval_1 ${b}.bltn.run_eval_1)
@@ -92,7 +94,8 @@ function (tu_cntfn_expected expected pos_pos neg_pos)
             endif ()
         elseif (b MATCHES "pos_fix_vla_eval$")
             if(CMAKE_C_COMPILER_ID STREQUAL Intel OR
-               CMAKE_C_COMPILER_ID STREQUAL LCC)
+               CMAKE_C_COMPILER_ID STREQUAL LCC OR
+               CMAKE_C_COMPILER_ID STREQUAL PellesC)
                 set(ints ${b}.kr.run_eval_3)
             elseif (NOT HAVE_BROKEN_SIZEOF)
                 set(ints ${b}.kr.run_eval_2)
@@ -101,7 +104,8 @@ function (tu_cntfn_expected expected pos_pos neg_pos)
             endif ()
             list(APPEND ints ${b}.gen.run_c2y.run_eval_4)
             if (CMAKE_C_COMPILER_ID STREQUAL Intel OR
-                CMAKE_C_COMPILER_ID STREQUAL LCC)
+                CMAKE_C_COMPILER_ID STREQUAL LCC OR
+                CMAKE_C_COMPILER_ID STREQUAL PellesC)
                 list(APPEND ints ${b}.c11.run_eval_3 ${b}.bltn.run_eval_3)
             elseif (CMAKE_C_COMPILER_ID STREQUAL SunPro)
                 list(APPEND ints ${b}.c11.run_eval_4 ${b}.bltn.run_eval_4)
@@ -310,6 +314,11 @@ function (tu_cntfn_expected expected pos_pos neg_pos)
                              "\\1.build_unexpected"
                              neg_base "${neg_base}")
     endif ()
+    if (CMAKE_C_COMPILER_ID STREQUAL PellesC)
+        string(REGEX REPLACE "pos_vla_func2d.c11"
+                             "pos_vla_func2d.c11.run_fail.compiler_bug"
+                             pos_base "${pos_base}")
+    endif ()
     if (CMAKE_C_COMPILER_ID STREQUAL SunPro)
         # TODO Move up? I don't understand. Why?
         string(REGEX REPLACE "(neg_alone_ptr\\.(kr|c11))\\.build_unexpected"
@@ -328,11 +337,14 @@ function (tu_cntfn_expected expected pos_pos neg_pos)
             "\\1.compiler_bug\\4"
             pos_base "${pos_base}")
     endif ()
-    if (CXX_ENABLED)
+    if (COUNTOF_NS_CXX_ENABLE)
         set(expt "${pos_base};${neg_base}")
     else ()
         foreach (e IN LISTS pos_base neg_base)
-            if (NOT e MATCHES "_cxx(\\.|$)")
+            if (NOT (e MATCHES "_cxx(\\.|$)" OR
+                     (e MATCHES "\\.bltn(\\.|$)" AND
+                      CMAKE_C_COMPILER_ID STREQUAL PellesC)
+                    ))
                 list(APPEND expt ${e})
             endif ()
         endforeach ()

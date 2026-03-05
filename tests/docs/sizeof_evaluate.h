@@ -5,6 +5,10 @@
 #include <assert.h>
 #include <stdio.h>
 
+#if __POCC__ && !__POCC__EXTENSIONS
+    #define __typeof__  typeof
+#endif
+
 int main(void) {
     size_t r = 0;
 #if !HAVE_BROKEN_SIZEOF  // TODO __ORANGEC__
