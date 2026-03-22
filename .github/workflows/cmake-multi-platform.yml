@@ -46,7 +46,7 @@ jobs:
       # customize the build_type list.
 
       matrix:
-        c_compiler: [cl, clang, gcc, icx, lcc, occ]
+        c_compiler: [cl, clang, gcc, icx, lcc, occ, pocc]
         os: [ubuntu-latest, windows-latest]
         include:
           - c_compiler: cl
@@ -81,6 +81,8 @@ jobs:
             c_compiler: cl
           - os: ubuntu-latest
             c_compiler: occ
+          - os: ubuntu-latest
+            c_compiler: pocc
           - os: windows-latest
             c_compiler: clang
           - os: windows-latest
@@ -102,6 +104,15 @@ jobs:
         uses: Serge3leo/orangec-msys2@v0
         with:
           verbose: true
+
+      - name: Setup Pelles C
+        if: ${{ matrix.c_compiler == 'pocc' }}
+        uses: Serge3leo/pellesc-msys2@space14rc
+        # uses: Serge3leo/pellesc-msys2@v0
+        with:
+          version: 14.0-rc1-git-lfs
+          verbose: true
+          msystem: skip  # Может и так ничего
 
       - name: Cache install oneAPI
         if: ${{ matrix.c_compiler == 'icx' }}
