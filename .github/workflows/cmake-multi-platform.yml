@@ -105,7 +105,8 @@ jobs:
 
       - name: Setup OrangeC
         if: ${{ matrix.c_compiler == 'occ' }}
-        uses: Serge3leo/orangec-msys2@v0
+        uses: Serge3leo/orangec-msys2@no-msys
+        # uses: Serge3leo/orangec-msys2@v0
         with:
           verbose: true
 
