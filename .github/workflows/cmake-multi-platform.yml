@@ -76,6 +76,10 @@ jobs:
             os: windows-latest
             platform: "win32"
             build_type: ""  # TODO
+          - c_compiler: pocc
+            os: windows-latest
+            platform: "win32"
+            build_type: ""  # TODO
         exclude:
           - os: ubuntu-latest
             c_compiler: cl
