@@ -116,7 +116,6 @@ jobs:
         with:
           version: 14.0-rc1-git-lfs
           verbose: true
-          msystem: skip  # Может и так ничего
 
       - name: Cache install oneAPI
         if: ${{ matrix.c_compiler == 'icx' }}
