@@ -2,10 +2,21 @@
 #define M_  (7)
 #define N_  (1917)
 #if !__cplusplus
+    #define STR(X)  #X
+    #define DUMP(X)  printf("TODO: debug: " #X "=%s\n", STR(X))
+
     static size_t pvf2_foo(size_t m, size_t n, int (*a)[m][n]) {
         tu_assert(M_ == m);
         tu_assert(N_ == n);
         tu_assert(N_ == TU_COUNTOF((*a)[0]));
+        DUMP(_COUNTOF_NS_USE_BUILTIN);
+        DUMP(_COUNTOF_NS_USE_GENERIC);
+        DUMP(_COUNTOF_NS_USE_SUBTRACTION);
+        DUMP(_COUNTOF_NS_VLA_UNSUPPORTED);
+        #ifdef countof_ns
+            printf("TODO: debug: countof_ns(*a)=%zu\n", countof_ns((*a)));
+        #endif
+        printf("TODO: debug: TU_COUNTOF(*a)=%zu\n", TU_COUNTOF((*a)));
         TU_ASSERT_AND_RETURN(M_, TU_COUNTOF(*a));
     }
     static size_t TU_UNIT(void) {

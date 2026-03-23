@@ -18,13 +18,18 @@ if "%1"=="%cc%" (
     set generator=NMake Makefiles
 ) else if "%1"=="occ" (
     set cc=occ
-    set cxx=occ
+    rem set cxx=occ  rem TODO OrangeC++ bugs workarounds
     set platform=occ
     set generator=MSYS Makefiles
+) else if "%1"=="pocc" (
+    set cc=pocc
+    set platform=pocc
+    set generator=MSYS Makefiles
 ) else (
-    echo "Usage: example-build.bat [[--|cl|nmake|occ] [cmake args...]]"
+    echo "Usage: example-build.bat [[--|cl|nmake|occ|pocc] [cmake args...]]"
     echo     nmake - If exist, then use "NMake Makefiles" cmake generator
     echo     occ - Use OrangeC with "MSYS Makefiles" cmake generator
+    echo     pocc - Use PellesC with "MSYS Makefiles" cmake generator
     echo .
     echo     Without argument - use default generator for Visual Studio
     exit /b 1
@@ -56,7 +61,12 @@ if not "%generator:~0,6%"=="Visual" (
     ctest --output-on-failure %CTEST_ARGS%
     if errorlevel 1 exit /b
 ) else (
-    cmake -B . -DCMAKE_CXX_COMPILER=%cxx% -DCMAKE_C_COMPILER=%cc% ^
+    if "x%cxx%" == "x" (
+        set cmakecxx=-DCOUNTOF_NS_CXX_ENABLE=OFF
+    ) else (
+        set cmakecxx=-DCMAKE_CXX_COMPILER=%cxx%
+    )
+    cmake -B . %cmakecxx% -DCMAKE_C_COMPILER=%cc% ^
           -G "%generator%" ^
           -DCMAKE_BUILD_TYPE=%build_type% -S ..\.. --preset %prst% %2 %3 %4 %5 %6 %7 %8 %9
     if errorlevel 1 exit /b

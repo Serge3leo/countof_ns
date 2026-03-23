@@ -7,11 +7,19 @@ project(countof_ns
     VERSION 0.7.0
     DESCRIPTION "C2y countof() platform independent implementation C23/C++14"
     HOMEPAGE_URL https://github.com/Serge3leo/countof_ns.git
-    LANGUAGES C CXX)
+    LANGUAGES C)
+option(COUNTOF_NS_CXX_ENABLE "Enable use C++ compiler for tests" ON)
+if (CMAKE_C_COMPILER_ID STREQUAL OrangeC OR  # TODO OrangeC++ bugs workarounds
+    CMAKE_C_COMPILER_ID STREQUAL PellesC)
+    set(COUNTOF_NS_CXX_ENABLE OFF)
+endif ()
+if (COUNTOF_NS_CXX_ENABLE)
+    enable_language(CXX)
+endif ()
 add_library(CountofNS INTERFACE include/countof_ns/countof_ns.h)
 add_library(CountofNS::CountofNS ALIAS CountofNS)
 
-if (NOT DEFINED CMAKE_C_STANDARD_REQUIRED)
+if (NOT DEFINED CMAKE_C_STANDARD_REQUIRED)  # TODO Boolean
     set(CMAKE_C_STANDARD_REQUIRED 11)  # With C extension `__typeof__()` et al.
 endif ()
 if (NOT DEFINED CMAKE_C_STANDARD)
@@ -21,13 +29,10 @@ if (CMAKE_C_COMPILER_ID STREQUAL OrangeC)  # Workaround CMake bug for OrangeC
     string(APPEND CMAKE_C_FLAGS " -std=c23")
 endif ()
 if (NOT DEFINED CMAKE_CXX_STANDARD_REQUIRED)
-    set(CMAKE_CXX_STANDARD_REQUIRED 14)
+    set(CMAKE_CXX_STANDARD_REQUIRED 14)  # TODO Boolean
 endif ()
 if (NOT DEFINED CMAKE_CXX_STANDARD)
     set(CMAKE_CXX_STANDARD 20)  # TODO: clang-14 <iostream> from godbolt_cxx.cpp
-endif ()
-if (CMAKE_C_COMPILER_ID STREQUAL OrangeC AND NOT DEFINED CXX_ENABLED)
-    set(CXX_ENABLED FALSE)  # TODO OrangeC++ bugs workarounds and -std=c++14
 endif ()
 if ((CMAKE_C_STANDARD_REQUIRED GREATER 70 AND
      CMAKE_C_STANDARD_REQUIRED LESS 99) OR
