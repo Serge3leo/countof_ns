@@ -105,15 +105,13 @@ jobs:
 
       - name: Setup OrangeC
         if: ${{ matrix.c_compiler == 'occ' }}
-        uses: Serge3leo/orangec-setup@no-msys
-        # uses: Serge3leo/orangec-setup@v0
+        uses: Serge3leo/orangec-setup@v0
         with:
           verbose: true
 
       - name: Setup Pelles C
         if: ${{ matrix.c_compiler == 'pocc' }}
-        uses: Serge3leo/pellesc-setup@space14rc
-        # uses: Serge3leo/pellesc-setup@v0
+        uses: Serge3leo/pellesc-setup@v0
         with:
           version: 14.0-rc1-git-lfs
           verbose: true
