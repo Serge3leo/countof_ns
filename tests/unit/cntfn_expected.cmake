@@ -62,7 +62,7 @@ function (tu_cntfn_expected expected pos_pos neg_pos)
             else ()
                 if(CMAKE_C_COMPILER_ID STREQUAL Intel OR
                    CMAKE_C_COMPILER_ID STREQUAL LCC OR
-                   CMAKE_C_COMPILER_ID STREQUAL PellesC OR
+                   (CMAKE_C_COMPILER_ID STREQUAL PellesC AND NOT CMAKE_C_EXTENSIONS) OR
                    CMAKE_C_COMPILER_ID STREQUAL SunPro)
                     set(ints ${b}.kr.run_eval_2)
                 else ()
@@ -73,7 +73,7 @@ function (tu_cntfn_expected expected pos_pos neg_pos)
                     list(APPEND ints ${b}.c11.run_eval_5 ${b}.bltn.run_eval_5)
                 elseif (CMAKE_C_COMPILER_ID STREQUAL Intel OR
                         CMAKE_C_COMPILER_ID STREQUAL LCC OR
-                        CMAKE_C_COMPILER_ID STREQUAL PellesC)
+                        (CMAKE_C_COMPILER_ID STREQUAL PellesC AND NOT CMAKE_C_EXTENSIONS))
                     list(APPEND ints ${b}.c11.run_eval_2 ${b}.bltn.run_eval_2)
                 else ()
                     list(APPEND ints ${b}.c11.run_eval_1 ${b}.bltn.run_eval_1)
@@ -95,7 +95,7 @@ function (tu_cntfn_expected expected pos_pos neg_pos)
         elseif (b MATCHES "pos_fix_vla_eval$")
             if(CMAKE_C_COMPILER_ID STREQUAL Intel OR
                CMAKE_C_COMPILER_ID STREQUAL LCC OR
-               CMAKE_C_COMPILER_ID STREQUAL PellesC)
+               (CMAKE_C_COMPILER_ID STREQUAL PellesC AND NOT CMAKE_C_EXTENSIONS))
                 set(ints ${b}.kr.run_eval_3)
             elseif (NOT HAVE_BROKEN_SIZEOF)
                 set(ints ${b}.kr.run_eval_2)
@@ -105,7 +105,7 @@ function (tu_cntfn_expected expected pos_pos neg_pos)
             list(APPEND ints ${b}.gen.run_c2y.run_eval_4)
             if (CMAKE_C_COMPILER_ID STREQUAL Intel OR
                 CMAKE_C_COMPILER_ID STREQUAL LCC OR
-                CMAKE_C_COMPILER_ID STREQUAL PellesC)
+                (CMAKE_C_COMPILER_ID STREQUAL PellesC AND NOT CMAKE_C_EXTENSIONS))
                 list(APPEND ints ${b}.c11.run_eval_3 ${b}.bltn.run_eval_3)
             elseif (CMAKE_C_COMPILER_ID STREQUAL SunPro)
                 list(APPEND ints ${b}.c11.run_eval_4 ${b}.bltn.run_eval_4)

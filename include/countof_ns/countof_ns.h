@@ -188,7 +188,7 @@
     #define _countof_ns_unsafe(a)  (0 == sizeof((a)[0]) ? 0 \
               : sizeof(a)/(sizeof((a)[0]) ? sizeof((a)[0]) : 2*sizeof(void *)))
     #define _countof_ns_not_kr_idiom_  (1)
-#elif !__GNUC__
+#elif !__GNUC__ && !__POCC__EXTENSIONS
     #define _countof_ns_unsafe(a)  \
                 (0 == sizeof((a)[0]) ? 0 : sizeof(a)/sizeof((a)[0]))
 #else
@@ -198,7 +198,7 @@
                         (sizeof(a)/( sizeof((a)[0]) ?: 2*sizeof(void *) ))
     #define _countof_ns_not_kr_idiom_  (1)
 #endif
-#if _COUNTOF_NS_WANT_KR || (_MSC_VER < 1939 && _MSC_VER && !__cplusplus)
+#if _COUNTOF_NS_WANT_KR || (_MSC_VER < 1939 && _MSC_VER && !__cplusplus && !__POCC__)
     #define _COUNTOF_NS_USE_KR (1)
     #if _countof_ns_not_kr_idiom_
             // For compilers, analyzers and warnings (as errors)
