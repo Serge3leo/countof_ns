@@ -20,7 +20,7 @@ add_library(CountofNS INTERFACE include/countof_ns/countof_ns.h)
 add_library(CountofNS::CountofNS ALIAS CountofNS)
 
 if (NOT DEFINED CMAKE_C_STANDARD)
-    set(CMAKE_C_STANDARD 23)
+    set(CMAKE_C_STANDARD ${CMAKE_C_STANDARD_LATEST})
 endif ()
 if (NOT DEFINED CMAKE_C_EXTENSIONS)
     set(CMAKE_C_EXTENSIONS ON)
